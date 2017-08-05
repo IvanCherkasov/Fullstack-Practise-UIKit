@@ -1,0 +1,34 @@
+.ui-button
+  background-color white
+  border 1px solid var(--ui-color)
+  border-radius 3px
+  height 100%
+  display flex
+  flex-direction column
+  justify-content center
+  cursor pointer
+  box-shadow 0 3px 0px 0px var(--ui-color)
+  color var(--ui-color)
+  transition 0.2s
+
+  .ui-button-caption
+    text-transform uppercase
+    font-weight bold
+    text-align center
+    margin auto 0
+
+.ui-button.aqua
+  --ui-color #4EB7A8
+  --box-shadow-color #28A290
+
+.ui-button.lightred
+  --ui-color #E75735
+  --box-shadow-color #BF3E1F
+
+.ui-button:hover
+  box-shadow 0 3px 0px 0px var(--box-shadow-color)
+  background-color var(--ui-color)
+  color white
+
+.ui-button:active
+  box-shadow 0 0px 0px 0px var(--box-shadow-color)
