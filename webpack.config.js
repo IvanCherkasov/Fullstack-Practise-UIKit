@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const webpack  = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const PATHS = {
@@ -40,6 +41,10 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: PATHS.source + '/index.pug'
+        }),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery'
         })
     ]
 }
