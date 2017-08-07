@@ -189,7 +189,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(5);
+var	fixUrls = __webpack_require__(7);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -509,7 +509,7 @@ function updateLink (link, options, obj) {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ui_button_index__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ui_button_index__ = __webpack_require__(8);
 
 
 
@@ -554,13 +554,25 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".box {\n  width: 118px;\n  height: 32px;\n}\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(5) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(6) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Regular.ttf";
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Bold.ttf";
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports) {
 
 
@@ -653,11 +665,11 @@ module.exports = function (css) {
 };
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(8);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
@@ -675,10 +687,10 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     });
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(9)))
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10508,13 +10520,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(9);
+var content = __webpack_require__(11);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -10539,7 +10551,7 @@ if(false) {
 }
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(0)(undefined);
@@ -10547,7 +10559,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".ui-button {\n  position: relative;\n  background-color: #fff;\n  border: 1px solid var(--ui-color);\n  border-radius: 3px;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  cursor: pointer;\n  box-shadow: 0 3px 0px 0px var(--ui-color);\n  color: var(--ui-color);\n  transition: 0.2s;\n  overflow: hidden;\n}\n.ui-button .ui-button-caption {\n  text-transform: uppercase;\n  font-weight: bold;\n  text-align: center;\n  margin: auto 0;\n}\n.ui-button .ui-radial {\n  position: absolute;\n  border-radius: 50%;\n  width: 0px;\n  height: 0px;\n  top: 25px;\n  left: 20px;\n  background-color: #fff;\n  opacity: 1;\n  transform: scale(0);\n}\n.ui-button .ui-radial.animate {\n  animation: radial 0.5s linear;\n}\n@-moz-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-webkit-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-o-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n.ui-button.aqua {\n  --ui-color: #4eb7a8;\n  --box-shadow-color: #28a290;\n}\n.ui-button.lightred {\n  --ui-color: #e75735;\n  --box-shadow-color: #bf3e1f;\n}\n.ui-button:hover {\n  box-shadow: 0 3px 0px 0px var(--box-shadow-color);\n  background-color: var(--ui-color);\n  color: #fff;\n}\n.ui-button:active {\n  box-shadow: 0 0px 0px 0px var(--box-shadow-color);\n}\n", ""]);
+exports.push([module.i, ".ui-button {\n  position: relative;\n  background-color: #fff;\n  border: 1px solid var(--ui-color);\n  border-radius: 3px;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  cursor: pointer;\n  box-shadow: 0 3px 0px 0px var(--ui-color);\n  color: var(--ui-color);\n  transition: 0.2s;\n  overflow: hidden;\n}\n.ui-button .ui-button-caption {\n  font-family: Lato;\n  text-transform: uppercase;\n  font-weight: bold;\n  text-align: center;\n  margin: auto 0;\n  font-size: 12px;\n  letter-spacing: 0.5px;\n}\n.ui-button .ui-radial {\n  position: absolute;\n  border-radius: 50%;\n  width: 0px;\n  height: 0px;\n  top: 25px;\n  left: 20px;\n  background-color: #fff;\n  opacity: 1;\n  transform: scale(0);\n}\n.ui-button .ui-radial.animate {\n  animation: radial 0.5s linear;\n}\n@-moz-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-webkit-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-o-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n.ui-button.aqua {\n  --ui-color: #4eb7a8;\n  --box-shadow-color: #28a290;\n}\n.ui-button.lightred {\n  --ui-color: #e75735;\n  --box-shadow-color: #bf3e1f;\n}\n.ui-button:hover {\n  box-shadow: 0 3px 0px 0px var(--box-shadow-color);\n  background-color: var(--ui-color);\n  color: #fff;\n}\n.ui-button:active {\n  box-shadow: 0 0px 0px 0px var(--box-shadow-color);\n}\n", ""]);
 
 // exports
 
