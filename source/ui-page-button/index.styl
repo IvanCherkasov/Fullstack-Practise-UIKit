@@ -1,0 +1,55 @@
+.ui-page-button
+  position relative
+  border-radius 50%
+  background-color white
+  border 3px solid #4EB7A8
+  width 42px
+  height 42px
+  transition background-color 0.2s
+
+.ui-page-button.disabled
+  background-color #e4e4e4
+  border-color #e4e4e4
+
+.ui-page-button.disabled::after
+  background-color white
+
+.ui-page-button.disabled::before
+  background-color white
+
+.ui-page-button.back
+  transform scale(-1, 1)
+
+.ui-page-button.back
+  transform scale(-1, 1)
+
+.ui-page-button::after
+  content ""
+  position absolute
+  background-color #4EB7A8
+  width 18px
+  height 4px
+  top 14px
+  left 14px
+  transform rotate(45deg)
+  transition background-color 0.2s
+
+.ui-page-button::before
+  content ""
+  position absolute
+  background-color #4EB7A8
+  width 18px
+  height 4px
+  top 24px
+  left 14px
+  transform rotate(-45deg)
+  transition background-color 0.2s
+
+.ui-page-button:not(.disabled):hover
+  background-color #4EB7A8
+
+.ui-page-button:not(.disabled):hover.ui-page-button::after
+  background-color white
+
+.ui-page-button:not(.disabled):hover.ui-page-button::before
+  background-color white

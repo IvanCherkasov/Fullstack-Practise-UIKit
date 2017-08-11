@@ -1,4 +1,6 @@
 include ./ui-button/index.pug
+include ./ui-page-button/index.pug
+include ./ui-radial-progress-bar/index.pug
 
 doctype html
 html(lang='ru')
@@ -8,3 +10,15 @@ html(lang='ru')
         title UI Kit
     body
         +addUIButton("aqua", "Button")
+        br
+        +addUIButton("lightred", "Button")
+        br
+        +addUIPageButton(false, true)
+        br
+        +addUIPageButton(true, false)
+        br
+        +addRadialProgressBar(38)
+        br
+        +addRadialProgressBar(89)
+        br
+        +addRadialProgressBar(10)
