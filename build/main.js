@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -189,7 +189,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(10);
+var	fixUrls = __webpack_require__(9);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -503,6 +503,505 @@ function updateLink (link, options, obj) {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js__ = __webpack_require__(10);
+
+
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(4);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(5) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(6) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Regular.ttf";
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Bold.ttf";
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Light.ttf";
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "fonts/Lato/Lato-Thin.ttf";
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+	// get current location
+	var location = typeof window !== "undefined" && window.location;
+
+	if (!location) {
+		throw new Error("fixUrls requires window.location");
+	}
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+		return css;
+	}
+
+	var baseUrl = location.protocol + "//" + location.host;
+	var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+ This regular expression is just a way to recursively match brackets within
+ a string.
+ 	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+    (  = Start a capturing group
+      (?:  = Start a non-capturing group
+          [^)(]  = Match anything that isn't a parentheses
+          |  = OR
+          \(  = Match a start parentheses
+              (?:  = Start another non-capturing groups
+                  [^)(]+  = Match anything that isn't a parentheses
+                  |  = OR
+                  \(  = Match a start parentheses
+                      [^)(]*  = Match anything that isn't a parentheses
+                  \)  = Match a end parentheses
+              )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+  \)  = Match a close parens
+ 	 /gi  = Get all matches, not the first.  Be case insensitive.
+  */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function (fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl.trim().replace(/^"(.*)"$/, function (o, $1) {
+			return $1;
+		}).replace(/^'(.*)'$/, function (o, $1) {
+			return $1;
+		});
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+			return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+			//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+$(document).ready(function () {
+
+	/*(function($){
+ 	$.fn.uikit = {
+ 		_slider: undefined,
+ 		get slider(){
+ 			console.log($.fn.uikit);
+ 			return this._slider;
+ 		},
+ 		set slider(object){
+ 			this._slider = object;
+ 			Object.defineProperty(this, 'slider', {
+ 				set: undefined
+ 			});
+ 		}
+ 	}
+ })(jQuery);
+ */
+	var sliders = [];
+	$('.ui-slider').each(function (i) {
+		var slider = {
+			element: $(this),
+			isHover: false,
+			_value: $(this).attr('value'),
+			_isDrag: false,
+			_xMaximum: 0,
+			_thumbWidth: 0,
+			setTrigger: function (name, f) {
+				this.element.on(name, f);
+			},
+			get xMaximum() {
+				return this._xMaximum;
+			},
+			get isDrag() {
+				return this._isDrag;
+			},
+			set isDrag(val) {
+				this._isDrag = val;
+				this.element.trigger('uikit.slider.isDrag', val);
+			},
+			get index() {
+				return i;
+			},
+			get id() {
+				return this.element.attr('id');
+			},
+			get maximum() {
+				return Number(this.element.attr('maximum'));
+			},
+			get minimum() {
+				return Number(this.element.attr('minimum'));
+			},
+			get value() {
+				return this._value;
+			},
+			set value(val) {
+				val = Math.min(Math.max(this.minimum, val), this.maximum);
+				this._value = val;
+				this.element.attr('value', val);
+				this.element.trigger('uikit.slider.valueChanged', val);
+			},
+			get width() {
+				return this.element.width();
+			},
+			calculate: {
+				_: 'proto',
+				value: function (x) {
+					var percent = x / this.Parent().xMaximum * 100;
+					var val = percent * (this.Parent().maximum - this.Parent().minimum) / 100 + this.Parent().minimum;
+					return Math.min(Math.max(this.Parent().minimum, Math.round(val)), this.Parent().maximum);
+				},
+				left: function (value) {
+					var percent = (value - this.Parent().minimum) * 100 / (this.Parent().maximum - this.Parent().minimum);
+					var left = percent / 100 * this.Parent().xMaximum;
+					return Math.min(Math.max(0, left), this.Parent().xMaximum);
+				}
+			},
+			track: {
+				_: 'proto',
+				element: $(this).find('.ui-slider-track'),
+				get width() {
+					return this.element.width();
+				},
+				get minimum() {
+					return 0;
+				},
+				get maximum() {
+					return this.width - this.thumb.width;
+				},
+				thumb: {
+					_: 'proto',
+					element: $(this).find('.ui-slider-thumb'),
+					_isHover: false,
+					get isHover() {
+						return this._isHover;
+					},
+					set isHover(val) {
+						this._isHover = val;
+						if (val === true) {
+							this.element.addClass('hover');
+						} else {
+							if (!this.Parent().isDrag) this.element.removeClass('hover');
+						}
+					},
+					get width() {
+						return this.element.width();
+					},
+					_moveTo: {
+						_: 'proto',
+						pageX: function (pageX) {
+							var x = pageX - this.Parent(1).element.offset().left;
+							this._setLeft(x - this.Parent(0).width / 2);
+						},
+						position: function (position) {
+							this._setLeft(position);
+						},
+						_setLeft: function (val) {
+							var clamped = Math.round(Math.min(Math.max(0, val), this.Parent(1).maximum));
+							this.Parent(0).element.css('left', clamped);
+						}
+					},
+					initDrag: function () {
+						var that = this;
+						this.Parent().isDrag = true;
+						$(document).on('mousemove.uikit.slider', function (event) {
+							that._moveTo.pageX(event.pageX);
+							that.Parent().element.trigger('uikit.slider.onDrag');
+						});
+						$(document).on('mouseup.uikit.slider', function (event) {
+							$(document).off('mousemove.uikit.slider');
+							$(document).off('mouseup.uikit.slider');
+							that.Parent().isDrag = false;
+						});
+					},
+					upper: {
+						_: 'proto',
+						element: $(this).find('.ui-slider-thumb-upper'),
+						textElement: $(this).find('.ui-slider-thumb-upper').find('div.no-select'),
+						get width() {
+							return this.element.width();
+						},
+						Init: function () {
+							var that = this;
+							that.Parent().setTrigger('uikit.slider.valueChanged', function (event, val) {
+								that.textElement.text(val);
+							});
+						}
+					},
+					Init: function () {
+						var that = this;
+						this.Parent()._xMaximum = this.Parent().width - this.width;
+						that.element.on('mousedown', function () {
+							if (that.isHover) {
+								that.initDrag();
+							}
+						});
+						that.element.on('mouseenter', function () {
+							that.isHover = true;
+						});
+						that.element.on('mouseleave', function () {
+							that.isHover = false;
+						});
+						that.Parent().setTrigger('uikit.slider.isDrag', function (event, val) {
+							if (!val && !that.isHover) {
+								that.element.removeClass('hover');
+							}
+						});
+						that.Parent().setTrigger('uikit.slider.onDrag', function (event) {
+							var val = that.Parent().calculate.value(parseInt(that.element.css('left')));
+							that.Parent().value = val;
+						});
+						that.Parent().setTrigger('uikit.slider.valueChanged', function (event, val) {
+							if (!that.Parent().isDrag) {
+								var left = that.Parent().calculate.left(val);
+								that._moveTo.position(left);
+							}
+						});
+						that.Parent().setTrigger('uikit.slider.mousedown', function (event, md_event) {
+							if (md_event.target !== that.element.get(0)) {
+								var x = md_event.pageX - that.Parent(0).element.offset().left - that.width / 2;
+								var val = that.Parent().calculate.value(x);
+								that.Parent().value = val;
+								if (!that.Parent().isDrag) {
+									that.isHover = true;
+									that.initDrag();
+								}
+							}
+						});
+					}
+				},
+				Init: function () {
+					var that = this;
+					this.element.on('mousedown', function (event) {
+						that.element.trigger('uikit.slider.mousedown', event);
+					});
+				}
+			},
+			rule: {
+				_: 'proto',
+				element: $(this).find('.ui-slider-rule'),
+				get segments() {
+					var seg = Number(this.element.attr('segments'));
+					if (seg >= 2) {
+						return seg;
+					}
+					return 0;
+				},
+				get _values() {
+					var values = [];
+					if (this.segments !== 0) {
+						var crat = (Math.abs(this.Parent().minimum) + Math.abs(this.Parent().maximum)) / (this.segments - 1);
+						var buf = this.Parent().minimum;
+						for (var i = 0; i < this.segments; i++) {
+							values.push(Math.round(buf));
+							buf += crat;
+						}
+					}
+					return values;
+				},
+				Init: function () {
+					var that = this;
+					if (this.segments !== 0) {
+						var values = this._values;
+						that.element.append($('<span>').text(values[0]));
+						that.element.append($('<span>').text(values[values.length - 1]));
+						for (var i = 1; i < values.length - 1; i++) {
+							var span = $('<span>').text(values[i]).css('position', 'absolute').css('width', that.Parent().width - that.Parent().xMaximum);
+							that.element.append(span);
+							var left = that.Parent().calculate.left(values[i]);
+							span.css('left', Math.round(left) + 'px');
+						}
+					}
+					this.element.find('span').each(function () {
+						var item = $(this);
+						item.addClass('no-select');
+						item.on('click', function (event) {
+							that.Parent().value = Number(item.text());
+						});
+					});
+				}
+			},
+			filler: {
+				_: 'proto',
+				element: $(this).find('.ui-slider-track-fill-left'),
+				get width() {
+					return this.element.width();
+				},
+				set width(val) {
+					this.element.css('width', val + 'px');
+				},
+				Init: function () {
+					var that = this;
+					this.Parent().setTrigger('uikit.slider.valueChanged', function (event, val) {
+						var left = that.Parent().calculate.left(val) + (that.Parent().width - that.Parent().xMaximum) / 2;
+						that.width = left;
+					});
+				}
+			},
+			Init: function () {
+				var that = this;
+
+				// функция добавляет в каждый прототип у которого есть поле "_" со значением "proto"
+				// поле-функцию "Parent(index)" которая позволяет получить родителя по индексу вверх.
+				// Так же производит запуск функции Init() если она имеется.
+				// рекурсивная
+				function AddParent_AndInit(source, array) {
+					var names = Object.getOwnPropertyNames(source);
+					names.forEach(function (name, i) {
+						var item = source[name];
+						if (typeof item !== 'undefined') {
+							if (item['_'] === 'proto') {
+								var newArray = array.slice();
+								newArray.push(source);
+								var retArray = newArray.slice().reverse();
+								item.Parent = function (index) {
+									if (typeof index === 'number') {
+										return retArray[index];
+									} else if (typeof index === 'undefined') {
+										return that;
+									}
+									return 'undefined';
+								};
+								if (typeof item.Init === 'function') item.Init();
+								AddParent_AndInit(item, newArray);
+							}
+						}
+					});
+				}
+				AddParent_AndInit(that, []);
+
+				this.element.on('dragstart', function () {
+					return false;
+				});
+				this.element.on('selectstart', function () {
+					return false;
+				});
+
+				this.value = this._value;
+				delete this.Init;
+				return this;
+			}
+		}.Init();
+
+		sliders.push(slider);
+
+		document.getElementById('slider-value').onchange = function () {
+			var val = Number(this.value);
+			if (val + '' !== 'NaN') {
+				sliders[0].value = Number(val);
+			}
+		};
+	});
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(11)))
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10332,208 +10831,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ui_button_index__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ui_page_button_index__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ui_radial_progress_bar_index__ = __webpack_require__(17);
-
-
-
-
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(5);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(1)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/stylus-loader/index.js!./index.styl", function() {
-			var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/stylus-loader/index.js!./index.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(6) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(9) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/Lato/Lato-Regular.ttf";
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/Lato/Lato-Bold.ttf";
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/Lato/Lato-Light.ttf";
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "fonts/Lato/Lato-Thin.ttf";
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-	// get current location
-	var location = typeof window !== "undefined" && window.location;
-
-	if (!location) {
-		throw new Error("fixUrls requires window.location");
-	}
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-		return css;
-	}
-
-	var baseUrl = location.protocol + "//" + location.host;
-	var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
- This regular expression is just a way to recursively match brackets within
- a string.
- 	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-    (  = Start a capturing group
-      (?:  = Start a non-capturing group
-          [^)(]  = Match anything that isn't a parentheses
-          |  = OR
-          \(  = Match a start parentheses
-              (?:  = Start another non-capturing groups
-                  [^)(]+  = Match anything that isn't a parentheses
-                  |  = OR
-                  \(  = Match a start parentheses
-                      [^)(]*  = Match anything that isn't a parentheses
-                  \)  = Match a end parentheses
-              )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-  \)  = Match a close parens
- 	 /gi  = Get all matches, not the first.  Be case insensitive.
-  */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function (fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl.trim().replace(/^"(.*)"$/, function (o, $1) {
-			return $1;
-		}).replace(/^'(.*)'$/, function (o, $1) {
-			return $1;
-		});
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
-			return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-			//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
-
-/***/ }),
-/* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
-$(document).ready(function () {
-    $('.ui-button').click(function (e) {
-        var offset = $(this).offset();
-        var x = e.pageX - offset.left;
-        var y = e.pageY - offset.top;
-        var effectDiv = $(this).find('#ui-effect');
-        effectDiv.removeClass("animate");
-        var size = Math.max($(this).parent().outerWidth(), $(this).parent().outerHeight());
-        $(this).find(effectDiv).css("top", y - size / 2).css("left", x - size / 2).css("width", size).css("height", size);
-        effectDiv.addClass("animate");
-    });
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
-
-/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10573,133 +10870,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".ui-button {\n  position: relative;\n  background-color: #fff;\n  border: 1px solid var(--ui-color);\n  border-radius: 3px;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  cursor: pointer;\n  box-shadow: 0 3px 0px 0px var(--ui-color);\n  color: var(--ui-color);\n  transition: 0.2s;\n  overflow: hidden;\n}\n.ui-button .ui-button-caption {\n  font-family: Lato;\n  text-transform: uppercase;\n  font-weight: bold;\n  text-align: center;\n  font-size: 12px;\n  letter-spacing: 0.5px;\n}\n.ui-button .ui-radial {\n  position: absolute;\n  border-radius: 50%;\n  width: 0px;\n  height: 0px;\n  background-color: #fff;\n  opacity: 0.8;\n  transform: scale(0);\n}\n.ui-button .ui-radial.animate {\n  animation: radial 0.5s linear;\n}\n@-moz-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-webkit-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@-o-keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n@keyframes radial {\n  100% {\n    opacity: 0;\n    transform: scale(3);\n  }\n}\n.ui-button.aqua {\n  --ui-color: #4eb7a8;\n  --box-shadow-color: #28a290;\n}\n.ui-button.lightred {\n  --ui-color: #e75735;\n  --box-shadow-color: #bf3e1f;\n}\n.ui-button:hover {\n  box-shadow: 0 3px 0px 0px var(--box-shadow-color);\n  background-color: var(--ui-color);\n  color: #fff;\n}\n.ui-button:active {\n  box-shadow: 0 0px 0px 0px var(--box-shadow-color);\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(16);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(1)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/stylus-loader/index.js!./index.styl", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/stylus-loader/index.js!./index.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, ".ui-page-button {\n  position: relative;\n  border-radius: 50%;\n  background-color: #fff;\n  border: 3px solid #4eb7a8;\n  width: 42px;\n  height: 42px;\n  transition: background-color 0.2s;\n}\n.ui-page-button.disabled {\n  background-color: #e4e4e4;\n  border-color: #e4e4e4;\n}\n.ui-page-button.disabled::after {\n  background-color: #fff;\n}\n.ui-page-button.disabled::before {\n  background-color: #fff;\n}\n.ui-page-button.back {\n  transform: scale(-1, 1);\n}\n.ui-page-button.back {\n  transform: scale(-1, 1);\n}\n.ui-page-button::after {\n  content: \"\";\n  position: absolute;\n  background-color: #4eb7a8;\n  width: 18px;\n  height: 4px;\n  top: 14px;\n  left: 14px;\n  transform: rotate(45deg);\n  transition: background-color 0.2s;\n}\n.ui-page-button::before {\n  content: \"\";\n  position: absolute;\n  background-color: #4eb7a8;\n  width: 18px;\n  height: 4px;\n  top: 24px;\n  left: 14px;\n  transform: rotate(-45deg);\n  transition: background-color 0.2s;\n}\n.ui-page-button:not(.disabled):hover {\n  background-color: #4eb7a8;\n}\n.ui-page-button:not(.disabled):hover.ui-page-button::after {\n  background-color: #fff;\n}\n.ui-page-button:not(.disabled):hover.ui-page-button::before {\n  background-color: #fff;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
-$(document).ready(function () {
-    $('.ui-radial-progress-bar').each(function () {
-        var value = $(this).attr('value');
-        var item_right = $(this).find('.progress-right');
-        var item_left = $(this).find('.progress-left');
-        if (value <= 50 && value >= 0) {
-            value = 180 / 50 * value;
-            item_right.css('transform', 'rotate(' + value + 'deg)');
-            item_left.css('transform', 'rotate(180deg)');
-        } else if (value <= 100 && value > 50) {
-            value = 180 / 50 * value;
-            item_right.css('transform', 'rotate(180deg)');
-            item_left.css('transform', 'rotate(' + value + 'deg)');
-        }
-    });
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(19);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(1)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/stylus-loader/index.js!./index.styl", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/stylus-loader/index.js!./index.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(0)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, ".ui-radial-progress-bar {\n  width: 100px;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.ui-radial-progress-bar .text {\n  font-family: Lato;\n  color: #9d9d9d;\n  font-size: 40px;\n  font-weight: 200;\n}\n.ui-radial-progress-bar .wrapper-right {\n  width: inherit;\n  height: inherit;\n  position: absolute;\n  clip: rect(0px, 100px, 100px, 50px);\n  background-color: transparent;\n}\n.ui-radial-progress-bar .wrapper-right .progress-right {\n  width: calc(100% - 10px);\n  height: calc(100% - 10px);\n  position: absolute;\n  border-radius: 50%;\n  border: 5px solid #e75735;\n  background-color: transparent;\n  clip: rect(0px, 50px, 100px, 0px);\n  transform: rotate(0deg);\n}\n.ui-radial-progress-bar .wrapper-left {\n  width: inherit;\n  height: inherit;\n  position: absolute;\n  clip: rect(0px, 50px, 100px, 0px);\n  background-color: transparent;\n}\n.ui-radial-progress-bar .wrapper-left .progress-left {\n  width: calc(100% - 10px);\n  height: calc(100% - 10px);\n  position: absolute;\n  border-radius: 50%;\n  border: 5px solid #e75735;\n  background-color: transparent;\n  clip: rect(0px, 50px, 100px, 0px);\n  transform: rotate(180deg);\n}\n", ""]);
+exports.push([module.i, ".ui-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.ui-slider .ui-slider-track {\n  position: relative;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.ui-slider .ui-slider-track .ui-slider-thumb {\n  position: relative;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n}\n.ui-slider .ui-slider-track .ui-slider-thumb .ui-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.ui-slider .ui-slider-track .ui-slider-thumb .ui-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.ui-slider .ui-slider-track .ui-slider-thumb .ui-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.ui-slider .ui-slider-track .ui-slider-thumb.hover .ui-slider-thumb-upper {\n  opacity: 1;\n}\n.ui-slider .ui-slider-track .ui-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.ui-slider .ui-slider-track .ui-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.ui-slider .ui-slider-track .ui-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.ui-slider .ui-slider-track .ui-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.ui-slider .ui-slider-track-fill {\n  position: absolute;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.ui-slider .ui-slider-track-fill .ui-slider-track-fill-left {\n  position: relative;\n  height: inherit;\n  width: 50px;\n  background-color: #e75735;\n}\n.ui-slider .ui-slider-track.hover .ui-slider-track-upper {\n  opacity: 1;\n}\n.ui-slider .ui-slider-rule {\n  width: 100%;\n  position: relative;\n  margin-top: 2px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  cursor: default;\n}\n.ui-slider .ui-slider-rule span {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.ui-slider .ui-slider-rule span:hover {\n  color: #e75735;\n}\n", ""]);
 
 // exports
 

@@ -1,24 +1,13 @@
-include ./ui-button/index.pug
-include ./ui-page-button/index.pug
-include ./ui-radial-progress-bar/index.pug
+include ./uikit-slider/index.pug
 
 doctype html
 html(lang='ru')
-    head
-        meta(charset="utf-8")
-        meta(viewport="width=device-width")
-        title UI Kit
-    body
-        +addUIButton("aqua", "Button")
-        br
-        +addUIButton("lightred", "Button")
-        br
-        +addUIPageButton(false, true)
-        br
-        +addUIPageButton(true, false)
-        br
-        +addRadialProgressBar(38)
-        br
-        +addRadialProgressBar(89)
-        br
-        +addRadialProgressBar(10)
+	head
+		meta(charset="utf-8")
+		meta(viewport="width=device-width")
+		title UI Kit
+	body
+		br
+		br
+		br
+		+addUISliderC('uikit-slider-id', -30, 30)
