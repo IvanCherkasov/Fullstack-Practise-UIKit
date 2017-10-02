@@ -1,3 +1,3 @@
 import './index.styl'
 
-import './uikit-slider/index.js'
+import './uikit/uikit-slider/index.js'
