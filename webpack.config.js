@@ -27,6 +27,9 @@ module.exports = {
                 pretty: true
             }
         },{
+            test: /\.css$/,
+            loader: 'style-loader!css-loader'
+        },{
             test: /\.styl$/,
             loader: 'style-loader!css-loader!stylus-loader'
         },{

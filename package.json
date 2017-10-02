@@ -1,6 +1,8 @@
 {
-  "name": "uikit",
+  "name": "Fullstack-Practise-UIKit",
   "main": "index.js",
+  "repository": "https://github.com/IvanCherkasov/Fullstack-Practise-UIKit.git",
+  "license": "MIT",
   "scripts": {
     "build": "webpack"
   },
