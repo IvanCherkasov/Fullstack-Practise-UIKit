@@ -9901,8 +9901,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_slider_index_js__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_slider_index_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__uikit_uikit_slider_index_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_index_js__ = __webpack_require__(11);
 
 
 
@@ -10509,6 +10508,18 @@ module.exports = function (css) {
 
 /***/ }),
 /* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js__);
+
+
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery, $) {class UIKitElement {
@@ -10573,6 +10584,36 @@ class UIKitEventsList {
 	}
 }
 
+(function ($) {
+	jQuery.fn.UIKit = function (option) {
+		if (option) {
+			return new option(this);
+		}
+		return this;
+	};
+
+	jQuery.UIKit = {
+		Core: {
+			UIKitElement: UIKitElement,
+			UIKitFragment: UIKitFragment,
+			UIKitEvent: UIKitEvent,
+			UIKitEventsList: UIKitEventsList
+		}
+	};
+})(jQuery);
+
+console.log($.UIKit);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function($, jQuery) {var UIKitElement = $.UIKit.Core.UIKitElement;
+var UIKitFragment = $.UIKit.Core.UIKitFragment;
+var UIKitEvent = $.UIKit.Core.UIKitEvent;
+var UIKitEventsList = $.UIKit.Core.UIKitEventsList;
+
 class UIKitSlider extends UIKitElement {
 	constructor(slider) {
 		super(slider);
@@ -10590,7 +10631,6 @@ class UIKitSlider extends UIKitElement {
 
 		this.Thumb = new UIKitSliderThumb(slider.find('.uikit-slider-thumb'), this.EventsList);
 
-		//в конце
 		(function ($) {
 			var sliderData = function () {
 				if (slider.data('UIKit.Slider')) {
@@ -10634,18 +10674,8 @@ class UIKitSliderThumb extends UIKitFragment {
 	}
 }
 
-//ядро UIKit
-(function ($) {
-	jQuery.fn.UIKit = function (option) {
-		if (option) {
-			return new option(this);
-		}
-		return this;
-	};
-})(jQuery);
-
 $('#uikit-slider-id').UIKit(UIKitSlider);
-$('#uikit-slider-id').UIKit.Slider().value = 10;
+console.log($.UIKit);
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
 
 /***/ })

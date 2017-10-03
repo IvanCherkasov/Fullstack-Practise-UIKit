@@ -17,12 +17,13 @@
     "jquery": "^3.2.1",
     "pug": "^2.0.0-rc.3",
     "pug-loader": "^2.3.0",
+    "resolve": "^1.4.0",
     "style-loader": "^0.18.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "url": "^0.11.0",
     "url-loader": "^0.5.9",
-    "webpack": "^3.4.1",
+    "webpack": "3.0.0",
     "webpack-merge": "^4.1.0"
   }
 }

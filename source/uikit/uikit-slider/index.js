@@ -1,64 +1,7 @@
-class UIKitElement{
-	constructor(element){
-		this.element = element;
-		this.EventsList = new UIKitEventsList();
-	}
-}
-
-class UIKitFragment{
-	constructor(element, eventsList){
-		this.element = element;
-		this.EventsList = eventsList;
-	}
-}
-
-class UIKitEvent{
-	constructor(name){
-		this.name = name;
-		this._callbacks = [];
-	}
-
-	setCallback(value){
-		this._callbacks.push(value);
-	}
-
-	dispatch(...args){
-		this._callbacks.forEach(function(event){
-			event(...args);
-		});
-	}
-}
-
-class UIKitEventsList{
-	constructor(){
-		this._events = [];
-	}
-
-	getEvent(name){
-		var _event = undefined;
-		this._events.forEach(function(event){
-			if (event.name === name) {
-				_event = event;
-				return;
-			}
-		});
-		return _event;
-	}
-
-	addEvent(event, f){
-		if (!this.exists(event.name)){
-			event.setCallback(f);
-			this._events.push(event);
-		}
-	}
-
-	exists(name){
-		this._events.forEach(function(event){
-			if (event.name === name) return true;
-		});
-		return false;
-	}
-}
+var UIKitElement 	= 	$.UIKit.Core.UIKitElement;
+var UIKitFragment 	= 	$.UIKit.Core.UIKitFragment;
+var UIKitEvent 		= 	$.UIKit.Core.UIKitEvent;
+var UIKitEventsList = 	$.UIKit.Core.UIKitEventsList;
 
 class UIKitSlider extends UIKitElement{
 	constructor(slider){
@@ -77,7 +20,6 @@ class UIKitSlider extends UIKitElement{
 
 		this.Thumb = new UIKitSliderThumb(slider.find('.uikit-slider-thumb'), this.EventsList);
 
-		//в конце
 		(function($){
 			var sliderData = function(){
 				if (slider.data('UIKit.Slider')){
@@ -121,15 +63,5 @@ class UIKitSliderThumb extends UIKitFragment{
 	}
 }
 
-//ядро UIKit
-(function($){
-  	jQuery.fn.UIKit = function(option){
-		if (option){
-			return new option(this);
-		}
-		return this;
-	}
-})(jQuery);
-
 $('#uikit-slider-id').UIKit(UIKitSlider);
-$('#uikit-slider-id').UIKit.Slider().value = 10;
+console.log($.UIKit);
