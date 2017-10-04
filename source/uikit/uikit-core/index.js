@@ -3,6 +3,17 @@ class UIKitElement{
 		this.element = element;
 		this.EventsList = new UIKitEventsList();
 	}
+
+	static Get(obj){
+		if (obj.data(this.name)){
+			console.log('экземпляр взят из data');
+			return obj.data(this.name);
+		}
+		var inst = new this(obj);
+		obj.data(this.name, inst);
+		console.log('создан новый экземпляр и помещен в data');
+		return inst;
+	}
 }
 
 class UIKitFragment{
@@ -18,8 +29,8 @@ class UIKitEvent{
 		this._callbacks = [];
 	}
 
-	setCallback(value){
-		this._callbacks.push(value);
+	setCallback(f){
+		this._callbacks.push(f);
 	}
 
 	dispatch(...args){
@@ -45,38 +56,34 @@ class UIKitEventsList{
 		return _event;
 	}
 
-	addEvent(event, f){
+	addEvent(eventName, f){
+		var event = new UIKitEvent(eventName);
 		if (!this.exists(event.name)){
 			event.setCallback(f);
 			this._events.push(event);
+		} else {
+			this.getEvent(eventName).setCallback(f);
 		}
 	}
 
 	exists(name){
+		var exist = false;
 		this._events.forEach(function(event){
-			if (event.name === name) return true;
+			if (event.name === name) {
+				exist = true;
+				return;
+			}
 		});
-		return false;
+		return exist;
 	}
 }
 
-(function($){
-  	jQuery.fn.UIKit = function(option){
-		if (option){
-			return new option(this);
-		}
-		return this;
+var UIKit = {
+	Core: {
+		UIKitElement: UIKitElement,
+		UIKitFragment: UIKitFragment,
+		UIKitEvent: UIKitEvent,
+		UIKitEventsList: UIKitEventsList
 	}
-
-	jQuery.UIKit = {
-		Core: {
-			UIKitElement: UIKitElement,
-			UIKitFragment: UIKitFragment,
-			UIKitEvent: UIKitEvent,
-			UIKitEventsList: UIKitEventsList
-		}
-	};
-	
-})(jQuery);
-
-console.log($.UIKit);
+}
+export default UIKit;

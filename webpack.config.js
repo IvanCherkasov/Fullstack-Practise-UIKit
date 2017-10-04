@@ -16,13 +16,6 @@ module.exports = {
         filename: '[name].js'
     },
 
-    resolve: {
-        extensions: ['.js'],
-        alias: {
-          'UIKit': path.resolve(__dirname, './source/uikit/index.js')
-        }
-    },
-
     module: {
         loaders:[{
             test: /\.js$/,
@@ -54,8 +47,7 @@ module.exports = {
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
-            jQuery: 'jquery',
-            UIKit: path.resolve(__dirname, './source/uikit/index.js')
+            jQuery: 'jquery'
         })
     ]
 }

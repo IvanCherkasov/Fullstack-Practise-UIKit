@@ -1,36 +1,21 @@
-var UIKitElement 	= 	$.UIKit.Core.UIKitElement;
-var UIKitFragment 	= 	$.UIKit.Core.UIKitFragment;
-var UIKitEvent 		= 	$.UIKit.Core.UIKitEvent;
-var UIKitEventsList = 	$.UIKit.Core.UIKitEventsList;
+import UIKit from '../uikit-core/index.js'
 
-class UIKitSlider extends UIKitElement{
+class UIKitSlider extends UIKit.Core.UIKitElement {
 	constructor(slider){
 		super(slider);
 		var that = this;
 		this._value = 0;
 		this._isHover = false;
 		
-		this.EventsList.addEvent(new UIKitEvent('slider.valueChanged'), function(value){
-			console.log('valueChanged: ' + value);
+		this.EventsList.addEvent('slider.valueChanged', function(value){
+			console.log('value changed: ' + value);
 		});
 
-		this.EventsList.addEvent(new UIKitEvent('slider.hoverChanged'), function(value){
-			console.log('hoverChanged: ' + value);
+		this.EventsList.addEvent('slider.hoverChanged', function(value){
+			console.log('hover changed: ' + value);
 		});
 
 		this.Thumb = new UIKitSliderThumb(slider.find('.uikit-slider-thumb'), this.EventsList);
-
-		(function($){
-			var sliderData = function(){
-				if (slider.data('UIKit.Slider')){
-					return slider.data('UIKit.Slider');
-				}
-				slider.data('UIKit.Slider', that);
-				return that;
-			}
-			jQuery.fn.UIKit.Slider = sliderData;
-			jQuery.fn.UIKit().Slider = sliderData;
-		})(jQuery);
 	}
 
 	set value(val){
@@ -56,12 +41,11 @@ class UIKitSlider extends UIKitElement{
 	}
 }
 
-class UIKitSliderThumb extends UIKitFragment{
+class UIKitSliderThumb extends UIKit.Core.UIKitFragment{
 	constructor(thumb, eventsList){
 		super(thumb, eventsList);
 		var that = this;
 	}
 }
 
-$('#uikit-slider-id').UIKit(UIKitSlider);
-console.log($.UIKit);
+UIKit.Core.UIKitSlider = UIKitSlider;

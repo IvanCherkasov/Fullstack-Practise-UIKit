@@ -65,6 +65,127 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class UIKitElement {
+	constructor(element) {
+		this.element = element;
+		this.EventsList = new UIKitEventsList();
+	}
+
+	static Get(obj) {
+		if (obj.data(this.name)) {
+			console.log('экземпляр взят из data');
+			return obj.data(this.name);
+		}
+		var inst = new this(obj);
+		obj.data(this.name, inst);
+		console.log('создан новый экземпляр и помещен в data');
+		return inst;
+	}
+}
+
+class UIKitFragment {
+	constructor(element, eventsList) {
+		this.element = element;
+		this.EventsList = eventsList;
+	}
+}
+
+class UIKitEvent {
+	constructor(name) {
+		this.name = name;
+		this._callbacks = [];
+	}
+
+	setCallback(f) {
+		this._callbacks.push(f);
+	}
+
+	dispatch(...args) {
+		this._callbacks.forEach(function (event) {
+			event(...args);
+		});
+	}
+}
+
+class UIKitEventsList {
+	constructor() {
+		this._events = [];
+	}
+
+	getEvent(name) {
+		var _event = undefined;
+		this._events.forEach(function (event) {
+			if (event.name === name) {
+				_event = event;
+				return;
+			}
+		});
+		return _event;
+	}
+
+	addEvent(eventName, f) {
+		var event = new UIKitEvent(eventName);
+		if (!this.exists(event.name)) {
+			event.setCallback(f);
+			this._events.push(event);
+		} else {
+			this.getEvent(eventName).setCallback(f);
+		}
+	}
+
+	exists(name) {
+		var exist = false;
+		this._events.forEach(function (event) {
+			if (event.name === name) {
+				exist = true;
+				return;
+			}
+		});
+		return exist;
+	}
+}
+
+var UIKit = {
+	Core: {
+		UIKitElement: UIKitElement,
+		UIKitFragment: UIKitFragment,
+		UIKitEvent: UIKitEvent,
+		UIKitEventsList: UIKitEventsList
+	}
+};
+/* harmony default export */ __webpack_exports__["a"] = (UIKit);
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(12);
+
+
+
+
+
+var slider = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id'));
+slider.EventsList.addEvent('slider.valueChanged', function (val) {
+	console.log('custom callback; value changed: ' + val);
+});
+slider.value = 10;
+slider.value = 18;
+
+var slider2 = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id'));
+slider2.value = 5;
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9894,26 +10015,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_index_js__ = __webpack_require__(11);
-
-
-
-
-/***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(3);
+var content = __webpack_require__(4);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -9921,7 +10029,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(9)(content, options);
+var update = __webpack_require__(10)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -9938,21 +10046,21 @@ if(false) {
 }
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(undefined);
+exports = module.exports = __webpack_require__(5)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(5) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(6) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(6) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(9) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -10031,31 +10139,31 @@ function toComment(sourceMap) {
 }
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/Lato/Lato-Regular.ttf";
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/Lato/Lato-Bold.ttf";
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/Lato/Lato-Light.ttf";
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fonts/Lato/Lato-Thin.ttf";
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -10101,7 +10209,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(10);
+var	fixUrls = __webpack_require__(11);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -10414,7 +10522,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 
@@ -10507,141 +10615,29 @@ module.exports = function (css) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__uikit_slider_index_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__ = __webpack_require__(0);
 
 
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(jQuery, $) {class UIKitElement {
-	constructor(element) {
-		this.element = element;
-		this.EventsList = new UIKitEventsList();
-	}
-}
-
-class UIKitFragment {
-	constructor(element, eventsList) {
-		this.element = element;
-		this.EventsList = eventsList;
-	}
-}
-
-class UIKitEvent {
-	constructor(name) {
-		this.name = name;
-		this._callbacks = [];
-	}
-
-	setCallback(value) {
-		this._callbacks.push(value);
-	}
-
-	dispatch(...args) {
-		this._callbacks.forEach(function (event) {
-			event(...args);
-		});
-	}
-}
-
-class UIKitEventsList {
-	constructor() {
-		this._events = [];
-	}
-
-	getEvent(name) {
-		var _event = undefined;
-		this._events.forEach(function (event) {
-			if (event.name === name) {
-				_event = event;
-				return;
-			}
-		});
-		return _event;
-	}
-
-	addEvent(event, f) {
-		if (!this.exists(event.name)) {
-			event.setCallback(f);
-			this._events.push(event);
-		}
-	}
-
-	exists(name) {
-		this._events.forEach(function (event) {
-			if (event.name === name) return true;
-		});
-		return false;
-	}
-}
-
-(function ($) {
-	jQuery.fn.UIKit = function (option) {
-		if (option) {
-			return new option(this);
-		}
-		return this;
-	};
-
-	jQuery.UIKit = {
-		Core: {
-			UIKitElement: UIKitElement,
-			UIKitFragment: UIKitFragment,
-			UIKitEvent: UIKitEvent,
-			UIKitEventsList: UIKitEventsList
-		}
-	};
-})(jQuery);
-
-console.log($.UIKit);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function($, jQuery) {var UIKitElement = $.UIKit.Core.UIKitElement;
-var UIKitFragment = $.UIKit.Core.UIKitFragment;
-var UIKitEvent = $.UIKit.Core.UIKitEvent;
-var UIKitEventsList = $.UIKit.Core.UIKitEventsList;
-
-class UIKitSlider extends UIKitElement {
+class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
 	constructor(slider) {
 		super(slider);
 		var that = this;
 		this._value = 0;
 		this._isHover = false;
 
-		this.EventsList.addEvent(new UIKitEvent('slider.valueChanged'), function (value) {
-			console.log('valueChanged: ' + value);
+		this.EventsList.addEvent('slider.valueChanged', function (value) {
+			console.log('value changed: ' + value);
 		});
 
-		this.EventsList.addEvent(new UIKitEvent('slider.hoverChanged'), function (value) {
-			console.log('hoverChanged: ' + value);
+		this.EventsList.addEvent('slider.hoverChanged', function (value) {
+			console.log('hover changed: ' + value);
 		});
 
 		this.Thumb = new UIKitSliderThumb(slider.find('.uikit-slider-thumb'), this.EventsList);
-
-		(function ($) {
-			var sliderData = function () {
-				if (slider.data('UIKit.Slider')) {
-					return slider.data('UIKit.Slider');
-				}
-				slider.data('UIKit.Slider', that);
-				return that;
-			};
-			jQuery.fn.UIKit.Slider = sliderData;
-			jQuery.fn.UIKit().Slider = sliderData;
-		})(jQuery);
 	}
 
 	set value(val) {
@@ -10667,16 +10663,14 @@ class UIKitSlider extends UIKitElement {
 	}
 }
 
-class UIKitSliderThumb extends UIKitFragment {
+class UIKitSliderThumb extends __WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__["a" /* default */].Core.UIKitFragment {
 	constructor(thumb, eventsList) {
 		super(thumb, eventsList);
 		var that = this;
 	}
 }
 
-$('#uikit-slider-id').UIKit(UIKitSlider);
-console.log($.UIKit);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(0)))
+__WEBPACK_IMPORTED_MODULE_0__uikit_core_index_js__["a" /* default */].Core.UIKitSlider = UIKitSlider;
 
 /***/ })
 /******/ ]);
