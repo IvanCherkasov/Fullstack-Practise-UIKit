@@ -5,6 +5,9 @@ class UIKitElement{
 	}
 
 	static Get(obj){
+		if (!obj){
+			throw new ReferenceError('Элемент пустой');
+		}
 		if (obj.data(this.name)){
 			console.log('экземпляр взят из data');
 			return obj.data(this.name);
@@ -18,6 +21,9 @@ class UIKitElement{
 
 class UIKitFragment{
 	constructor(element, eventsList){
+		if (!element){
+			throw new ReferenceError('Элемент пустой');
+		}
 		this.element = element;
 		this.EventsList = eventsList;
 	}

@@ -1,2 +1,8 @@
-mixin addUIKit_Slider()
-	div(id='uikit-slider-id')
+mixin addUIKit_Slider(id, minimum, maximum, value)
+	div.uikit-slider(id=id, maximum=maximum, minimum=minimum, value=value)
+		div.uikit-slider-track
+			div.uikit-slider-filler
+				div.uikit-slider-filled
+			div.uikit-slider-thumb
+				div.uikit-slider-thumb-upper
+		div.uikit-slider-rule
