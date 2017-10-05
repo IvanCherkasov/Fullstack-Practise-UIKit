@@ -20,7 +20,8 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 
 	set value(val){
 		this._value = val;
-		if (event = this.EventsList.getEvent('slider.valueChanged')){
+		var event = this.EventsList.getEvent('slider.valueChanged');
+		if (event){
 			event.dispatch(val);
 		}
 	}
