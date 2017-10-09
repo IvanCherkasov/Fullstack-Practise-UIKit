@@ -1,7 +1,29 @@
 class UIKitElement{
-	constructor(element){
-		this.element = element;
-		this.EventsList = new UIKitEventsList();
+	constructor(dom, eventsList, parentSize){
+		if (dom !== null && dom !== undefined){
+			var that = this;
+			this.element = dom;
+			if (eventsList === null || eventsList === undefined){
+				this.EventsList = new UIKitEventsList(); //Создает новый eventsList, если данный элемент корневой
+			} else {
+				this.EventsList = eventsList; //Произошла передача уже созданного eventsList от родительского элемента
+			}
+			/*if (parentSize !== null || parentSize !== undefined){
+				this.ParentSize = parentSize;
+			}
+			this.Size = {
+				get width(){ return that.element.width(); },
+				get height(){ return that.element.height(); }
+			}*/
+		} else throw ReferenceError('Элемент пустой');
+	}
+
+	toggleClass(className){
+		if (this.element.hasClass(className)){
+			this.element.removeClass(className);
+		} else {
+			this.element.addClass(className);
+		}
 	}
 
 	static Get(obj){
@@ -9,34 +31,23 @@ class UIKitElement{
 			throw new ReferenceError('Элемент пустой');
 		}
 		if (obj.data(this.name)){
-			console.log('экземпляр взят из data');
 			return obj.data(this.name);
 		}
 		var inst = new this(obj);
 		obj.data(this.name, inst);
-		console.log('создан новый экземпляр и помещен в data');
 		return inst;
 	}
 }
 
-class UIKitFragment{
-	constructor(element, eventsList){
-		if (!element){
-			throw new ReferenceError('Элемент пустой');
-		}
-		this.element = element;
-		this.EventsList = eventsList;
-	}
-}
-
 class UIKitEvent{
-	constructor(name){
-		this.name = name;
-		this._callbacks = [];
+	constructor(){
+		this._callbacks = []
 	}
 
-	setCallback(f){
-		this._callbacks.push(f);
+	addCallback(f){
+		if (typeof f === 'function'){
+			this._callbacks.push(f);
+		} else throw ReferenceError('Входящий параметр не является функцией!');
 	}
 
 	dispatch(...args){
@@ -48,46 +59,37 @@ class UIKitEvent{
 
 class UIKitEventsList{
 	constructor(){
-		this._events = [];
+		this._events = {}
 	}
 
-	getEvent(name){
-		var _event = undefined;
-		this._events.forEach(function(event){
-			if (event.name === name) {
-				_event = event;
-				return;
-			}
-		});
-		return _event;
+	get(name){
+		return this._events[name];
 	}
 
-	addEvent(eventName, f){
-		var event = new UIKitEvent(eventName);
-		if (!this.exists(event.name)){
-			event.setCallback(f);
-			this._events.push(event);
+	add(name, f){
+		var getted = this._events[name];
+		if (getted !== undefined){
+			getted.addCallback(f);
 		} else {
-			this.getEvent(eventName).setCallback(f);
+			var event = new UIKitEvent();
+			event.addCallback(f);
+			this._events[name] = event;
 		}
 	}
 
-	exists(name){
-		var exist = false;
-		this._events.forEach(function(event){
-			if (event.name === name) {
-				exist = true;
-				return;
-			}
-		});
-		return exist;
+	dispatch(name, ...args){
+		var getted = this._events[name];
+		if (getted !== undefined){
+			getted.dispatch(...args);
+			return true;
+		}
+		return false;
 	}
 }
 
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
-		UIKitFragment: UIKitFragment,
 		UIKitEvent: UIKitEvent,
 		UIKitEventsList: UIKitEventsList
 	}
