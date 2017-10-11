@@ -1,5 +1,5 @@
 class UIKitElement{
-	constructor(dom, eventsList, parentSize){
+	constructor(dom, eventsList){
 		if (dom !== null && dom !== undefined){
 			var that = this;
 			this.element = dom;
@@ -8,13 +8,6 @@ class UIKitElement{
 			} else {
 				this.EventsList = eventsList; //Произошла передача уже созданного eventsList от родительского элемента
 			}
-			/*if (parentSize !== null || parentSize !== undefined){
-				this.ParentSize = parentSize;
-			}
-			this.Size = {
-				get width(){ return that.element.width(); },
-				get height(){ return that.element.height(); }
-			}*/
 		} else throw ReferenceError('Элемент пустой');
 	}
 

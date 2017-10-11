@@ -13,8 +13,6 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		this._maximum = this.element.attr('maximum');
 		this._minimum = this.element.attr('minimum');
 
-		this.value = this.element.attr('value');
-
 		this.Track = new UIKitSlider_Track(
 			this.element.find('.uikit-slider-track'), 
 			this.EventsList
@@ -27,34 +25,23 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			this._maximum
 			);
 
-		var valueChangedFlag = false;
-		this.EventsList.add('slider.valueChanged', function(value){
-			if (!valueChangedFlag){
-				valueChangedFlag = true;
-				//получаю координаты по значению
-				//вызываю onDrag
-			} else {
-				//ничего не делаю
-				//переключаю флаг
-				valueChangedFlag = false;
-			}
-		});
-
-		this.EventsList.add('slider.thumb.onDrag', function(x, y){
-			if (!valueChangedFlag){
-				valueChangedFlag = true;
-				//получаю значение по координатам
-				//выставляю значение
-			} else {
-				//ничего не делаю
-				//переключаю флаг
-				valueChangedFlag = false;
-			}
+		this.EventsList.add('slider.thumb.positionChanged', function(val){
+			//TODO: по проценту узнаю значение и выставляю
 		});
 
 		this.EventsList.add('slider.hoverChanged', function(value){
 			
 		});
+
+		this.element.on('dragstart', function(){
+			return false;
+		});
+		
+		this.element.on('selectstart', function(){
+			return false;
+		});
+
+		this.value = this.element.attr('value');
 	}
 
 	set value(val){
@@ -81,23 +68,32 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 	constructor(dom, eventsList){
 		super(dom, eventsList);
 		var that = this;
+
 		this.Thumb = new UIKitSlider_Thumb(
 			this.element.find('.uikit-slider-thumb'),
-			this.EventsList
+			this.EventsList,
+			{
+				get width(){ return that.element.width(); },
+				get height(){ return that.element.height(); }
+			}, //либо добавить какой-нибудь onresize для обновления размеров
+			this.element.offset()
 			);
+
 		this.element.on('mousedown', function(event){
-			//перемещаю тамб вызовом события onDrag
-			that.EventsList.dispatch('slider.thumb.onDrag', event.pageX, event.pageY);
+			that.EventsList.dispatch('slider.track.mousePressed', event.pageX - that.element.offset().left);
 		});
 	}
 }
 
 class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
-	constructor(dom, eventsList){
+	constructor(dom, eventsList, trackSize, trackOffset){
 		super(dom, eventsList);
 		var that = this;
 		this._isHover = false;
 		this._isDrag = false;
+		this._position = 0;
+		this._trackSize = trackSize;
+		this._trackOffset = trackOffset;
 		this.Upper = new UIKitSlider_Upper(
 			this.element.find('.uikit-slider-upper'),
 			this.EventsList
@@ -116,19 +112,22 @@ class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
 		});
 
 		this.element.on('mousedown', function(){
-			that.isDrag = true;
-			$(document).on('mousemove.uikit.slider', function(event){
-				that.EventsList.dispatch('slider.thumb.onDrag', event.pageX, event.pageY);
-			});
-			$(document).on('mouseup.uikit.slider', function(){
-				$(document).off('mousemove.uikit.slider');
-				$(document).off('mouseup.uikit.slider');
-				that.isDrag = false;
-			});
+			//that.startDrag();
 		});
 
-		this.EventsList.add('slider.thumb.onDrag', function(x, y){
-			//перемещение тамба
+		this.EventsList.add('slider.thumb.positionChanged', function(val){
+			that._move(val);
+		});
+
+		this.EventsList.add('slider.valueChanged', function(value){
+			if (!that.isDrag){
+				//TODO: посчитать процент по значению. Получить кординату. И отправить в position. Где будет получен новый процент 
+			}
+		});
+
+		this.EventsList.add('slider.track.mousePressed', function(x){
+			that.position = x;
+			that.startDrag();
 		});
 	}
 
@@ -149,11 +148,51 @@ class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
 		this._isDrag = val;
 		this.EventsList.dispatch('slider.thumb.dragChanged', val);
 	}
+
+	get positionPercent(){
+		//TODO: вернуть позицию в процентах.
+		var val = this._calc(this.position);
+		return val;
+	}
+
+	get position(){
+		return this._position;
+	}
+
+	set position(val){//сюда идут координаты
+		this._position = val;
+		this.EventsList.dispatch('slider.thumb.positionChanged', this.positionPercent);
+	}
+
+	_calc(val){
+		var clamp = function(val, min, max){
+			return Math.round(Math.min(Math.max(min, val), max));
+		}
+		return clamp(val - this.element.width()/2, 0, this._trackSize.width - this.element.width());
+	}
+
+	_move(val){
+		this.element.css('left', val + 'px');
+	}
+
+	startDrag(){
+		var that = this;
+		that.isDrag = true;
+		$(document).on('mousemove.uikit.slider', function(event){
+			that.position = event.pageX - that._trackOffset.left;
+		});
+		$(document).on('mouseup.uikit.slider', function(){
+			$(document).off('mousemove.uikit.slider');
+			$(document).off('mouseup.uikit.slider');
+			that.isDrag = false;
+		});
+}
 }
 
 class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
 	constructor(dom, eventsList){
 		super(dom, eventsList);
+		var that = this;
 		this.EventsList.add('slider.valueChanged', function(value){
 			that.print(value);
 		});
