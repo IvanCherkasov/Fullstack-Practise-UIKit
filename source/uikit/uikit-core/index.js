@@ -1,12 +1,10 @@
 class UIKitElement{
-	constructor(dom, eventsList){
+	constructor(dom, model){
 		if (dom !== null && dom !== undefined){
 			var that = this;
 			this.element = dom;
-			if (eventsList === null || eventsList === undefined){
-				this.EventsList = new UIKitEventsList(); //Создает новый eventsList, если данный элемент корневой
-			} else {
-				this.EventsList = eventsList; //Произошла передача уже созданного eventsList от родительского элемента
+			if (model !== null && model !== undefined){
+				this.Model = model;
 			}
 		} else throw ReferenceError('Элемент пустой');
 	}
@@ -80,11 +78,19 @@ class UIKitEventsList{
 	}
 }
 
+class UIKitMath{
+	constructor(){}
+	static Clamp(value, min, max){
+		return Math.min(Math.max(min, value), max);
+	}
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
 		UIKitEvent: UIKitEvent,
-		UIKitEventsList: UIKitEventsList
+		UIKitEventsList: UIKitEventsList,
+		UIKitMath: UIKitMath
 	}
 }
 export default UIKit;

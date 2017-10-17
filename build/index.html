@@ -6,16 +6,18 @@
     <title>UI Kit</title>
   </head>
   <body><br><br><br>
-    <div class="uikit-slider" id="uikit-slider-id" maximum="100" minimum="0" value="0">
+    <div class="uikit-slider" id="uikit-slider-id" maximum="30" minimum="-30" value="0">
       <div class="uikit-slider-track">
-        <div class="uikit-slider-filler">
+        <div class="uikit-slider-fill">
           <div class="uikit-slider-filled"></div>
         </div>
         <div class="uikit-slider-thumb">
-          <div class="uikit-slider-thumb-upper"></div>
+          <div class="uikit-slider-thumb-upper">
+            <div class="no-select"></div>
+          </div>
         </div>
       </div>
-      <div class="uikit-slider-rule"></div>
+      <div class="uikit-slider-rule" segments="5"></div>
     </div>
   <script type="text/javascript" src="main.js"></script></body>
 </html>

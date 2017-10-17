@@ -1,8 +1,7 @@
-mixin addUIKit_Slider(id, minimum, maximum, value)
+include ./uikit-slider-track/index.pug
+include ./uikit-slider-rule/index.pug
+
+mixin addUIKit_Slider(id, minimum, maximum, value, ruleSegments)
 	div.uikit-slider(id=id, maximum=maximum, minimum=minimum, value=value)
-		div.uikit-slider-track
-			div.uikit-slider-filler
-				div.uikit-slider-filled
-			div.uikit-slider-thumb
-				div.uikit-slider-thumb-upper
-		div.uikit-slider-rule
+		+addUIKitSlider_Track()
+		+addUIKitSlider_Rule(ruleSegments)

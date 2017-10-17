@@ -1,5 +1,7 @@
 import './index.styl'
 import UIKit from '../uikit-core/index.js'
+import UIKitSlider_Track from './uikit-slider-track/index.js'
+import UIKitSlider_Rule from './uikit-slider-rule/index.js'
 
 class UIKitSlider extends UIKit.Core.UIKitElement {
 	constructor(dom){
@@ -8,30 +10,20 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		var that = this;
-		this._value = 0;
-		this._isHover = false;
-		this._maximum = this.element.attr('maximum');
-		this._minimum = this.element.attr('minimum');
+		this.Model = new UIKitSlider_Model();
+		this.Model.Slider.element = this.element;
+		this.Model.Slider.minimum = Number(this.element.attr('minimum'));
+		this.Model.Slider.maximum = Number(this.element.attr('maximum'));
 
 		this.Track = new UIKitSlider_Track(
 			this.element.find('.uikit-slider-track'), 
-			this.EventsList
+			this.Model
 			);
 
 		this.Rule = new UIKitSlider_Rule(
 			this.element.find('.uikit-slider-rule'), 
-			this.EventsList,
-			this._minimum,
-			this._maximum
+			this.Model
 			);
-
-		this.EventsList.add('slider.thumb.positionChanged', function(val){
-			//TODO: по проценту узнаю значение и выставляю
-		});
-
-		this.EventsList.add('slider.hoverChanged', function(value){
-			
-		});
 
 		this.element.on('dragstart', function(){
 			return false;
@@ -41,176 +33,162 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			return false;
 		});
 
-		this.value = this.element.attr('value');
+		this.Model.Slider.value = Number(this.element.attr('value'));
 	}
 
-	set value(val){
-		val = Number(val);
-		this._value = val;
-		this.EventsList.dispatch('slider.valueChanged', val)
+	set value(value){
+		this.Model.Slider.value = value;
 	}
 
 	get value(){
-		return this._value;
-	}
-
-	set isHover(val){
-		this._isHover = val;
-		this.EventsList.dispatch('slider.hoverChanged', val);
-	}
-
-	get isHover(){
-		return this._isHover;
+		return this.Model.Slider.value;
 	}
 }
 
-class UIKitSlider_Track extends UIKit.Core.UIKitElement{
-	constructor(dom, eventsList){
-		super(dom, eventsList);
+class UIKitSlider_Model {
+	constructor(){
 		var that = this;
+		this._eventsList = new UIKit.Core.UIKitEventsList();
 
-		this.Thumb = new UIKitSlider_Thumb(
-			this.element.find('.uikit-slider-thumb'),
-			this.EventsList,
-			{
-				get width(){ return that.element.width(); },
-				get height(){ return that.element.height(); }
-			}, //либо добавить какой-нибудь onresize для обновления размеров
-			this.element.offset()
-			);
-
-		this.element.on('mousedown', function(event){
-			that.EventsList.dispatch('slider.track.mousePressed', event.pageX - that.element.offset().left);
-		});
-	}
-}
-
-class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
-	constructor(dom, eventsList, trackSize, trackOffset){
-		super(dom, eventsList);
-		var that = this;
-		this._isHover = false;
-		this._isDrag = false;
-		this._position = 0;
-		this._trackSize = trackSize;
-		this._trackOffset = trackOffset;
-		this.Upper = new UIKitSlider_Upper(
-			this.element.find('.uikit-slider-upper'),
-			this.EventsList
-			);
-
-		this.EventsList.add('slider.thumb.hoverChanged', function(value){
-			that.toggleClass('hover');
-		});
-
-		this.element.on('mouseenter', function(){
-			that.isHover = true;
-		});
-
-		this.element.on('mouseleave', function(){
-			that.isHover = false;
-		});
-
-		this.element.on('mousedown', function(){
-			//that.startDrag();
-		});
-
-		this.EventsList.add('slider.thumb.positionChanged', function(val){
-			that._move(val);
-		});
-
-		this.EventsList.add('slider.valueChanged', function(value){
-			if (!that.isDrag){
-				//TODO: посчитать процент по значению. Получить кординату. И отправить в position. Где будет получен новый процент 
-			}
-		});
-
-		this.EventsList.add('slider.track.mousePressed', function(x){
-			that.position = x;
-			that.startDrag();
-		});
-	}
-
-	get isHover(){
-		return this.isHover;
-	}
-
-	set isHover(val){
-		this._isHover = val;
-		this.EventsList.dispatch('slider.thumb.hoverChanged', val);
-	}
-
-	get isDrag(){
-		return this._isDrag;
-	}
-
-	set isDrag(val){
-		this._isDrag = val;
-		this.EventsList.dispatch('slider.thumb.dragChanged', val);
-	}
-
-	get positionPercent(){
-		//TODO: вернуть позицию в процентах.
-		var val = this._calc(this.position);
-		return val;
-	}
-
-	get position(){
-		return this._position;
-	}
-
-	set position(val){//сюда идут координаты
-		this._position = val;
-		this.EventsList.dispatch('slider.thumb.positionChanged', this.positionPercent);
-	}
-
-	_calc(val){
-		var clamp = function(val, min, max){
-			return Math.round(Math.min(Math.max(min, val), max));
+		var dispatchSubscribers = function(property, ...args){
+			that._eventsList.dispatch(property, ...args);
 		}
-		return clamp(val - this.element.width()/2, 0, this._trackSize.width - this.element.width());
+
+		this.Slider = {
+			element: undefined,
+			_value: 0,
+			_minimum: 0,
+			_maximum: 0,
+			get value(){
+				return this._value;
+			},
+			set value(value){
+				this._value = value;
+				dispatchSubscribers('slider.value', value);
+			},
+			get minimum(){
+				return this._minimum;
+			},
+			set minimum(value){
+				this._minimum = value;
+				dispatchSubscribers('slider.minimum', value);
+			},
+			get maximum(){
+				return this._maximum;
+			},
+			set maximum(value){
+				this._maximum = value;
+				dispatchSubscribers('slider.maximum', value);
+			}
+		}
+
+		this.Track = {
+			element: undefined,
+			_position: 0, //absolute
+			_isDrag: false,
+			get width(){
+				return this.element.width();
+			},
+			get height(){
+				return this.element.height();
+			},
+			get position(){
+				return this._position;
+			},
+			get offset(){
+				return this.element.offset();
+			},
+			get maximum(){
+				if (that.Thumb.element){
+					return (100/this.width) * (this.width - that.Thumb.width);
+				}
+				return 100;
+			},
+			set position(value){
+				this._position = value;
+				dispatchSubscribers('slider.track.position', value);
+			},
+			get isDrag(){
+				return this._isDrag;
+			},
+			set isDrag(value){
+				this._isDrag = value;
+				dispatchSubscribers('slider.track.isDrag', value);
+			},
+			Calculate: {
+				value(position){
+					//точки отсчета отступают на: половину ширина тамба слева на право и справа на лево
+					position = UIKit.Core.UIKitMath.Clamp(position, that.Thumb.width/2, that.Track.width - (that.Thumb.width/2));
+					//|x-a|/b-a
+					var percent = Math.abs(position - that.Thumb.width/2)/((that.Track.width - (that.Thumb.width/2)) - (that.Thumb.width/2));
+					percent *= 100;
+					var value = Math.round(((percent * (that.Slider.maximum - that.Slider.minimum))/100) + that.Slider.minimum);
+					return value;
+				},
+				position(value){
+					value = UIKit.Core.UIKitMath.Clamp(value, that.Slider.minimum, that.Slider.maximum);
+					//|x-a|/b-a
+					var percent = Math.abs(value - that.Slider.minimum)/(that.Slider.maximum - that.Slider.minimum);
+					percent *= 100;
+					var position = Math.round(((percent * ((that.Track.width - (that.Thumb.width/2)) - (that.Thumb.width/2)))/100) + (that.Thumb.width/2));
+					return position;
+				}
+			}
+		}
+
+		this.Thumb = {
+			element: undefined, //по другому: передавать дом через сеттер для тамба, и записывать в _thumbElement в корне, 
+								//объект данных тамба брать из его геттера
+			_isHover: false,
+			get width(){
+				if (this.element){
+					return this.element.width();
+				}
+				return 0;
+			},
+			get height(){
+				if (this.element){
+					return this.element.height();
+				}
+				return 0;
+			},
+			get isHover(){
+				return this._isHover;
+			},
+			set isHover(value){
+				this._isHover = value;
+				dispatchSubscribers('slider.track.thumb.isHover', value);
+			}
+		}
+
+		this.ThumbUpper = {
+			_text: "",
+			get text(){
+				return this._text;
+			},
+			set text(value){
+				this._text = value;
+				dispatchSubscribers('slider.track.thumb.upper.text', value);
+			}
+		}
+
+		this.TrackFilled = {
+			element: undefined
+		}
+
+		this.Rule = {
+			element: undefined,
+			get segments(){
+				if (this.element){
+					return Number(this.element.attr('segments'));
+				}
+				return 0;
+			}
+		}
 	}
 
-	_move(val){
-		this.element.css('left', val + 'px');
-	}
-
-	startDrag(){
-		var that = this;
-		that.isDrag = true;
-		$(document).on('mousemove.uikit.slider', function(event){
-			that.position = event.pageX - that._trackOffset.left;
-		});
-		$(document).on('mouseup.uikit.slider', function(){
-			$(document).off('mousemove.uikit.slider');
-			$(document).off('mouseup.uikit.slider');
-			that.isDrag = false;
-		});
-}
-}
-
-class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
-	constructor(dom, eventsList){
-		super(dom, eventsList);
-		var that = this;
-		this.EventsList.add('slider.valueChanged', function(value){
-			that.print(value);
-		});
-	}
-
-	print(value){
-		this.element.find('div.no-select').text(value);
-	}
-}
-
-class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
-	constructor(dom, eventsList, minimum, maximum){
-		super(dom, eventsList);
-		this.init(minimum, maximum);
-	}
-
-	init(minimum, maximum){
-
+	subscribeTo(property, func){
+		this._eventsList.add(property, func);
 	}
 }
 

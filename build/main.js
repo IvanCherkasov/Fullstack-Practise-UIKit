@@ -65,6 +65,559 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function (useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if (item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function (modules, mediaQuery) {
+		if (typeof modules === "string") modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for (var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if (typeof id === "number") alreadyImportedModules[id] = true;
+		}
+		for (i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if (mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if (mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			var styleTarget = fn.call(this, selector);
+			// Special case to return head of iframe instead of iframe itself
+			if (styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[selector] = styleTarget;
+		}
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(11);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton) options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
+		target.insertBefore(style, nextSibling);
+	} else {
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class UIKitElement {
+	constructor(dom, model) {
+		if (dom !== null && dom !== undefined) {
+			var that = this;
+			this.element = dom;
+			if (model !== null && model !== undefined) {
+				this.Model = model;
+			}
+		} else throw ReferenceError('Элемент пустой');
+	}
+
+	toggleClass(className) {
+		if (this.element.hasClass(className)) {
+			this.element.removeClass(className);
+		} else {
+			this.element.addClass(className);
+		}
+	}
+
+	static Get(obj) {
+		if (!obj) {
+			throw new ReferenceError('Элемент пустой');
+		}
+		if (obj.data(this.name)) {
+			return obj.data(this.name);
+		}
+		var inst = new this(obj);
+		obj.data(this.name, inst);
+		return inst;
+	}
+}
+
+class UIKitEvent {
+	constructor() {
+		this._callbacks = [];
+	}
+
+	addCallback(f) {
+		if (typeof f === 'function') {
+			this._callbacks.push(f);
+		} else throw ReferenceError('Входящий параметр не является функцией!');
+	}
+
+	dispatch(...args) {
+		this._callbacks.forEach(function (event) {
+			event(...args);
+		});
+	}
+}
+
+class UIKitEventsList {
+	constructor() {
+		this._events = {};
+	}
+
+	get(name) {
+		return this._events[name];
+	}
+
+	add(name, f) {
+		var getted = this._events[name];
+		if (getted !== undefined) {
+			getted.addCallback(f);
+		} else {
+			var event = new UIKitEvent();
+			event.addCallback(f);
+			this._events[name] = event;
+		}
+	}
+
+	dispatch(name, ...args) {
+		var getted = this._events[name];
+		if (getted !== undefined) {
+			getted.dispatch(...args);
+			return true;
+		}
+		return false;
+	}
+}
+
+class UIKitMath {
+	constructor() {}
+	static Clamp(value, min, max) {
+		return Math.min(Math.max(min, value), max);
+	}
+}
+
+var UIKit = {
+	Core: {
+		UIKitElement: UIKitElement,
+		UIKitEvent: UIKitEvent,
+		UIKitEventsList: UIKitEventsList,
+		UIKitMath: UIKitMath
+	}
+};
+/* harmony default export */ __webpack_exports__["a"] = (UIKit);
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9894,553 +10447,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 });
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function (useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if (item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function (modules, mediaQuery) {
-		if (typeof modules === "string") modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for (var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if (typeof id === "number") alreadyImportedModules[id] = true;
-		}
-		for (i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if (mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if (mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
-};
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			var styleTarget = fn.call(this, selector);
-			// Special case to return head of iframe instead of iframe itself
-			if (styleTarget instanceof window.HTMLIFrameElement) {
-				try {
-					// This will throw an exception if access to iframe is blocked
-					// due to cross-origin restrictions
-					styleTarget = styleTarget.contentDocument.head;
-				} catch(e) {
-					styleTarget = null;
-				}
-			}
-			memo[selector] = styleTarget;
-		}
-		return memo[selector]
-	};
-})(function (target) {
-	return document.querySelector(target)
-});
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(11);
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton) options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
-		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
-		target.insertBefore(style, nextSibling);
-	} else {
-		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	options.attrs.type = "text/css";
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class UIKitElement {
-	constructor(dom, eventsList) {
-		if (dom !== null && dom !== undefined) {
-			var that = this;
-			this.element = dom;
-			if (eventsList === null || eventsList === undefined) {
-				this.EventsList = new UIKitEventsList(); //Создает новый eventsList, если данный элемент корневой
-			} else {
-				this.EventsList = eventsList; //Произошла передача уже созданного eventsList от родительского элемента
-			}
-		} else throw ReferenceError('Элемент пустой');
-	}
-
-	toggleClass(className) {
-		if (this.element.hasClass(className)) {
-			this.element.removeClass(className);
-		} else {
-			this.element.addClass(className);
-		}
-	}
-
-	static Get(obj) {
-		if (!obj) {
-			throw new ReferenceError('Элемент пустой');
-		}
-		if (obj.data(this.name)) {
-			return obj.data(this.name);
-		}
-		var inst = new this(obj);
-		obj.data(this.name, inst);
-		return inst;
-	}
-}
-
-class UIKitEvent {
-	constructor() {
-		this._callbacks = [];
-	}
-
-	addCallback(f) {
-		if (typeof f === 'function') {
-			this._callbacks.push(f);
-		} else throw ReferenceError('Входящий параметр не является функцией!');
-	}
-
-	dispatch(...args) {
-		this._callbacks.forEach(function (event) {
-			event(...args);
-		});
-	}
-}
-
-class UIKitEventsList {
-	constructor() {
-		this._events = {};
-	}
-
-	get(name) {
-		return this._events[name];
-	}
-
-	add(name, f) {
-		var getted = this._events[name];
-		if (getted !== undefined) {
-			getted.addCallback(f);
-		} else {
-			var event = new UIKitEvent();
-			event.addCallback(f);
-			this._events[name] = event;
-		}
-	}
-
-	dispatch(name, ...args) {
-		var getted = this._events[name];
-		if (getted !== undefined) {
-			getted.dispatch(...args);
-			return true;
-		}
-		return false;
-	}
-}
-
-var UIKit = {
-	Core: {
-		UIKitElement: UIKitElement,
-		UIKitEvent: UIKitEvent,
-		UIKitEventsList: UIKitEventsList
-	}
-};
-/* harmony default export */ __webpack_exports__["a"] = (UIKit);
-
-/***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -10448,7 +10454,7 @@ var UIKit = {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(12);
 
 
@@ -10464,7 +10470,7 @@ slider.value = 18;
 
 var slider2 = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id'));
 slider2.value = 5;*/
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
 /* 5 */
@@ -10481,7 +10487,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(2)(content, options);
+var update = __webpack_require__(1)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -10501,7 +10507,7 @@ if(false) {
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(undefined);
+exports = module.exports = __webpack_require__(0)(undefined);
 // imports
 
 
@@ -10633,9 +10639,13 @@ module.exports = function (css) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(30);
+
+
 
 
 
@@ -10646,20 +10656,14 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		var that = this;
-		this._value = 0;
-		this._isHover = false;
-		this._maximum = this.element.attr('maximum');
-		this._minimum = this.element.attr('minimum');
+		this.Model = new UIKitSlider_Model();
+		this.Model.Slider.element = this.element;
+		this.Model.Slider.minimum = Number(this.element.attr('minimum'));
+		this.Model.Slider.maximum = Number(this.element.attr('maximum'));
 
-		this.Track = new UIKitSlider_Track(this.element.find('.uikit-slider-track'), this.EventsList);
+		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model);
 
-		this.Rule = new UIKitSlider_Rule(this.element.find('.uikit-slider-rule'), this.EventsList, this._minimum, this._maximum);
-
-		this.EventsList.add('slider.thumb.positionChanged', function (val) {
-			//TODO: по проценту узнаю значение и выставляю
-		});
-
-		this.EventsList.add('slider.hoverChanged', function (value) {});
+		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Model);
 
 		this.element.on('dragstart', function () {
 			return false;
@@ -10669,177 +10673,166 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			return false;
 		});
 
-		this.value = this.element.attr('value');
+		this.Model.Slider.value = Number(this.element.attr('value'));
 	}
 
-	set value(val) {
-		val = Number(val);
-		this._value = val;
-		this.EventsList.dispatch('slider.valueChanged', val);
+	set value(value) {
+		this.Model.Slider.value = value;
 	}
 
 	get value() {
-		return this._value;
-	}
-
-	set isHover(val) {
-		this._isHover = val;
-		this.EventsList.dispatch('slider.hoverChanged', val);
-	}
-
-	get isHover() {
-		return this._isHover;
+		return this.Model.Slider.value;
 	}
 }
 
-class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, eventsList) {
-		super(dom, eventsList);
+class UIKitSlider_Model {
+	constructor() {
 		var that = this;
+		this._eventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList();
 
-		this.Thumb = new UIKitSlider_Thumb(this.element.find('.uikit-slider-thumb'), this.EventsList, {
+		var dispatchSubscribers = function (property, ...args) {
+			that._eventsList.dispatch(property, ...args);
+		};
+
+		this.Slider = {
+			element: undefined,
+			_value: 0,
+			_minimum: 0,
+			_maximum: 0,
+			get value() {
+				return this._value;
+			},
+			set value(value) {
+				this._value = value;
+				dispatchSubscribers('slider.value', value);
+			},
+			get minimum() {
+				return this._minimum;
+			},
+			set minimum(value) {
+				this._minimum = value;
+				dispatchSubscribers('slider.minimum', value);
+			},
+			get maximum() {
+				return this._maximum;
+			},
+			set maximum(value) {
+				this._maximum = value;
+				dispatchSubscribers('slider.maximum', value);
+			}
+		};
+
+		this.Track = {
+			element: undefined,
+			_position: 0, //absolute
+			_isDrag: false,
 			get width() {
-				return that.element.width();
+				return this.element.width();
 			},
 			get height() {
-				return that.element.height();
+				return this.element.height();
+			},
+			get position() {
+				return this._position;
+			},
+			get offset() {
+				return this.element.offset();
+			},
+			get maximum() {
+				if (that.Thumb.element) {
+					return 100 / this.width * (this.width - that.Thumb.width);
+				}
+				return 100;
+			},
+			set position(value) {
+				this._position = value;
+				dispatchSubscribers('slider.track.position', value);
+			},
+			get isDrag() {
+				return this._isDrag;
+			},
+			set isDrag(value) {
+				this._isDrag = value;
+				dispatchSubscribers('slider.track.isDrag', value);
+			},
+			Calculate: {
+				value(position) {
+					//точки отсчета отступают на: половину ширина тамба слева на право и справа на лево
+					position = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(position, that.Thumb.width / 2, that.Track.width - that.Thumb.width / 2);
+					//|x-a|/b-a
+					var percent = Math.abs(position - that.Thumb.width / 2) / (that.Track.width - that.Thumb.width / 2 - that.Thumb.width / 2);
+					percent *= 100;
+					var value = Math.round(percent * (that.Slider.maximum - that.Slider.minimum) / 100 + that.Slider.minimum);
+					return value;
+				},
+				position(value) {
+					value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(value, that.Slider.minimum, that.Slider.maximum);
+					//|x-a|/b-a
+					var percent = Math.abs(value - that.Slider.minimum) / (that.Slider.maximum - that.Slider.minimum);
+					percent *= 100;
+					var position = Math.round(percent * (that.Track.width - that.Thumb.width / 2 - that.Thumb.width / 2) / 100 + that.Thumb.width / 2);
+					return position;
+				}
 			}
-		}, //либо добавить какой-нибудь onresize для обновления размеров
-		this.element.offset());
-
-		this.element.on('mousedown', function (event) {
-			that.EventsList.dispatch('slider.track.mousePressed', event.pageX - that.element.offset().left);
-		});
-	}
-}
-
-class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, eventsList, trackSize, trackOffset) {
-		super(dom, eventsList);
-		var that = this;
-		this._isHover = false;
-		this._isDrag = false;
-		this._position = 0;
-		this._trackSize = trackSize;
-		this._trackOffset = trackOffset;
-		this.Upper = new UIKitSlider_Upper(this.element.find('.uikit-slider-upper'), this.EventsList);
-
-		this.EventsList.add('slider.thumb.hoverChanged', function (value) {
-			that.toggleClass('hover');
-		});
-
-		this.element.on('mouseenter', function () {
-			that.isHover = true;
-		});
-
-		this.element.on('mouseleave', function () {
-			that.isHover = false;
-		});
-
-		this.element.on('mousedown', function () {
-			//that.startDrag();
-		});
-
-		this.EventsList.add('slider.thumb.positionChanged', function (val) {
-			that._move(val);
-		});
-
-		this.EventsList.add('slider.valueChanged', function (value) {
-			if (!that.isDrag) {
-				//TODO: посчитать процент по значению. Получить кординату. И отправить в position. Где будет получен новый процент 
-			}
-		});
-
-		this.EventsList.add('slider.track.mousePressed', function (x) {
-			that.position = x;
-			that.startDrag();
-		});
-	}
-
-	get isHover() {
-		return this.isHover;
-	}
-
-	set isHover(val) {
-		this._isHover = val;
-		this.EventsList.dispatch('slider.thumb.hoverChanged', val);
-	}
-
-	get isDrag() {
-		return this._isDrag;
-	}
-
-	set isDrag(val) {
-		this._isDrag = val;
-		this.EventsList.dispatch('slider.thumb.dragChanged', val);
-	}
-
-	get positionPercent() {
-		//TODO: вернуть позицию в процентах.
-		var val = this._calc(this.position);
-		return val;
-	}
-
-	get position() {
-		return this._position;
-	}
-
-	set position(val) {
-		//сюда идут координаты
-		this._position = val;
-		this.EventsList.dispatch('slider.thumb.positionChanged', this.positionPercent);
-	}
-
-	_calc(val) {
-		var clamp = function (val, min, max) {
-			return Math.round(Math.min(Math.max(min, val), max));
 		};
-		return clamp(val - this.element.width() / 2, 0, this._trackSize.width - this.element.width());
+
+		this.Thumb = {
+			element: undefined, //по другому: передавать дом через сеттер для тамба, и записывать в _thumbElement в корне, 
+			//объект данных тамба брать из его геттера
+			_isHover: false,
+			get width() {
+				if (this.element) {
+					return this.element.width();
+				}
+				return 0;
+			},
+			get height() {
+				if (this.element) {
+					return this.element.height();
+				}
+				return 0;
+			},
+			get isHover() {
+				return this._isHover;
+			},
+			set isHover(value) {
+				this._isHover = value;
+				dispatchSubscribers('slider.track.thumb.isHover', value);
+			}
+		};
+
+		this.ThumbUpper = {
+			_text: "",
+			get text() {
+				return this._text;
+			},
+			set text(value) {
+				this._text = value;
+				dispatchSubscribers('slider.track.thumb.upper.text', value);
+			}
+		};
+
+		this.TrackFilled = {
+			element: undefined
+		};
+
+		this.Rule = {
+			element: undefined,
+			get segments() {
+				if (this.element) {
+					return Number(this.element.attr('segments'));
+				}
+				return 0;
+			}
+		};
 	}
 
-	_move(val) {
-		this.element.css('left', val + 'px');
+	subscribeTo(property, func) {
+		this._eventsList.add(property, func);
 	}
-
-	startDrag() {
-		var that = this;
-		that.isDrag = true;
-		$(document).on('mousemove.uikit.slider', function (event) {
-			that.position = event.pageX - that._trackOffset.left;
-		});
-		$(document).on('mouseup.uikit.slider', function () {
-			$(document).off('mousemove.uikit.slider');
-			$(document).off('mouseup.uikit.slider');
-			that.isDrag = false;
-		});
-	}
-}
-
-class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, eventsList) {
-		super(dom, eventsList);
-		var that = this;
-		this.EventsList.add('slider.valueChanged', function (value) {
-			that.print(value);
-		});
-	}
-
-	print(value) {
-		this.element.find('div.no-select').text(value);
-	}
-}
-
-class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, eventsList, minimum, maximum) {
-		super(dom, eventsList);
-		this.init(minimum, maximum);
-	}
-
-	init(minimum, maximum) {}
 }
 
 __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitSlider = UIKitSlider;
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
 /* 13 */
@@ -10856,7 +10849,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(2)(content, options);
+var update = __webpack_require__(1)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -10876,12 +10869,546 @@ if(false) {
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(undefined);
+exports = module.exports = __webpack_require__(0)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track {\n  position: relative;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb {\n  position: relative;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb.hover .uikit-slider-thumb-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-filler {\n  position: absolute;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.uikit-slider .uikit-slider-filler .uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  width: 50px;\n  background-color: #e75735;\n}\n.uikit-slider .uikit-slider-track.hover .uikit-slider-track-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  margin-top: 2px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  cursor: default;\n}\n.uikit-slider .uikit-slider-rule span {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider .uikit-slider-rule span:hover {\n  color: #e75735;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track {\n  position: relative;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb {\n  position: relative;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb.hover .uikit-slider-thumb-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-fill {\n  position: absolute;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.uikit-slider .uikit-slider-fill .uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  width: 50px;\n  background-color: #e75735;\n}\n.uikit-slider .uikit-slider-track.hover .uikit-slider-track-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  margin-top: 2px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  cursor: default;\n}\n.uikit-slider .uikit-slider-rule span {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider .uikit-slider-rule span:hover {\n  color: #e75735;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__ = __webpack_require__(24);
+
+
+
+
+
+class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+		this.Model.Track.element = this.element;
+
+		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Model);
+
+		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Model);
+
+		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+
+		var startDrag = function () {
+			$(document).on('mousemove.uikit.slider', function (event) {
+				that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
+				var value = that.Model.Track.Calculate.value(that.Model.Track.position);
+				that.Model.Slider.value = value;
+			});
+			$(document).on('mouseup.uikit.slider', function () {
+				$(document).off('mousemove.uikit.slider');
+				$(document).off('mouseup.uikit.slider');
+				that.Model.Track.isDrag = false;
+			});
+		};
+
+		this.Model.subscribeTo('slider.value', function (value) {
+			if (!that.Model.Track.isDrag) {
+				that.Model.Track.position = that.Model.Track.Calculate.position(value);
+			}
+		});
+
+		this.element.on('mousedown', function (event) {
+			that.Model.Track.isDrag = true;
+			that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
+			var value = that.Model.Track.Calculate.value(that.Model.Track.position);
+			that.Model.Slider.value = value;
+			startDrag();
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Track);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(17);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(21);
+
+
+
+
+class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+		this.Model.Thumb.element = this.element;
+
+		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+
+		var moveThumb = function (position) {
+			position = position - that.Model.Thumb.width / 2;
+			var percent = 100 / that.Model.Track.width * position;
+			that.Model.Thumb.element.css('left', Clamp(percent, 0, that.Model.Track.maximum) + '%');
+		};
+
+		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Model);
+
+		this.element.on('mouseenter', function () {
+			that.Model.Thumb.isHover = true;
+		});
+
+		this.element.on('mouseleave', function () {
+			that.Model.Thumb.isHover = false;
+		});
+
+		this.Model.subscribeTo('slider.track.isDrag', function (value) {
+			if (!value) {
+				if (!that.Model.Thumb.isHover) {
+					that.element.removeClass('hover');
+				}
+			}
+		});
+
+		this.Model.subscribeTo('slider.track.thumb.isHover', function (value) {
+			if (value) {
+				that.element.addClass('hover');
+			} else {
+				if (!that.Model.Track.isDrag) {
+					that.element.removeClass('hover');
+				}
+			}
+		});
+
+		this.Model.subscribeTo('slider.track.position', function (position) {
+			moveThumb(position);
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(20);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+
+
+
+class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+
+		var print = function (value) {
+			that.element.find('div').text(value);
+		};
+
+		this.Model.subscribeTo('slider.value', function (value) {
+			that.Model.ThumbUpper.text = value;
+			print(value);
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(23);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__ = __webpack_require__(27);
+
+
+
+
+class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Model);
+	}
+}
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(26);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+
+
+
+class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+		this.Model.TrackFilled.element = this.element;
+
+		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+
+		var moveFilled = function (position) {
+			position = position - that.Model.Thumb.width / 3;
+			var percent = 100 / that.Model.Track.width * position;
+			that.Model.TrackFilled.element.css('width', Clamp(percent, 0, 100) + '%');
+		};
+
+		this.Model.subscribeTo('slider.track.position', function (position) {
+			moveFilled(position);
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(29);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../../../node_modules/css-loader/index.js!../../../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+
+
+
+class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, model) {
+		super(dom, model);
+		var that = this;
+		that.Model.Rule.element = this.element;
+		var segments = that.Model.Rule.segments;
+
+		var values = function () {
+			if (segments !== 0 && segments > 0) {
+				var values = [];
+				var crat = (Math.abs(that.Model.Slider.minimum) + Math.abs(that.Model.Slider.maximum)) / (segments - 1);
+				var buf = that.Model.Slider.minimum;
+				for (var i = 0; i < segments; i++) {
+					values.push(Math.round(buf));
+					buf += crat;
+				}
+				return values;
+			}
+			return undefined;
+		};
+
+		if (segments !== 0) {
+			var values = values();
+			if (values) {
+				that.element.append($('<span>').text(values[0]).attr('value', values[0]));
+				that.element.append($('<span>').text(values[values.length - 1]).attr('value', values[values.length - 1]));
+				for (var i = 1; i < values.length - 1; i++) {
+					var span = $('<span>').text(values[i]).css('position', 'absolute').css('width', that.Model.Thumb.width).attr('value', values[i]);
+					that.element.append(span);
+					var position = that.Model.Track.Calculate.position(values[i]) - that.Model.Thumb.width / 2;
+					var percent = 100 / that.Model.Track.width * position;
+					span.css('left', percent + '%');
+				}
+				that.element.find('span').each(function () {
+					$(this).addClass('no-select');
+					$(this).on('click', function () {
+						that.Model.Slider.value = Number($(this).attr('value'));
+					});
+				});
+			}
+		}
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Rule);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(32);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
 
 // exports
 
