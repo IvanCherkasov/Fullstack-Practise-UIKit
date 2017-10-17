@@ -7,7 +7,7 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 	constructor(dom, model){
 		super(dom, model);
 		var that = this;
-		this.Model.coordinateSystem = this.element;
+		this.Model.Track.element = this.element;
 
 		this.Thumb = new UIKitSlider_Thumb(
 			this.element.find('.uikit-slider-thumb'),
@@ -19,10 +19,33 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 			this.Model
 			);
 
+		var Clamp = UIKit.Core.UIKitMath.Clamp;
+
+		var startDrag = function(){
+			$(document).on('mousemove.uikit.slider', function(event){
+				that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
+				var value = that.Model.Track.Calculate.value(that.Model.Track.position);
+				that.Model.Slider.value = value;
+			});
+			$(document).on('mouseup.uikit.slider', function(){
+				$(document).off('mousemove.uikit.slider');
+				$(document).off('mouseup.uikit.slider');
+				that.Model.Track.isDrag = false;
+			});
+		}
+		
+		this.Model.subscribeTo('slider.value', function(value){
+			if (!that.Model.Track.isDrag){
+				that.Model.Track.position = that.Model.Track.Calculate.position(value);
+			}
+		});
+
 		this.element.on('mousedown', function(event){
-			//TODO: вычислить value на точке. выставить value
-			var position = event.pageX - that.Model.coordinateSystem.xMin;
-			var percent = 
+			that.Model.Track.isDrag = true;
+			that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
+			var value = that.Model.Track.Calculate.value(that.Model.Track.position);
+			that.Model.Slider.value = value;
+			startDrag();
 		});
 	}
 }
