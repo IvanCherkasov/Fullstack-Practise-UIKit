@@ -85,6 +85,41 @@ class UIKitMath{
 	}
 }
 
+class UIKitCoordinateSystem{
+	constructor(dom){
+		this._element = dom;
+		var that = this;
+	}
+
+	get xMin(){
+		if (this._element){
+			return this._element.offset().left;
+		}
+		return 0;
+	}
+
+	get yMin(){
+		if (this._element){
+			return this._element.offset().top;
+		}
+		return 0;
+	}
+
+	get xMax(){
+		if (this._element){
+			return this._element.offset().left + this._element.width();
+		}
+		return 0;
+	}
+
+	get yMax(){
+		if (this._element){
+			return this._element.offset().top + this._element.height();
+		}
+		return 0;
+	}
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
