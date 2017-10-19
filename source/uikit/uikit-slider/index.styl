@@ -14,6 +14,7 @@
 	
 	.uikit-slider-track
 		position relative
+		height 21px
 		width 100%
 		display flex
 		align-items center
@@ -22,16 +23,22 @@
 		flex-basis auto
 		
 		.uikit-slider-thumb
-			position relative
-			width 21px
-			height 21px
-			background-color #e75735
-			border-radius 50%
+			position absolute
+			height inherit
 			left 0
 			display flex
 			justify-content center
 			align-items start
+			margin-top 15.5px
 			
+			.circle
+				position absolute
+				width 21px
+				height 21px
+				background-color #e75735
+				border-radius 50%
+				left -10.5px
+
 			.uikit-slider-thumb-upper
 				position absolute
 				height 23px
@@ -68,8 +75,8 @@
 				left 0
 				margin auto
 				
-		.uikit-slider-thumb.hover
-			.uikit-slider-thumb-upper
+		.uikit-slider-thumb
+			.uikit-slider-thumb-upper.show
 				opacity 1
 				
 		.uikit-slider-track-upper
@@ -129,7 +136,7 @@
 			margin auto
 			
 	.uikit-slider-fill
-		position absolute
+		position relative
 		width 100%
 		height 5px
 		background-color #e5e5e5
@@ -139,7 +146,6 @@
 		.uikit-slider-filled
 			position relative
 			height inherit
-			width 50px
 			background-color #e75735
 			
 	.uikit-slider-track.hover
@@ -149,13 +155,11 @@
 	.uikit-slider-rule
 		width 100%
 		position relative
-		margin-top 2px
-		display flex
-		justify-content space-between
-		align-items center
+		display table
 		cursor default
+		margin-top 3px
 			
-		span
+		div
 			position relative
 			font-family Lato
 			font-size 11px
@@ -164,5 +168,5 @@
 			text-align center
 			cursor pointer
 			
-		span:hover
+		div:hover
 			color #e75735

@@ -5,17 +5,17 @@ class UIKitSlider_Filled extends UIKit.Core.UIKitElement{
 	constructor(dom, model){
 		super(dom, model);
 		var that = this;
-		this.Model.TrackFilled.element = this.element;
-
 		var Clamp = UIKit.Core.UIKitMath.Clamp;
 
 		var moveFilled = function(position){
-			position = position - (that.Model.Thumb.width/3);
-			var percent = (100/that.Model.Track.width) * position;
-			that.Model.TrackFilled.element.css('width', Clamp(percent, 0, 100) + '%');
+			var percent = (100/that.Model.coordinateSystem.width) * position;
+			that.element.css('width', Clamp(percent, 0, 100) + '%');
 		}
 
-		this.Model.subscribeTo('slider.track.position', function(position){
+		this.Model.subscribeTo('value', function(value){
+			var percent = Math.abs(value - that.Model.minimum)/(that.Model.maximum - that.Model.minimum);
+			percent *= 100;
+			var position = Math.round(((percent * (that.Model.coordinateSystem.width))/100));
 			moveFilled(position);
 		});
 	}

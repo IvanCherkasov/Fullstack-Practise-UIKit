@@ -5,14 +5,13 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 	constructor(dom, model){
 		super(dom, model);
 		var that = this;
-		that.Model.Rule.element = this.element;
-		var segments = that.Model.Rule.segments;
+		var segments = this.element.attr('segments');
 
 		var values = function(){
 			if (segments !== 0 && segments > 0){
 				var values = [];
-				var crat =((Math.abs(that.Model.Slider.minimum) + Math.abs(that.Model.Slider.maximum)) / (segments - 1));
-				var buf = that.Model.Slider.minimum;
+				var crat =((Math.abs(that.Model.minimum) + Math.abs(that.Model.maximum)) / (segments - 1));
+				var buf = that.Model.minimum;
 				for (var i = 0; i < segments; i++) {
 					values.push(Math.round(buf));
 					buf += crat;
@@ -25,19 +24,75 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 		if (segments !== 0){
 			var values = values();
 			if (values){
-				that.element.append($('<span>').text(values[0]).attr('value', values[0]));
-				that.element.append($('<span>').text(values[values.length - 1]).attr('value', values[values.length - 1]));
-				for (var i = 1; i < values.length - 1; i++){
-					var span = $('<span>').text(values[i]).css('position', 'absolute').css('width', that.Model.Thumb.width).attr('value', values[i]);
-					that.element.append(span);
-					var position = (that.Model.Track.Calculate.position(values[i])) - that.Model.Thumb.width/2;
-					var percent = (100/that.Model.Track.width) * position;
-					span.css('left', percent + '%');
+				var divs = [];
+				var length = 0;
+				var width = (100/(values.length + 1));
+				if (values.length & 1){
+					//нечетное количество
+					length = values.length + 1;
+				} else {
+					//четное количество
+					length = values.length;
 				}
-				that.element.find('span').each(function(){
+
+				for (var i = 0; i < length; i++){
+					var div = $('<div>')
+						.css('position', 'relative')
+						.css('display', 'table-cell')
+						.css('width', width + '%')
+						.css('text-align', 'center')
+					divs.push(div);
+				}
+
+				divs[0]
+					.css('text-align', 'left')
+					.text(values[0])
+					.attr('value', values[0]);
+
+				divs[divs.length - 1]
+					.css('text-align', 'right')
+					.text(values[values.length - 1])
+					.attr('value', values[values.length - 1]);
+
+				var half = (length / 2) - 1;
+
+				for (var i = 1; i < half; i++){
+					divs[i]
+						.text(values[i])
+						.attr('value', values[i]);
+				}
+
+				var _half = half;
+				
+				if (!(values.length & 1)){
+					_half--;
+				}
+
+				for (var i = values.length - 2; i > _half; i--){
+					divs[i+1]
+						.text(values[i])
+						.attr('value', values[i]);
+				}
+
+				if (!(length & 1)){
+					var div = $('<div>')
+						.css('position', 'relative')
+						.css('display', 'table-cell')
+						.css('width', (width * 2) + '%')
+						.css('text-align', 'center')
+						.text(values[_half])
+						.attr('value', values[_half]);
+					divs.splice(_half, 2, div);
+				}
+
+				divs.forEach(function(item){
+					that.element.append(item);
+				});
+
+				that.element.find('div').each(function(){
 					$(this).addClass('no-select');
 					$(this).on('click', function(){
-						that.Model.Slider.value = Number($(this).attr('value'));
+						that.Model.value = Number($(this).attr('value'));
 					});
 				});
 			}

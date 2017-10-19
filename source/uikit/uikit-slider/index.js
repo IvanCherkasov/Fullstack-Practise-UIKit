@@ -13,10 +13,13 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
+		var list = ['thumb.hover', 'track.hover'];
+		this.EventsList = new UIKit.Core.UIKitEventsList(list);
 
 		this.Track = new UIKitSlider_Track(
-			this.element.find('.uikit-slider-track'), 
-			this.Model
+			this.element.find('.uikit-slider-track'),
+			this.Model,
+			this.EventsList
 			);
 
 		this.Rule = new UIKitSlider_Rule(
@@ -39,16 +42,12 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 class UIKitSlider_Model {
 	constructor(){
 		var that = this;
-		this._eventsList = new UIKit.Core.UIKitEventsList();
-
-		var dispatchSubscribers = function(property, ...args){
-			that._eventsList.dispatch(property, ...args);
-		}
-
+		var list = ['value', 'minimum', 'maximum'];
+		this._eventsList = new UIKit.Core.UIKitEventsList(list);
 		this._value = 0;
 		this._minimum = 0;
 		this._maximum = 0;
-		this._cs = undefined;	
+		this._cs = undefined;
 	}
 
 	subscribeTo(property, func){
@@ -56,8 +55,9 @@ class UIKitSlider_Model {
 	}
 
 	set value(value){
+		value = UIKit.Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
 		this._value = value;
-		dispatchSubscribers('value', value);
+		this._dispatchSubscribers('value', value);
 	}
 
 	get value(){
@@ -66,7 +66,7 @@ class UIKitSlider_Model {
 
 	set maximum(value){
 		this._maximum = value;
-		dispatchSubscribers('maximum', value);
+		this._dispatchSubscribers('maximum', value);
 	}
 
 	get maximum(){
@@ -75,7 +75,7 @@ class UIKitSlider_Model {
 
 	set minimum(value){
 		this._minimum = value;
-		dispatchSubscribers('minimum', value);
+		this._dispatchSubscribers('minimum', value);
 	}
 
 	get minimum(){
@@ -94,7 +94,11 @@ class UIKitSlider_Model {
 
 	resetCoordinateSystem(){
 		this._cs = undefined;
-		dispatchSubscribers('coordinateSystem.reset');
+		this._dispatchSubscribers('coordinateSystem.reset');
+	}
+
+	_dispatchSubscribers(property, ...args){
+		this._eventsList.dispatch(property, ...args);
 	}
 }
 

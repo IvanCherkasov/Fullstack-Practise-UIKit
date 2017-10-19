@@ -1,10 +1,13 @@
 class UIKitElement{
-	constructor(dom, model){
+	constructor(dom, model, eventsList){
 		if (dom !== null && dom !== undefined){
 			var that = this;
 			this.element = dom;
 			if (model !== null && model !== undefined){
 				this.Model = model;
+			}
+			if (eventsList !== null && eventsList !== undefined){
+				this.EventsList = eventsList;
 			}
 		} else throw ReferenceError('Элемент пустой');
 	}
@@ -49,8 +52,15 @@ class UIKitEvent{
 }
 
 class UIKitEventsList{
-	constructor(){
+	constructor(list){
 		this._events = {}
+		if (list !== null && list !== undefined){
+			if (Array.isArray(list)){
+				if (list.length > 0){
+					this._list = list;
+				}
+			}
+		}
 	}
 
 	get(name){
@@ -58,14 +68,27 @@ class UIKitEventsList{
 	}
 
 	add(name, f){
-		var getted = this._events[name];
-		if (getted !== undefined){
-			getted.addCallback(f);
-		} else {
-			var event = new UIKitEvent();
-			event.addCallback(f);
-			this._events[name] = event;
+		var that = this;
+		var _addCallback = function(name, f){
+			var getted = that._events[name];
+			if (getted !== undefined){
+				getted.addCallback(f);
+			} else {
+				var event = new UIKitEvent();
+				event.addCallback(f);
+				that._events[name] = event;
+			}
 		}
+
+		if (this._list){
+			if (this._list.includes(name)){
+				_addCallback(name, f);
+				return true;
+			}
+			return false;
+		}
+		_addCallback(name, f);
+		return true;
 	}
 
 	dispatch(name, ...args){
@@ -118,6 +141,20 @@ class UIKitCoordinateSystem{
 		}
 		return 0;
 	}
+
+	get width(){
+		if (this._element){
+			return this._element.width();
+		}
+		return 0;
+	}
+
+	get height(){
+		if (this._element){
+			return this._element.height();
+		}
+		return 0;
+	}
 }
 
 var UIKit = {
@@ -125,7 +162,8 @@ var UIKit = {
 		UIKitElement: UIKitElement,
 		UIKitEvent: UIKitEvent,
 		UIKitEventsList: UIKitEventsList,
-		UIKitMath: UIKitMath
+		UIKitMath: UIKitMath,
+		UIKitCoordinateSystem: UIKitCoordinateSystem
 	}
 }
 export default UIKit;

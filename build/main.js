@@ -520,12 +520,15 @@ function updateLink (link, options, obj) {
 
 "use strict";
 class UIKitElement {
-	constructor(dom, model) {
+	constructor(dom, model, eventsList) {
 		if (dom !== null && dom !== undefined) {
 			var that = this;
 			this.element = dom;
 			if (model !== null && model !== undefined) {
 				this.Model = model;
+			}
+			if (eventsList !== null && eventsList !== undefined) {
+				this.EventsList = eventsList;
 			}
 		} else throw ReferenceError('Элемент пустой');
 	}
@@ -570,8 +573,15 @@ class UIKitEvent {
 }
 
 class UIKitEventsList {
-	constructor() {
+	constructor(list) {
 		this._events = {};
+		if (list !== null && list !== undefined) {
+			if (Array.isArray(list)) {
+				if (list.length > 0) {
+					this._list = list;
+				}
+			}
+		}
 	}
 
 	get(name) {
@@ -579,14 +589,27 @@ class UIKitEventsList {
 	}
 
 	add(name, f) {
-		var getted = this._events[name];
-		if (getted !== undefined) {
-			getted.addCallback(f);
-		} else {
-			var event = new UIKitEvent();
-			event.addCallback(f);
-			this._events[name] = event;
+		var that = this;
+		var _addCallback = function (name, f) {
+			var getted = that._events[name];
+			if (getted !== undefined) {
+				getted.addCallback(f);
+			} else {
+				var event = new UIKitEvent();
+				event.addCallback(f);
+				that._events[name] = event;
+			}
+		};
+
+		if (this._list) {
+			if (this._list.includes(name)) {
+				_addCallback(name, f);
+				return true;
+			}
+			return false;
 		}
+		_addCallback(name, f);
+		return true;
 	}
 
 	dispatch(name, ...args) {
@@ -606,12 +629,62 @@ class UIKitMath {
 	}
 }
 
+class UIKitCoordinateSystem {
+	constructor(dom) {
+		this._element = dom;
+		var that = this;
+	}
+
+	get xMin() {
+		if (this._element) {
+			return this._element.offset().left;
+		}
+		return 0;
+	}
+
+	get yMin() {
+		if (this._element) {
+			return this._element.offset().top;
+		}
+		return 0;
+	}
+
+	get xMax() {
+		if (this._element) {
+			return this._element.offset().left + this._element.width();
+		}
+		return 0;
+	}
+
+	get yMax() {
+		if (this._element) {
+			return this._element.offset().top + this._element.height();
+		}
+		return 0;
+	}
+
+	get width() {
+		if (this._element) {
+			return this._element.width();
+		}
+		return 0;
+	}
+
+	get height() {
+		if (this._element) {
+			return this._element.height();
+		}
+		return 0;
+	}
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
 		UIKitEvent: UIKitEvent,
 		UIKitEventsList: UIKitEventsList,
-		UIKitMath: UIKitMath
+		UIKitMath: UIKitMath,
+		UIKitCoordinateSystem: UIKitCoordinateSystem
 	}
 };
 /* harmony default export */ __webpack_exports__["a"] = (UIKit);
@@ -10657,11 +10730,12 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		}
 		var that = this;
 		this.Model = new UIKitSlider_Model();
-		this.Model.Slider.element = this.element;
-		this.Model.Slider.minimum = Number(this.element.attr('minimum'));
-		this.Model.Slider.maximum = Number(this.element.attr('maximum'));
+		this.Model.minimum = Number(this.element.attr('minimum'));
+		this.Model.maximum = Number(this.element.attr('maximum'));
+		var list = ['thumb.hover', 'track.hover'];
+		this.EventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
 
-		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model);
+		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model, this.EventsList);
 
 		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Model);
 
@@ -10673,162 +10747,70 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			return false;
 		});
 
-		this.Model.Slider.value = Number(this.element.attr('value'));
-	}
-
-	set value(value) {
-		this.Model.Slider.value = value;
-	}
-
-	get value() {
-		return this.Model.Slider.value;
+		this.Model.value = Number(this.element.attr('value'));
 	}
 }
 
 class UIKitSlider_Model {
 	constructor() {
 		var that = this;
-		this._eventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList();
-
-		var dispatchSubscribers = function (property, ...args) {
-			that._eventsList.dispatch(property, ...args);
-		};
-
-		this.Slider = {
-			element: undefined,
-			_value: 0,
-			_minimum: 0,
-			_maximum: 0,
-			get value() {
-				return this._value;
-			},
-			set value(value) {
-				this._value = value;
-				dispatchSubscribers('slider.value', value);
-			},
-			get minimum() {
-				return this._minimum;
-			},
-			set minimum(value) {
-				this._minimum = value;
-				dispatchSubscribers('slider.minimum', value);
-			},
-			get maximum() {
-				return this._maximum;
-			},
-			set maximum(value) {
-				this._maximum = value;
-				dispatchSubscribers('slider.maximum', value);
-			}
-		};
-
-		this.Track = {
-			element: undefined,
-			_position: 0, //absolute
-			_isDrag: false,
-			get width() {
-				return this.element.width();
-			},
-			get height() {
-				return this.element.height();
-			},
-			get position() {
-				return this._position;
-			},
-			get offset() {
-				return this.element.offset();
-			},
-			get maximum() {
-				if (that.Thumb.element) {
-					return 100 / this.width * (this.width - that.Thumb.width);
-				}
-				return 100;
-			},
-			set position(value) {
-				this._position = value;
-				dispatchSubscribers('slider.track.position', value);
-			},
-			get isDrag() {
-				return this._isDrag;
-			},
-			set isDrag(value) {
-				this._isDrag = value;
-				dispatchSubscribers('slider.track.isDrag', value);
-			},
-			Calculate: {
-				value(position) {
-					//точки отсчета отступают на: половину ширина тамба слева на право и справа на лево
-					position = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(position, that.Thumb.width / 2, that.Track.width - that.Thumb.width / 2);
-					//|x-a|/b-a
-					var percent = Math.abs(position - that.Thumb.width / 2) / (that.Track.width - that.Thumb.width / 2 - that.Thumb.width / 2);
-					percent *= 100;
-					var value = Math.round(percent * (that.Slider.maximum - that.Slider.minimum) / 100 + that.Slider.minimum);
-					return value;
-				},
-				position(value) {
-					value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(value, that.Slider.minimum, that.Slider.maximum);
-					//|x-a|/b-a
-					var percent = Math.abs(value - that.Slider.minimum) / (that.Slider.maximum - that.Slider.minimum);
-					percent *= 100;
-					var position = Math.round(percent * (that.Track.width - that.Thumb.width / 2 - that.Thumb.width / 2) / 100 + that.Thumb.width / 2);
-					return position;
-				}
-			}
-		};
-
-		this.Thumb = {
-			element: undefined, //по другому: передавать дом через сеттер для тамба, и записывать в _thumbElement в корне, 
-			//объект данных тамба брать из его геттера
-			_isHover: false,
-			get width() {
-				if (this.element) {
-					return this.element.width();
-				}
-				return 0;
-			},
-			get height() {
-				if (this.element) {
-					return this.element.height();
-				}
-				return 0;
-			},
-			get isHover() {
-				return this._isHover;
-			},
-			set isHover(value) {
-				this._isHover = value;
-				dispatchSubscribers('slider.track.thumb.isHover', value);
-			}
-		};
-
-		this.ThumbUpper = {
-			_text: "",
-			get text() {
-				return this._text;
-			},
-			set text(value) {
-				this._text = value;
-				dispatchSubscribers('slider.track.thumb.upper.text', value);
-			}
-		};
-
-		this.TrackFilled = {
-			element: undefined
-		};
-
-		this.Rule = {
-			element: undefined,
-			get segments() {
-				if (this.element) {
-					return Number(this.element.attr('segments'));
-				}
-				return 0;
-			}
-		};
+		var list = ['value', 'minimum', 'maximum'];
+		this._eventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
+		this._value = 0;
+		this._minimum = 0;
+		this._maximum = 0;
+		this._cs = undefined;
 	}
 
 	subscribeTo(property, func) {
 		this._eventsList.add(property, func);
+	}
+
+	set value(value) {
+		value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
+		this._value = value;
+		this._dispatchSubscribers('value', value);
+	}
+
+	get value() {
+		return this._value;
+	}
+
+	set maximum(value) {
+		this._maximum = value;
+		this._dispatchSubscribers('maximum', value);
+	}
+
+	get maximum() {
+		return this._maximum;
+	}
+
+	set minimum(value) {
+		this._minimum = value;
+		this._dispatchSubscribers('minimum', value);
+	}
+
+	get minimum() {
+		return this._minimum;
+	}
+
+	get coordinateSystem() {
+		return this._cs;
+	}
+
+	set coordinateSystem(dom) {
+		if (!this._cs) {
+			this._cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitCoordinateSystem(dom);
+		}
+	}
+
+	resetCoordinateSystem() {
+		this._cs = undefined;
+		this._dispatchSubscribers('coordinateSystem.reset');
+	}
+
+	_dispatchSubscribers(property, ...args) {
+		this._eventsList.dispatch(property, ...args);
 	}
 }
 
@@ -10874,7 +10856,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track {\n  position: relative;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb {\n  position: relative;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb.hover .uikit-slider-thumb-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-fill {\n  position: absolute;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.uikit-slider .uikit-slider-fill .uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  width: 50px;\n  background-color: #e75735;\n}\n.uikit-slider .uikit-slider-track.hover .uikit-slider-track-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  margin-top: 2px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  cursor: default;\n}\n.uikit-slider .uikit-slider-rule span {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider .uikit-slider-rule span:hover {\n  color: #e75735;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track {\n  position: relative;\n  height: 21px;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb {\n  position: absolute;\n  height: inherit;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n  margin-top: 15.5px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .circle {\n  position: absolute;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: -10.5px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper.show {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-fill {\n  position: relative;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.uikit-slider .uikit-slider-fill .uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  background-color: #e75735;\n}\n.uikit-slider .uikit-slider-track.hover .uikit-slider-track-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  display: table;\n  cursor: default;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-rule div {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider .uikit-slider-rule div:hover {\n  color: #e75735;\n}\n", ""]);
 
 // exports
 
@@ -10895,42 +10877,43 @@ exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\
 
 
 class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
-		this.Model.Track.element = this.element;
+		var isDrag = false;
+		this.Model.coordinateSystem = this.element;
 
-		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Model);
+		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Model, this.EventsList);
 
 		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Model);
 
-		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
-
 		var startDrag = function () {
-			$(document).on('mousemove.uikit.slider', function (event) {
-				that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
-				var value = that.Model.Track.Calculate.value(that.Model.Track.position);
-				that.Model.Slider.value = value;
+			isDrag = true;
+			$(document).on('mousemove.uikit.slider.track', function (event) {
+				var position = event.pageX - that.Model.coordinateSystem.xMin;
+				var percent = 100 / that.Model.coordinateSystem.width * position;
+				var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
+				if (value !== that.Model.value) {
+					that.Model.value = value;
+				}
 			});
-			$(document).on('mouseup.uikit.slider', function () {
-				$(document).off('mousemove.uikit.slider');
-				$(document).off('mouseup.uikit.slider');
-				that.Model.Track.isDrag = false;
+			$(document).on('mouseup.uikit.slider.track', function () {
+				$(document).off('mousemove.uikit.slider.track');
+				$(document).off('mouseup.uikit.slider.track');
+				isDrag = false;
 			});
 		};
 
-		this.Model.subscribeTo('slider.value', function (value) {
-			if (!that.Model.Track.isDrag) {
-				that.Model.Track.position = that.Model.Track.Calculate.position(value);
-			}
+		this.element.on('mousedown', function (event) {
+			var position = event.pageX - that.Model.coordinateSystem.xMin;
+			var percent = 100 / that.Model.coordinateSystem.width * position;
+			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
+			that.Model.value = value;
+			startDrag();
 		});
 
-		this.element.on('mousedown', function (event) {
-			that.Model.Track.isDrag = true;
-			that.Model.Track.position = event.pageX - that.Model.Track.offset.left;
-			var value = that.Model.Track.Calculate.value(that.Model.Track.position);
-			that.Model.Slider.value = value;
-			startDrag();
+		this.element.on('mouseenter', function () {
+			that.EventsList.dispatch('track.hover', true);
 		});
 	}
 }
@@ -10988,7 +10971,7 @@ exports.push([module.i, "", ""]);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(21);
@@ -10997,54 +10980,71 @@ exports.push([module.i, "", ""]);
 
 
 class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
-		this.Model.Thumb.element = this.element;
-
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+		var isDrag = false;
+		var isHover = false;
 
-		var moveThumb = function (position) {
-			position = position - that.Model.Thumb.width / 2;
-			var percent = 100 / that.Model.Track.width * position;
-			that.Model.Thumb.element.css('left', Clamp(percent, 0, that.Model.Track.maximum) + '%');
+		var calculateValue = function (position) {
+			var percent = 100 / that.Model.coordinateSystem.width * position;
+			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
+			return value;
 		};
 
-		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Model);
+		var moveThumb = function (position) {
+			if (position >= 0) {
+				var percent = 100 / that.Model.coordinateSystem.width * position;
+				var maximum = 100 / that.Model.coordinateSystem.xMax * (that.Model.coordinateSystem.xMax - that.element.width() / 2);
+				var minimum = 100 / that.Model.coordinateSystem.width * that.element.width();
+				that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
+			}
+		};
+
+		var startDrag = function () {
+			isDrag = true;
+			$(document).on('mousemove.uikit.slider.thumb', function (event) {
+				var position = event.pageX - that.Model.coordinateSystem.xMin;
+				var value = calculateValue(position);
+				if (value !== that.Model.value) {
+					that.Model.value = value;
+				}
+			});
+			$(document).on('mouseup.uikit.slider.thumb', function () {
+				$(document).off('mousemove.uikit.slider.thumb');
+				$(document).off('mouseup.uikit.slider.thumb');
+				isDrag = false;
+			});
+		};
+
+		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Model, this.EventsList);
 
 		this.element.on('mouseenter', function () {
-			that.Model.Thumb.isHover = true;
+			isHover = true;
+			that.EventsList.dispatch('thumb.hover', true);
 		});
 
 		this.element.on('mouseleave', function () {
-			that.Model.Thumb.isHover = false;
+			isHover = false;
+			that.EventsList.dispatch('thumb.hover', false);
 		});
 
-		this.Model.subscribeTo('slider.track.isDrag', function (value) {
-			if (!value) {
-				if (!that.Model.Thumb.isHover) {
-					that.element.removeClass('hover');
-				}
-			}
-		});
-
-		this.Model.subscribeTo('slider.track.thumb.isHover', function (value) {
-			if (value) {
-				that.element.addClass('hover');
-			} else {
-				if (!that.Model.Track.isDrag) {
-					that.element.removeClass('hover');
-				}
-			}
-		});
-
-		this.Model.subscribeTo('slider.track.position', function (position) {
+		this.Model.subscribeTo('value', function (value) {
+			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum) * 100;
+			var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
 			moveThumb(position);
+		});
+
+		this.element.on('mousedown', function (event) {
+			startDrag();
+			event.stopPropagation();
 		});
 	}
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
 /* 19 */
@@ -11103,17 +11103,43 @@ exports.push([module.i, "", ""]);
 
 
 class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
-
-		var print = function (value) {
-			that.element.find('div').text(value);
+		var div = that.element.find('div.no-select');
+		var timerId = 0;
+		var disable = function () {
+			that.element.removeClass('show');
 		};
 
-		this.Model.subscribeTo('slider.value', function (value) {
-			that.Model.ThumbUpper.text = value;
+		var print = function (value) {
+			div.text(value);
+		};
+
+		var show = function () {
+			clearTimeout(timerId);
+			that.element.addClass('show');
+			timerId = setTimeout(disable, 1000);
+		};
+
+		this.Model.subscribeTo('value', function (value) {
 			print(value);
+		});
+
+		this.EventsList.add('thumb.hover', function (value) {
+			if (value) {
+				show();
+			}
+		});
+
+		this.EventsList.add('track.hover', function (value) {
+			if (value) {
+				show();
+			}
+		});
+
+		this.Model.subscribeTo('value', function () {
+			show();
 		});
 	}
 }
@@ -11247,17 +11273,17 @@ class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 	constructor(dom, model) {
 		super(dom, model);
 		var that = this;
-		this.Model.TrackFilled.element = this.element;
-
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
 
 		var moveFilled = function (position) {
-			position = position - that.Model.Thumb.width / 3;
-			var percent = 100 / that.Model.Track.width * position;
-			that.Model.TrackFilled.element.css('width', Clamp(percent, 0, 100) + '%');
+			var percent = 100 / that.Model.coordinateSystem.width * position;
+			that.element.css('width', Clamp(percent, 0, 100) + '%');
 		};
 
-		this.Model.subscribeTo('slider.track.position', function (position) {
+		this.Model.subscribeTo('value', function (value) {
+			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum);
+			percent *= 100;
+			var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
 			moveFilled(position);
 		});
 	}
@@ -11325,14 +11351,13 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 	constructor(dom, model) {
 		super(dom, model);
 		var that = this;
-		that.Model.Rule.element = this.element;
-		var segments = that.Model.Rule.segments;
+		var segments = this.element.attr('segments');
 
 		var values = function () {
 			if (segments !== 0 && segments > 0) {
 				var values = [];
-				var crat = (Math.abs(that.Model.Slider.minimum) + Math.abs(that.Model.Slider.maximum)) / (segments - 1);
-				var buf = that.Model.Slider.minimum;
+				var crat = (Math.abs(that.Model.minimum) + Math.abs(that.Model.maximum)) / (segments - 1);
+				var buf = that.Model.minimum;
 				for (var i = 0; i < segments; i++) {
 					values.push(Math.round(buf));
 					buf += crat;
@@ -11345,19 +11370,55 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		if (segments !== 0) {
 			var values = values();
 			if (values) {
-				that.element.append($('<span>').text(values[0]).attr('value', values[0]));
-				that.element.append($('<span>').text(values[values.length - 1]).attr('value', values[values.length - 1]));
-				for (var i = 1; i < values.length - 1; i++) {
-					var span = $('<span>').text(values[i]).css('position', 'absolute').css('width', that.Model.Thumb.width).attr('value', values[i]);
-					that.element.append(span);
-					var position = that.Model.Track.Calculate.position(values[i]) - that.Model.Thumb.width / 2;
-					var percent = 100 / that.Model.Track.width * position;
-					span.css('left', percent + '%');
+				var divs = [];
+				var length = 0;
+				var width = 100 / (values.length + 1);
+				if (values.length & 1) {
+					//нечетное количество
+					length = values.length + 1;
+				} else {
+					//четное количество
+					length = values.length;
 				}
-				that.element.find('span').each(function () {
+
+				for (var i = 0; i < length; i++) {
+					var div = $('<div>').css('position', 'relative').css('display', 'table-cell').css('width', width + '%').css('text-align', 'center');
+					divs.push(div);
+				}
+
+				divs[0].css('text-align', 'left').text(values[0]).attr('value', values[0]);
+
+				divs[divs.length - 1].css('text-align', 'right').text(values[values.length - 1]).attr('value', values[values.length - 1]);
+
+				var half = length / 2 - 1;
+
+				for (var i = 1; i < half; i++) {
+					divs[i].text(values[i]).attr('value', values[i]);
+				}
+
+				var _half = half;
+
+				if (!(values.length & 1)) {
+					_half--;
+				}
+
+				for (var i = values.length - 2; i > _half; i--) {
+					divs[i + 1].text(values[i]).attr('value', values[i]);
+				}
+
+				if (!(length & 1)) {
+					var div = $('<div>').css('position', 'relative').css('display', 'table-cell').css('width', width * 2 + '%').css('text-align', 'center').text(values[_half]).attr('value', values[_half]);
+					divs.splice(_half, 2, div);
+				}
+
+				divs.forEach(function (item) {
+					that.element.append(item);
+				});
+
+				that.element.find('div').each(function () {
 					$(this).addClass('no-select');
 					$(this).on('click', function () {
-						that.Model.Slider.value = Number($(this).attr('value'));
+						that.Model.value = Number($(this).attr('value'));
 					});
 				});
 			}

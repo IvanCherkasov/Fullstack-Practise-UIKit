@@ -3,52 +3,69 @@ import UIKit from  '../../../uikit-core/index.js'
 import UIKitSlider_Upper from './uikit-slider-upper/index.js'
 
 class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
-	constructor(dom, model){
-		super(dom, model);
+	constructor(dom, model, eventsList){
+		super(dom, model, eventsList);
 		var that = this;
-		this.Model.Thumb.element = this.element;
-
 		var Clamp = UIKit.Core.UIKitMath.Clamp;
+		var isDrag = false;
+		var isHover = false;
+
+		var calculateValue = function(position){
+			var percent = (100/that.Model.coordinateSystem.width) * position;
+			var value = Math.round(((percent * (that.Model.maximum - that.Model.minimum))/100) + that.Model.minimum);
+			return value;
+		}
 
 		var moveThumb = function(position){
-			position = position - (that.Model.Thumb.width/2);
-			var percent = (100/that.Model.Track.width) * position;
-			that.Model.Thumb.element.css('left', Clamp(percent, 0, that.Model.Track.maximum) + '%');
+			if (position >= 0){
+				var percent = (100/that.Model.coordinateSystem.width) * (position);
+				var maximum = (100/that.Model.coordinateSystem.xMax) * (that.Model.coordinateSystem.xMax - (that.element.width()/2));
+				var minimum = (100/that.Model.coordinateSystem.width) * that.element.width();
+				that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
+			}
+		}
+
+		var startDrag = function(){
+			isDrag = true;
+			$(document).on('mousemove.uikit.slider.thumb', function(event){
+				var position = event.pageX - that.Model.coordinateSystem.xMin;
+				var value = calculateValue(position);
+				if (value !== that.Model.value){
+					that.Model.value = value;
+				}
+			});
+			$(document).on('mouseup.uikit.slider.thumb', function(){
+				$(document).off('mousemove.uikit.slider.thumb');
+				$(document).off('mouseup.uikit.slider.thumb');
+				isDrag = false;
+			});
 		}
 
 		this.Upper = new UIKitSlider_Upper(
 			this.element.find('.uikit-slider-thumb-upper'),
-			this.Model
+			this.Model,
+			this.EventsList
 			);
 
 		this.element.on('mouseenter', function(){
-			that.Model.Thumb.isHover = true;
+			isHover = true;
+			that.EventsList.dispatch('thumb.hover', true);
 		});
 
 		this.element.on('mouseleave', function(){
-			that.Model.Thumb.isHover = false;
+			isHover = false;
+			that.EventsList.dispatch('thumb.hover', false);
 		});
 
-		this.Model.subscribeTo('slider.track.isDrag', function(value){
-			if (!value){
-				if (!that.Model.Thumb.isHover){
-					that.element.removeClass('hover');
-				}
-			}
-		});
-
-		this.Model.subscribeTo('slider.track.thumb.isHover', function(value){
-			if (value){
-				that.element.addClass('hover');
-			} else {
-				if (!that.Model.Track.isDrag){
-					that.element.removeClass('hover');
-				}
-			}
-		});
-
-		this.Model.subscribeTo('slider.track.position', function(position){
+		this.Model.subscribeTo('value', function(value){
+			var percent = Math.abs(value - that.Model.minimum)/(that.Model.maximum - that.Model.minimum) * 100;
+			var position = Math.round(((percent * (that.Model.coordinateSystem.width))/100));
 			moveThumb(position);
+		});	
+
+		this.element.on('mousedown', function(event){
+			startDrag();
+			event.stopPropagation();
 		});
 	}
 }
