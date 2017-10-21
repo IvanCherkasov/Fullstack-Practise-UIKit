@@ -176,19 +176,9 @@ var getElement = (function (fn) {
 
 	return function(selector) {
 		if (typeof memo[selector] === "undefined") {
-			var styleTarget = fn.call(this, selector);
-			// Special case to return head of iframe instead of iframe itself
-			if (styleTarget instanceof window.HTMLIFrameElement) {
-				try {
-					// This will throw an exception if access to iframe is blocked
-					// due to cross-origin restrictions
-					styleTarget = styleTarget.contentDocument.head;
-				} catch(e) {
-					styleTarget = null;
-				}
-			}
-			memo[selector] = styleTarget;
+			memo[selector] = fn.call(this, selector);
 		}
+
 		return memo[selector]
 	};
 })(function (target) {
@@ -318,11 +308,8 @@ function insertStyleElement (options, style) {
 		stylesInsertedAtTop.push(style);
 	} else if (options.insertAt === "bottom") {
 		target.appendChild(style);
-	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
-		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
-		target.insertBefore(style, nextSibling);
 	} else {
-		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
 	}
 }
 
@@ -10557,7 +10544,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10828,7 +10815,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10856,7 +10843,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  margin: 0 10px;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track {\n  position: relative;\n  height: 21px;\n  width: 100%;\n  display: flex;\n  align-items: center;\n  flex-grow: 1;\n  flex-shrink: 1;\n  flex-basis: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb {\n  position: absolute;\n  height: inherit;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: start;\n  margin-top: 15.5px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .circle {\n  position: absolute;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: -10.5px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-thumb .uikit-slider-thumb-upper.show {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper {\n  position: absolute;\n  height: 21px;\n  bottom: 23px;\n  left: 100px;\n  pointer-events: none;\n  border-radius: 5px;\n  border: 1px dashed #e75735;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  background-color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper div {\n  color: #e75735;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n  z-index: 1;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::before {\n  position: absolute;\n  content: \"\";\n  height: 7px;\n  width: 7px;\n  background-color: #fff;\n  border: 1px dashed #e75735;\n  border-left: none;\n  border-top: none;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -4px;\n  z-index: -1;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-track .uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider .uikit-slider-fill {\n  position: relative;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.uikit-slider .uikit-slider-fill .uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  background-color: #e75735;\n}\n.uikit-slider .uikit-slider-track.hover .uikit-slider-track-upper {\n  opacity: 1;\n}\n.uikit-slider .uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  display: table;\n  cursor: default;\n  margin-top: 3px;\n}\n.uikit-slider .uikit-slider-rule div {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider .uikit-slider-rule div:hover {\n  color: #e75735;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n}\n.uikit-slider.horizontal {\n  flex-direction: column;\n}\n.uikit-slider.vertical {\n  flex-direction: row;\n}\n", ""]);
 
 // exports
 
@@ -10933,7 +10920,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10961,7 +10948,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-track {\n  position: relative;\n  height: 21px;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.uikit-slider-track.horizontal {\n  height: 21px;\n  width: 100%;\n}\n.uikit-slider-track.vertical {\n  width: 21px;\n  height: 100%;\n}\n", ""]);
 
 // exports
 
@@ -11058,7 +11045,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11086,7 +11073,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-thumb {\n  position: absolute;\n  height: inherit;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  top: 0;\n  bottom: 0;\n}\n.uikit-slider-thumb .circle {\n  position: absolute;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: -10.5px;\n}\n.uikit-slider-thumb.horizontal {\n  top: 0;\n  bottom: 0;\n  height: inherit;\n}\n.uikit-slider-thumb.vertical {\n  left: 0;\n  right: 0;\n  width: inherit;\n}\n", ""]);
 
 // exports
 
@@ -11158,7 +11145,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11186,7 +11173,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider-thumb-upper.show {\n  opacity: 1;\n}\n", ""]);
 
 // exports
 
@@ -11225,7 +11212,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11253,7 +11240,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n", ""]);
 
 // exports
 
@@ -11303,7 +11290,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11331,7 +11318,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-filled {\n  position: relative;\n  height: inherit;\n  background-color: #e75735;\n}\n", ""]);
 
 // exports
 
@@ -11441,7 +11428,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {"hmr":true}
+var options = {}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11469,7 +11456,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, ".uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  display: table;\n  cursor: default;\n  margin-top: 3px;\n}\n.uikit-slider-rule div {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider-rule div:hover {\n  color: #e75735;\n}\n", ""]);
 
 // exports
 

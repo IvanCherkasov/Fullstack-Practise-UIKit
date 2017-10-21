@@ -10,6 +10,13 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		var that = this;
+
+		this.TypesList = ['horizontal', 'vertical'];
+		this._type = TypesList[0];
+		if (this.TypesList.includes(this.element.attr('type'))){
+			this._type = this.element.attr('type');
+		}
+		
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
@@ -36,6 +43,19 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		});
 
 		this.Model.value = Number(this.element.attr('value'));
+	}
+
+	get type(){
+		return this._type;
+	}
+
+	set type(value){
+		if (typeof value === 'string'){
+			if (this.TypesList.includes(value)){
+				this._type = value;
+				this._eventsList.dispatch('slider.type.change', this.TypesList, value);
+			}
+		}
 	}
 }
 

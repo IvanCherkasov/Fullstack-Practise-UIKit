@@ -1,1 +1,51 @@
- 
+.uikit-slider-thumb-upper
+	position absolute
+	height 23px
+	border-radius 5px
+	background-color #e75735
+	bottom 31px
+	display flex
+	justify-content center
+	align-items center
+	flex-direction column
+	pointer-events none
+	opacity 0
+	transition opacity 0.2s
+
+	div
+		color white
+		font-family Lato
+		font-size 13px
+		font-weight bold
+		text-align center
+		padding 10px
+		margin-top 3px
+
+.uikit-slider-thumb-upper::before
+	position absolute
+	content ""
+	width 7px
+	height 7px
+	background-color #e75735
+	border-radius 0 0 2px 0
+	transform rotate(45deg)
+	bottom -3px
+	right 0
+	left 0
+	margin auto
+	
+.uikit-slider-track-upper::after
+	position absolute
+	content ""
+	height 6px
+	width 6px
+	background-color white
+	border-radius 0 0 2px 0
+	transform rotate(45deg)
+	bottom -3px
+	left 0
+	right 0
+	margin auto
+
+.uikit-slider-thumb-upper.show
+	opacity 1	

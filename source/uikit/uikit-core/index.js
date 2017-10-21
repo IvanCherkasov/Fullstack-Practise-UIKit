@@ -12,14 +12,6 @@ class UIKitElement{
 		} else throw ReferenceError('Элемент пустой');
 	}
 
-	toggleClass(className){
-		if (this.element.hasClass(className)){
-			this.element.removeClass(className);
-		} else {
-			this.element.addClass(className);
-		}
-	}
-
 	static Get(obj){
 		if (!obj){
 			throw new ReferenceError('Элемент пустой');
@@ -30,6 +22,10 @@ class UIKitElement{
 		var inst = new this(obj);
 		obj.data(this.name, inst);
 		return inst;
+	}
+
+	reStyle(typesList, ...args){
+
 	}
 }
 
