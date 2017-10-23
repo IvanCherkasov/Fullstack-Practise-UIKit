@@ -40,6 +40,10 @@ class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
 		this.Model.subscribeTo('value', function(){
 			show();
 		});
+
+		this.EventsList.add('slider.type.change', function(typesList, type){
+			that.reStyle(typesList, type);
+		});
 	}
 }
 

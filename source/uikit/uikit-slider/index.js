@@ -11,16 +11,10 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		}
 		var that = this;
 
-		this.TypesList = ['horizontal', 'vertical'];
-		this._type = TypesList[0];
-		if (this.TypesList.includes(this.element.attr('type'))){
-			this._type = this.element.attr('type');
-		}
-		
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
-		var list = ['thumb.hover', 'track.hover'];
+		var list = ['thumb.hover', 'track.hover', 'slider.type.change'];
 		this.EventsList = new UIKit.Core.UIKitEventsList(list);
 
 		this.Track = new UIKitSlider_Track(
@@ -31,8 +25,13 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 
 		this.Rule = new UIKitSlider_Rule(
 			this.element.find('.uikit-slider-rule'), 
-			this.Model
+			this.Model,
+			this.EventsList
 			);
+
+		this.Model.subscribeTo('value', function(value){
+			that.element.attr('value', value);
+		});
 
 		this.element.on('dragstart', function(){
 			return false;
@@ -42,6 +41,17 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			return false;
 		});
 
+		this.EventsList.add('slider.type.change', function(typesList, type){
+			that.reStyle(typesList, type);
+		});
+
+		this.TypesList = ['horizontal', 'vertical'];
+		if (this.TypesList.includes(this.element.attr('type'))){
+			this.type = this.element.attr('type');
+		} else {
+			this.type = 'horizontal';
+		}
+
 		this.Model.value = Number(this.element.attr('value'));
 	}
 
@@ -50,10 +60,10 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 	}
 
 	set type(value){
-		if (typeof value === 'string'){
+		if (typeof value === 'string'){ // horizontal / vertical
 			if (this.TypesList.includes(value)){
 				this._type = value;
-				this._eventsList.dispatch('slider.type.change', this.TypesList, value);
+				this.EventsList.dispatch('slider.type.change', this.TypesList, value);
 			}
 		}
 	}

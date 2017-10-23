@@ -1,2 +1,3 @@
-mixin addUIKitSlider_Rule(segments)
-    div(segments=segments).uikit-slider-rule
+mixin addUIKitSlider_Rule(enabled, segments)
+    if enabled
+        div(segments=segments).uikit-slider-rule

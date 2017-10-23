@@ -9,6 +9,7 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 		var that = this;
 		var isDrag = false;
 		this.Model.coordinateSystem = this.element;
+		this._type = "";
 
 		this.Thumb = new UIKitSlider_Thumb(
 			this.element.find('.uikit-slider-thumb'),
@@ -18,14 +19,23 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 
 		this.Fill = new UIKitSlider_Fill(
 			this.element.find('.uikit-slider-fill'),
-			this.Model
+			this.Model,
+			this.EventsList
 			);
 
 		var startDrag = function(){
 			isDrag = true;
 			$(document).on('mousemove.uikit.slider.track', function(event){
-				var position = event.pageX - that.Model.coordinateSystem.xMin;
-				var percent = (100/(that.Model.coordinateSystem.width)) * position;
+				var position = 0;
+				var percent = 0;
+				if (that._type === 'horizontal'){
+					position = event.pageX - that.Model.coordinateSystem.xMin;
+					percent = (100/(that.Model.coordinateSystem.width)) * position;
+				} else if (that._type === 'vertical'){
+					position = event.pageY - that.Model.coordinateSystem.yMin;
+					percent = (100/(that.Model.coordinateSystem.height)) * position;
+					percent = 100 - percent;
+				}
 				var value = Math.round(((percent * (that.Model.maximum - that.Model.minimum))/100) + that.Model.minimum);
 				if (value !== that.Model.value){
 					that.Model.value = value;
@@ -39,8 +49,16 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 		}
 
 		this.element.on('mousedown', function(event){
-			var position = event.pageX - that.Model.coordinateSystem.xMin;
-			var percent = (100/(that.Model.coordinateSystem.width)) * position;
+			var position = 0;
+			var percent = 0 ;
+			if (that._type === 'horizontal'){
+				position = event.pageX - that.Model.coordinateSystem.xMin;
+				percent = (100/(that.Model.coordinateSystem.width)) * position;
+			} else if (that._type === 'vertical'){
+				position = event.pageY - that.Model.coordinateSystem.yMin;
+				percent = (100/(that.Model.coordinateSystem.height)) * position;
+				percent = 100 - percent;
+			}
 			var value = Math.round(((percent * (that.Model.maximum - that.Model.minimum))/100) + that.Model.minimum);
 			that.Model.value = value;
 			startDrag();
@@ -48,6 +66,11 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 
 		this.element.on('mouseenter', function(){
 			that.EventsList.dispatch('track.hover', true);
+		});
+
+		this.EventsList.add('slider.type.change', function(typesList, type){
+			that.reStyle(typesList, type);
+			that._type = type;
 		});
 	}
 }

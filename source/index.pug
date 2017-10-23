@@ -10,4 +10,13 @@ html(lang='ru')
 		br
 		br
 		br
-		+addUIKit_Slider('uikit-slider-id', -30, 30, 0, 5)
+		div(style="height: 200px; width 150px; display: flex; justify-content: space-evenly; flex-direction: column;")
+			+addUIKit_Slider('uikit-slider-id', 'horizontal', -30, 30, 0, true, 5)
+			+addUIKit_Slider('uikit-slider-id-hor', 'horizontal', -30, 30, 0, true, 5)
+		br
+		br
+		br
+		div(style="height: 250px; width 150px; display: flex; justify-content: space-evenly;")
+			+addUIKit_Slider('uikit-slider-id-vertical', 'vertical', -30, 30, 0, true, 5)
+			+addUIKit_Slider('uikit-slider-id-verticalt', 'vertical', -30, 30, 0, true, 5)
+			+addUIKit_Slider('uikit-slider-id-verticalth', 'vertical', -30, 30, 0, true, 5)

@@ -176,9 +176,19 @@ var getElement = (function (fn) {
 
 	return function(selector) {
 		if (typeof memo[selector] === "undefined") {
-			memo[selector] = fn.call(this, selector);
+			var styleTarget = fn.call(this, selector);
+			// Special case to return head of iframe instead of iframe itself
+			if (styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[selector] = styleTarget;
 		}
-
 		return memo[selector]
 	};
 })(function (target) {
@@ -308,8 +318,11 @@ function insertStyleElement (options, style) {
 		stylesInsertedAtTop.push(style);
 	} else if (options.insertAt === "bottom") {
 		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
+		target.insertBefore(style, nextSibling);
 	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
 	}
 }
 
@@ -507,6 +520,7 @@ function updateLink (link, options, obj) {
 
 "use strict";
 class UIKitElement {
+	// AbstractBase
 	constructor(dom, model, eventsList) {
 		if (dom !== null && dom !== undefined) {
 			var that = this;
@@ -520,14 +534,6 @@ class UIKitElement {
 		} else throw ReferenceError('Элемент пустой');
 	}
 
-	toggleClass(className) {
-		if (this.element.hasClass(className)) {
-			this.element.removeClass(className);
-		} else {
-			this.element.addClass(className);
-		}
-	}
-
 	static Get(obj) {
 		if (!obj) {
 			throw new ReferenceError('Элемент пустой');
@@ -538,6 +544,24 @@ class UIKitElement {
 		var inst = new this(obj);
 		obj.data(this.name, inst);
 		return inst;
+	}
+
+	reStyle(typesList, ...args) {
+		//typeList - array, список классов string
+		//args - array, список классов string
+		var that = this;
+		var toDelete = []; //список типов которые есть в typesList но нету в args
+		typesList.forEach(function (item) {
+			if (!args.includes(item)) {
+				toDelete.push(item);
+			}
+		});
+		toDelete.forEach(function (item) {
+			that.element.removeClass(item);
+		});
+		args.forEach(function (item) {
+			that.element.addClass(item);
+		});
 	}
 }
 
@@ -10521,7 +10545,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-var slider = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id'));
+var sliderHor = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id'));
+var sliderHorhor = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-hor'));
+var sliderVer = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-vertical'));
+var sliderVerT = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-verticalt'));
+var sliderVerTh = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-verticalth'));
 /*slider.EventsList.addEvent('slider.valueChanged', function(val){
 	console.log('custom callback; value changed: ' + val);
 });
@@ -10544,7 +10572,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10572,7 +10600,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(9) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(10) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(7) + ") format('truetype');\n  font-weight: normal;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(8) + ") format('truetype');\n  font-weight: bold;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(9) + ") format('truetype');\n  font-weight: 200;\n  font-style: normal;\n}\n@font-face {\n  font-family: Lato;\n  src: url(" + __webpack_require__(10) + ") format('truetype');\n  font-weight: 100;\n  font-style: normal;\n}\nbody {\n  height: 100%;\n}\nhtml {\n  height: 100%;\n}\n.box {\n  width: 118px;\n  height: 31px;\n}\n.no-select {\n  -webkit-touch-callout: none /* iOS Safari */;\n  -webkit-user-select: none /* Safari */;\n  -khtml-user-select: none /* Konqueror HTML */;\n  -moz-user-select: none /* Firefox */;\n  -ms-user-select: none /* Internet Explorer/Edge */;\n  user-select: none;\n}\n", ""]);
 
 // exports
 
@@ -10716,15 +10744,20 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		var that = this;
+
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
-		var list = ['thumb.hover', 'track.hover'];
+		var list = ['thumb.hover', 'track.hover', 'slider.type.change'];
 		this.EventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
 
 		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model, this.EventsList);
 
-		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Model);
+		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Model, this.EventsList);
+
+		this.Model.subscribeTo('value', function (value) {
+			that.element.attr('value', value);
+		});
 
 		this.element.on('dragstart', function () {
 			return false;
@@ -10734,7 +10767,32 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			return false;
 		});
 
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+		});
+
+		this.TypesList = ['horizontal', 'vertical'];
+		if (this.TypesList.includes(this.element.attr('type'))) {
+			this.type = this.element.attr('type');
+		} else {
+			this.type = 'horizontal';
+		}
+
 		this.Model.value = Number(this.element.attr('value'));
+	}
+
+	get type() {
+		return this._type;
+	}
+
+	set type(value) {
+		if (typeof value === 'string') {
+			// horizontal / vertical
+			if (this.TypesList.includes(value)) {
+				this._type = value;
+				this.EventsList.dispatch('slider.type.change', this.TypesList, value);
+			}
+		}
 	}
 }
 
@@ -10815,7 +10873,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10843,7 +10901,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n}\n.uikit-slider.horizontal {\n  flex-direction: column;\n}\n.uikit-slider.vertical {\n  flex-direction: row;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\n  height: auto;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  cursor: pointer;\n}\n.uikit-slider.horizontal {\n  flex-direction: column;\n}\n.uikit-slider.vertical {\n  flex-direction: row;\n  height: 100%;\n}\n", ""]);
 
 // exports
 
@@ -10869,16 +10927,25 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		var that = this;
 		var isDrag = false;
 		this.Model.coordinateSystem = this.element;
+		this._type = "";
 
 		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Model, this.EventsList);
 
-		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Model);
+		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Model, this.EventsList);
 
 		var startDrag = function () {
 			isDrag = true;
 			$(document).on('mousemove.uikit.slider.track', function (event) {
-				var position = event.pageX - that.Model.coordinateSystem.xMin;
-				var percent = 100 / that.Model.coordinateSystem.width * position;
+				var position = 0;
+				var percent = 0;
+				if (that._type === 'horizontal') {
+					position = event.pageX - that.Model.coordinateSystem.xMin;
+					percent = 100 / that.Model.coordinateSystem.width * position;
+				} else if (that._type === 'vertical') {
+					position = event.pageY - that.Model.coordinateSystem.yMin;
+					percent = 100 / that.Model.coordinateSystem.height * position;
+					percent = 100 - percent;
+				}
 				var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
 				if (value !== that.Model.value) {
 					that.Model.value = value;
@@ -10892,8 +10959,16 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		};
 
 		this.element.on('mousedown', function (event) {
-			var position = event.pageX - that.Model.coordinateSystem.xMin;
-			var percent = 100 / that.Model.coordinateSystem.width * position;
+			var position = 0;
+			var percent = 0;
+			if (that._type === 'horizontal') {
+				position = event.pageX - that.Model.coordinateSystem.xMin;
+				percent = 100 / that.Model.coordinateSystem.width * position;
+			} else if (that._type === 'vertical') {
+				position = event.pageY - that.Model.coordinateSystem.yMin;
+				percent = 100 / that.Model.coordinateSystem.height * position;
+				percent = 100 - percent;
+			}
 			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
 			that.Model.value = value;
 			startDrag();
@@ -10901,6 +10976,11 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		this.element.on('mouseenter', function () {
 			that.EventsList.dispatch('track.hover', true);
+		});
+
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+			that._type = type;
 		});
 	}
 }
@@ -10920,7 +11000,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -10948,7 +11028,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-track {\n  position: relative;\n  height: 21px;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.uikit-slider-track.horizontal {\n  height: 21px;\n  width: 100%;\n}\n.uikit-slider-track.vertical {\n  width: 21px;\n  height: 100%;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-track {\n  position: relative;\n  height: 21px;\n  width: 100%;\n  display: flex;\n  align-items: center;\n}\n.uikit-slider-track.horizontal {\n  height: 21px;\n  width: 100%;\n}\n.uikit-slider-track.vertical {\n  width: 21px;\n  height: 100%;\n  justify-content: center;\n}\n", ""]);
 
 // exports
 
@@ -10973,29 +11053,51 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
 		var isDrag = false;
 		var isHover = false;
+		this._type = "";
 
 		var calculateValue = function (position) {
-			var percent = 100 / that.Model.coordinateSystem.width * position;
+			var percent = 0;
+			if (that._type === 'horizontal') {
+				percent = 100 / that.Model.coordinateSystem.width * position;
+			} else if (that._type === 'vertical') {
+				percent = 100 / that.Model.coordinateSystem.height * position;
+				percent = 100 - percent;
+			}
 			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
 			return value;
 		};
 
 		var moveThumb = function (position) {
 			if (position >= 0) {
-				var percent = 100 / that.Model.coordinateSystem.width * position;
-				var maximum = 100 / that.Model.coordinateSystem.xMax * (that.Model.coordinateSystem.xMax - that.element.width() / 2);
-				var minimum = 100 / that.Model.coordinateSystem.width * that.element.width();
-				that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
+				if (that._type === "horizontal") {
+					var percent = 100 / that.Model.coordinateSystem.width * position;
+					var maximum = 100 / that.Model.coordinateSystem.xMax * (that.Model.coordinateSystem.xMax - that.element.width() / 2);
+					var minimum = 100 / that.Model.coordinateSystem.width * that.element.width();
+					that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
+				} else if (that._type === 'vertical') {
+					var percent = 100 / that.Model.coordinateSystem.height * position;
+					var maximum = 100 / that.Model.coordinateSystem.yMax * (that.Model.coordinateSystem.yMax + that.element.width());
+					var minimum = 100 / that.Model.coordinateSystem.height * that.element.width() / 2;
+					that.element.css('top', 100 - Clamp(percent, -minimum, maximum) + '%');
+				}
 			}
 		};
 
 		var startDrag = function () {
 			isDrag = true;
 			$(document).on('mousemove.uikit.slider.thumb', function (event) {
-				var position = event.pageX - that.Model.coordinateSystem.xMin;
-				var value = calculateValue(position);
-				if (value !== that.Model.value) {
-					that.Model.value = value;
+				if (that._type === "horizontal") {
+					var position = event.pageX - that.Model.coordinateSystem.xMin;
+					var value = calculateValue(position);
+					if (value !== that.Model.value) {
+						that.Model.value = value;
+					}
+				} else if (that._type === 'vertical') {
+					var position = event.pageY - that.Model.coordinateSystem.yMin;
+					var value = calculateValue(position);
+					if (value !== that.Model.value) {
+						that.Model.value = value;
+					}
 				}
 			});
 			$(document).on('mouseup.uikit.slider.thumb', function () {
@@ -11019,13 +11121,23 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		this.Model.subscribeTo('value', function (value) {
 			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum) * 100;
-			var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
-			moveThumb(position);
+			if (that._type === 'horizontal') {
+				var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
+				moveThumb(position);
+			} else if (that._type === 'vertical') {
+				var position = Math.round(percent * that.Model.coordinateSystem.height / 100);
+				moveThumb(position);
+			}
 		});
 
 		this.element.on('mousedown', function (event) {
 			startDrag();
 			event.stopPropagation();
+		});
+
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+			that._type = type;
 		});
 	}
 }
@@ -11045,7 +11157,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11073,7 +11185,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-thumb {\n  position: absolute;\n  height: inherit;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  top: 0;\n  bottom: 0;\n}\n.uikit-slider-thumb .circle {\n  position: absolute;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: -10.5px;\n}\n.uikit-slider-thumb.horizontal {\n  top: 0;\n  bottom: 0;\n  height: inherit;\n}\n.uikit-slider-thumb.vertical {\n  left: 0;\n  right: 0;\n  width: inherit;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-thumb {\n  position: absolute;\n  height: inherit;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  top: 0;\n  bottom: 0;\n}\n.uikit-slider-thumb .circle {\n  position: absolute;\n  width: 21px;\n  height: 21px;\n  background-color: #e75735;\n  border-radius: 50%;\n  left: -10.5px;\n}\n.uikit-slider-thumb.horizontal {\n  top: 0;\n  bottom: 0;\n  height: inherit;\n  width: 0;\n}\n.uikit-slider-thumb.vertical {\n  left: 0;\n  right: 0;\n  width: inherit;\n  height: 0;\n}\n.uikit-slider-thumb.vertical .circle {\n  left: 0;\n  top: -10.5px;\n}\n", ""]);
 
 // exports
 
@@ -11128,6 +11240,10 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		this.Model.subscribeTo('value', function () {
 			show();
 		});
+
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+		});
 	}
 }
 
@@ -11145,7 +11261,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11173,7 +11289,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider-thumb-upper::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider-track-upper::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider-thumb-upper.show {\n  opacity: 1;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  height: 23px;\n  border-radius: 5px;\n  background-color: #e75735;\n  bottom: 31px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  flex-direction: column;\n  pointer-events: none;\n  opacity: 0;\n  transition: opacity 0.2s;\n}\n.uikit-slider-thumb-upper div {\n  color: #fff;\n  font-family: Lato;\n  font-size: 13px;\n  font-weight: bold;\n  text-align: center;\n  padding: 10px;\n  margin-top: 3px;\n}\n.uikit-slider-thumb-upper.show {\n  opacity: 1;\n}\n.uikit-slider-thumb-upper.horizontal {\n  bottom: 31px;\n}\n.uikit-slider-thumb-upper.horizontal::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  right: 0;\n  left: 0;\n  margin: auto;\n}\n.uikit-slider-track-upper.horizontal::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: -3px;\n  left: 0;\n  right: 0;\n  margin: auto;\n}\n.uikit-slider-thumb-upper.vertical {\n  bottom: -11.5px;\n  right: 31px;\n}\n.uikit-slider-thumb-upper.vertical::before {\n  position: absolute;\n  content: \"\";\n  width: 7px;\n  height: 7px;\n  background-color: #e75735;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: 0;\n  top: 0;\n  right: -3px;\n  margin: auto;\n}\n.uikit-slider-track-upper.vertical::after {\n  position: absolute;\n  content: \"\";\n  height: 6px;\n  width: 6px;\n  background-color: #fff;\n  border-radius: 0 0 2px 0;\n  transform: rotate(45deg);\n  bottom: 0;\n  top: 0;\n  right: -3px;\n  margin: auto;\n}\n", ""]);
 
 // exports
 
@@ -11192,10 +11308,14 @@ exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  h
 
 
 class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
-		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Model);
+		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Model, this.EventsList);
+
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+		});
 	}
 }
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
@@ -11212,7 +11332,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11240,7 +11360,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 100%;\n  height: 5px;\n  background-color: #e5e5e5;\n  border-radius: 3px;\n  overflow: hidden;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 100%;\n  height: 5px;\n  border-radius: 3px;\n  overflow: hidden;\n  background-color: #e5e5e5;\n}\n.uikit-slider-fill.horizontal {\n  height: 5px;\n  width: 100%;\n}\n.uikit-slider-fill.vertical {\n  height: 100%;\n  width: 5px;\n  display: flex;\n  flex-direction: column-reverse;\n}\n", ""]);
 
 // exports
 
@@ -11257,21 +11377,38 @@ exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 1
 
 
 class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+		this._type = "";
 
 		var moveFilled = function (position) {
-			var percent = 100 / that.Model.coordinateSystem.width * position;
-			that.element.css('width', Clamp(percent, 0, 100) + '%');
+			var percent = 0;
+			if (that._type === 'horizontal') {
+				percent = 100 / that.Model.coordinateSystem.width * position;
+				that.element.css('width', Clamp(percent, 0, 100) + '%');
+			} else if (that._type === 'vertical') {
+				percent = 100 / that.Model.coordinateSystem.height * position;
+				that.element.css('height', Clamp(percent, 0, 100) + '%');
+			}
 		};
 
 		this.Model.subscribeTo('value', function (value) {
 			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum);
 			percent *= 100;
-			var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
+			var position = 0;
+			if (that._type === 'horizontal') {
+				position = Math.round(percent * that.Model.coordinateSystem.width / 100);
+			} else if (that._type === 'vertical') {
+				position = Math.round(percent * that.Model.coordinateSystem.height / 100);
+			}
 			moveFilled(position);
+		});
+
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+			that._type = type;
 		});
 	}
 }
@@ -11290,7 +11427,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11335,13 +11472,13 @@ exports.push([module.i, ".uikit-slider-filled {\n  position: relative;\n  height
 
 
 class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model) {
-		super(dom, model);
+	constructor(dom, model, eventsList) {
+		super(dom, model, eventsList);
 		var that = this;
 		var segments = this.element.attr('segments');
 
-		var values = function () {
-			if (segments !== 0 && segments > 0) {
+		var getValues = function () {
+			if (segments > 0) {
 				var values = [];
 				var crat = (Math.abs(that.Model.minimum) + Math.abs(that.Model.maximum)) / (segments - 1);
 				var buf = that.Model.minimum;
@@ -11354,62 +11491,63 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			return undefined;
 		};
 
-		if (segments !== 0) {
-			var values = values();
-			if (values) {
-				var divs = [];
-				var length = 0;
-				var width = 100 / (values.length + 1);
-				if (values.length & 1) {
-					//нечетное количество
-					length = values.length + 1;
-				} else {
-					//четное количество
-					length = values.length;
+		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.reStyle(typesList, type);
+			if (segments !== 0) {
+				var values = getValues();
+				if (values) {
+					if (type === 'horizontal') {
+						that._build(values, true);
+					} else if (type === 'vertical') {
+						that._build(values, false);
+					}
 				}
-
-				for (var i = 0; i < length; i++) {
-					var div = $('<div>').css('position', 'relative').css('display', 'table-cell').css('width', width + '%').css('text-align', 'center');
-					divs.push(div);
-				}
-
-				divs[0].css('text-align', 'left').text(values[0]).attr('value', values[0]);
-
-				divs[divs.length - 1].css('text-align', 'right').text(values[values.length - 1]).attr('value', values[values.length - 1]);
-
-				var half = length / 2 - 1;
-
-				for (var i = 1; i < half; i++) {
-					divs[i].text(values[i]).attr('value', values[i]);
-				}
-
-				var _half = half;
-
-				if (!(values.length & 1)) {
-					_half--;
-				}
-
-				for (var i = values.length - 2; i > _half; i--) {
-					divs[i + 1].text(values[i]).attr('value', values[i]);
-				}
-
-				if (!(length & 1)) {
-					var div = $('<div>').css('position', 'relative').css('display', 'table-cell').css('width', width * 2 + '%').css('text-align', 'center').text(values[_half]).attr('value', values[_half]);
-					divs.splice(_half, 2, div);
-				}
-
-				divs.forEach(function (item) {
-					that.element.append(item);
-				});
-
-				that.element.find('div').each(function () {
-					$(this).addClass('no-select');
-					$(this).on('click', function () {
-						that.Model.value = Number($(this).attr('value'));
-					});
-				});
 			}
+		});
+	}
+
+	_build(values, isHorizontal) {
+		var that = this;
+		var divs = [];
+		var size = 100 / (values.length + 1);
+		var sizeType = '';
+
+		if (isHorizontal) {
+			sizeType = 'width';
+		} else {
+			sizeType = 'height';
 		}
+
+		this.element.find('div.rule-item').each(function () {
+			$(this).remove();
+		});
+
+		for (var i = 0; i < values.length; i++) {
+			var div = $('<div>').addClass('rule-item').css(sizeType, size + '%').attr('value', values[i]).html('<div><span>' + values[i] + '</span></div>');
+			divs.push(div);
+		}
+
+		if (!isHorizontal) {
+			divs.reverse();
+		}
+
+		if (values.length & 1) {
+			//нечетное
+			var half = Math.floor(values.length / 2); //округление до меньшего целого
+			var div = $('<div>').addClass('rule-item').css(sizeType, size * 2 + '%').html('<div><span>' + values[half] + '</span></div>').attr('value', values[half]);
+			divs.splice(half, 1, div);
+		}
+
+		divs.forEach(function (item) {
+			that.element.append(item);
+		});
+
+		this.element.find('div').each(function () {
+			$(this).addClass('no-select');
+			$(this).on('click', function () {
+				that.Model.value = Number($(this).attr('value'));
+			});
+		});
 	}
 }
 
@@ -11428,7 +11566,7 @@ if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
 
-var options = {}
+var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
 var update = __webpack_require__(1)(content, options);
@@ -11456,7 +11594,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-rule {\n  width: 100%;\n  position: relative;\n  display: table;\n  cursor: default;\n  margin-top: 3px;\n}\n.uikit-slider-rule div {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  text-align: center;\n  cursor: pointer;\n}\n.uikit-slider-rule div:hover {\n  color: #e75735;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-rule {\n  position: relative;\n  display: table;\n  cursor: default;\n}\n.uikit-slider-rule div.rule-item {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  cursor: pointer;\n}\n.uikit-slider-rule div.rule-item div {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.uikit-slider-rule div.rule-item:hover {\n  color: #e75735;\n}\n.uikit-slider-rule.horizontal {\n  width: 100%;\n  height: auto;\n  margin-top: 3px;\n}\n.uikit-slider-rule.horizontal div.rule-item {\n  display: table-cell;\n}\n.uikit-slider-rule.horizontal div.rule-item:first-child div {\n  justify-content: flex-start;\n}\n.uikit-slider-rule.horizontal div.rule-item:last-child div {\n  justify-content: flex-end;\n}\n.uikit-slider-rule.vertical {\n  height: 100%;\n  width: auto;\n  margin-left: 3px;\n}\n.uikit-slider-rule.vertical div.rule-item {\n  display: table-row;\n}\n.uikit-slider-rule.vertical div.rule-item div {\n  width: 100%;\n  height: 100%;\n}\n.uikit-slider-rule.vertical div.rule-item:first-child div {\n  align-items: flex-start;\n}\n.uikit-slider-rule.vertical div.rule-item:last-child div {\n  align-items: flex-end;\n}\n", ""]);
 
 // exports
 

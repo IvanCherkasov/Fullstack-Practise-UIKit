@@ -1,4 +1,4 @@
-class UIKitElement{
+class UIKitElement{// AbstractBase
 	constructor(dom, model, eventsList){
 		if (dom !== null && dom !== undefined){
 			var that = this;
@@ -25,7 +25,21 @@ class UIKitElement{
 	}
 
 	reStyle(typesList, ...args){
-
+		//typeList - array, список классов string
+		//args - array, список классов string
+		var that = this;
+		var toDelete = []; //список типов которые есть в typesList но нету в args
+		typesList.forEach(function(item){
+			if (!args.includes(item)){
+				toDelete.push(item);
+			}
+		});
+		toDelete.forEach(function(item){
+			that.element.removeClass(item);
+		});
+		args.forEach(function(item){
+			that.element.addClass(item);
+		});
 	}
 }
 
