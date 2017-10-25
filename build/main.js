@@ -521,17 +521,13 @@ function updateLink (link, options, obj) {
 "use strict";
 class UIKitElement {
 	// AbstractBase
-	constructor(dom, model, eventsList) {
+	constructor(dom, mediator) {
 		if (dom !== undefined && dom !== null) {
 			var that = this;
 			this.element = dom;
 
-			if (model !== undefined && model !== null) {
-				this.Model = model;
-			}
-
-			if (eventsList !== undefined && eventsList !== null) {
-				this.EventsList = eventsList;
+			if (mediator !== undefined && mediator !== null) {
+				this.Mediator = mediator;
 			}
 		} else throw ReferenceError('Элемент пустой');
 	}
@@ -552,74 +548,6 @@ class UIKitElement {
 		args.forEach(function (item) {
 			that.element.addClass(item);
 		});
-	}
-}
-
-class UIKitEvent {
-	constructor() {
-		this._callbacks = [];
-	}
-
-	addCallback(f) {
-		if (typeof f === 'function') {
-			this._callbacks.push(f);
-		} else throw ReferenceError('Входящий параметр не является функцией!');
-	}
-
-	dispatch(...args) {
-		this._callbacks.forEach(function (event) {
-			event(...args);
-		});
-	}
-}
-
-class UIKitEventsList {
-	constructor(list) {
-		this._events = {};
-		if (list !== null && list !== undefined) {
-			if (Array.isArray(list)) {
-				if (list.length > 0) {
-					this._list = list;
-				}
-			}
-		}
-	}
-
-	get(name) {
-		return this._events[name];
-	}
-
-	add(name, f) {
-		var that = this;
-		var _addCallback = function (name, f) {
-			var getted = that._events[name];
-			if (getted !== undefined) {
-				getted.addCallback(f);
-			} else {
-				var event = new UIKitEvent();
-				event.addCallback(f);
-				that._events[name] = event;
-			}
-		};
-
-		if (this._list) {
-			if (this._list.includes(name)) {
-				_addCallback(name, f);
-				return true;
-			}
-			return false;
-		}
-		_addCallback(name, f);
-		return true;
-	}
-
-	dispatch(name, ...args) {
-		var getted = this._events[name];
-		if (getted !== undefined) {
-			getted.dispatch(...args);
-			return true;
-		}
-		return false;
 	}
 }
 
@@ -679,13 +607,91 @@ class UIKitCoordinateSystem {
 	}
 }
 
+class UIKitMediator {
+	constructor(Model, logsList) {
+		var that = this;
+		this.channels = {};
+		this._isLogging = false;
+		this._logsList = [];
+		this._model = Model;
+		if (logsList) {
+			if (Array.isArray(logsList)) {
+				this._logsList = logsList;
+			}
+		}
+	}
+
+	subscribe(channel, func) {
+		if (!this.channels[channel]) {
+			this.channels[channel] = [];
+		}
+		this.channels[channel].push({
+			callback: func
+		});
+	}
+
+	publish(channel, ...args) {
+		var that = this;
+		if (!this.channels[channel]) {
+			return false;
+		}
+
+		this.channels[channel].forEach(function (subscription) {
+			subscription.callback(...args);
+		});
+
+		return true;
+	}
+
+	setData(name, value) {
+		if (this._model[name] !== undefined) {
+			this._model[name] = value;
+			value = this._model[name]; //на случай если модель как-то фильтрует значения
+			this.publish(name, value);
+			if (this.isLogging) {
+				this._logsList.forEach(function (log) {
+					log('mediator set data', {
+						name: name,
+						data: value
+					});
+				});
+			}
+		} else {
+			console.error('no such property named "' + name + '"');
+		}
+	}
+
+	getData(name) {
+		if (this._model[name] !== undefined) {
+			return this._model[name];
+		}
+	}
+
+	get isLogging() {
+		return this._isLogging;
+	}
+
+	set isLogging(value) {
+		if (value) {
+			if (typeof value === 'boolean') {
+				this._isLogging = value;
+			}
+		}
+	}
+}
+
+class UIKitLogger {
+	constructor() {}
+
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
-		UIKitEvent: UIKitEvent,
-		UIKitEventsList: UIKitEventsList,
 		UIKitMath: UIKitMath,
-		UIKitCoordinateSystem: UIKitCoordinateSystem
+		UIKitCoordinateSystem: UIKitCoordinateSystem,
+		UIKitMediator: UIKitMediator,
+		UIKitLogger: UIKitLogger
 	}
 };
 /* harmony default export */ __webpack_exports__["a"] = (UIKit);
@@ -10548,14 +10554,15 @@ $('#slider-change-btn-id').on('click', function () {
 		sliderVer.type = 'horizontal';
 	}
 });
-/*slider.EventsList.addEvent('slider.valueChanged', function(val){
-	console.log('custom callback; value changed: ' + val);
-});
-slider.value = 10;
-slider.value = 18;
 
-var slider2 = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id'));
-slider2.value = 5;*/
+//TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
+//		придумать куда его впихнуть
+
+//TODO: restyle => rebuild (запоминание начального состояния элемента(this.element))
+//TODO: по возможности: переделать систему координат на слайдер. Но учитывать трэк
+//DONE: по возможности: EventSystem от модели и EventSystem от сладйре надо объединить в "медиатор". Чтобы он один
+//		отвечал за все события внутри системы. Чтобы логирование велось одной строкой. Одна общая функция для обработки
+//		событий.
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
@@ -10743,29 +10750,35 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		}
 		var that = this;
 
+		var loggers = [];
+		var logger = function (...args) {
+			console.log(...args);
+		};
+		loggers.push(logger);
+
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
-		var list = ['thumb.hover', 'track.hover', 'slider.type.change', 'slider.size.change'];
-		this.EventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model, loggers);
+		this.Mediator.isLogging = true; //включено логирование !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model, this.EventsList);
-
-		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Model, this.EventsList);
-
-		this.Model.subscribeTo('value', function (value) {
+		this.Mediator.subscribe('value', function (value) {
 			that.element.attr('value', value);
 		});
 
-		this.element.on('dragstart', function () {
-			return false;
+		this.Mediator.subscribe('minimum', function (minimum) {
+			that.element.attr('minimum', minimum);
 		});
 
-		this.element.on('selectstart', function () {
-			return false;
+		this.Mediator.subscribe('maximum', function (maximum) {
+			that.element.attr('maximum', maximum);
 		});
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator);
+
+		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator);
+
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 		});
 
@@ -10776,7 +10789,15 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			this.type = 'horizontal';
 		}
 
-		this.Model.value = Number(this.element.attr('value'));
+		this.Mediator.setData('value', Number(this.element.attr('value')));
+
+		this.element.on('dragstart', function () {
+			return false;
+		});
+
+		this.element.on('selectstart', function () {
+			return false;
+		});
 	}
 
 	get type() {
@@ -10788,7 +10809,7 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			// horizontal / vertical
 			if (this.TypesList.includes(value)) {
 				this._type = value;
-				this.EventsList.dispatch('slider.type.change', this.TypesList, value);
+				this.Mediator.publish('slider.type', this.TypesList, value);
 			}
 		}
 	}
@@ -10797,22 +10818,15 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 class UIKitSlider_Model {
 	constructor() {
 		var that = this;
-		var list = ['value', 'minimum', 'maximum'];
-		this._eventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
 		this._value = 0;
 		this._minimum = 0;
 		this._maximum = 0;
-		this._cs = undefined;
-	}
-
-	subscribeTo(property, func) {
-		this._eventsList.add(property, func);
+		this._cs = null;
 	}
 
 	set value(value) {
 		value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
 		this._value = value;
-		this._dispatchSubscribers('value', value);
 	}
 
 	get value() {
@@ -10821,7 +10835,6 @@ class UIKitSlider_Model {
 
 	set maximum(value) {
 		this._maximum = value;
-		this._dispatchSubscribers('maximum', value);
 	}
 
 	get maximum() {
@@ -10830,7 +10843,6 @@ class UIKitSlider_Model {
 
 	set minimum(value) {
 		this._minimum = value;
-		this._dispatchSubscribers('minimum', value);
 	}
 
 	get minimum() {
@@ -10849,11 +10861,6 @@ class UIKitSlider_Model {
 
 	resetCoordinateSystem() {
 		this._cs = undefined;
-		this._dispatchSubscribers('coordinateSystem.reset');
-	}
-
-	_dispatchSubscribers(property, ...args) {
-		this._eventsList.dispatch(property, ...args);
 	}
 }
 
@@ -10920,33 +10927,36 @@ exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\
 
 
 class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
 		var isDrag = false;
-		this.Model.coordinateSystem = this.element;
 		this._type = "";
+		that.Mediator.setData('coordinateSystem', this.element);
 
-		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Model, this.EventsList);
+		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Mediator);
 
-		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Model, this.EventsList);
+		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Mediator);
 
 		var startDrag = function () {
 			isDrag = true;
 			$(document).on('mousemove.uikit.slider.track', function (event) {
 				var position = 0;
 				var percent = 0;
+				var coordinateSystem = that.Mediator.getData('coordinateSystem');
+				var minimum = that.Mediator.getData('minimum');
+				var maximum = that.Mediator.getData('maximum');
 				if (that._type === 'horizontal') {
-					position = event.pageX - that.Model.coordinateSystem.xMin;
-					percent = 100 / that.Model.coordinateSystem.width * position;
+					position = event.pageX - coordinateSystem.xMin;
+					percent = 100 / coordinateSystem.width * position;
 				} else if (that._type === 'vertical') {
-					position = event.pageY - that.Model.coordinateSystem.yMin;
-					percent = 100 / that.Model.coordinateSystem.height * position;
+					position = event.pageY - coordinateSystem.yMin;
+					percent = 100 / coordinateSystem.height * position;
 					percent = 100 - percent;
 				}
-				var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
-				if (value !== that.Model.value) {
-					that.Model.value = value;
+				var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
+				if (value !== that.Mediator.getData('value')) {
+					that.Mediator.setData('value', value);
 				}
 			});
 			$(document).on('mouseup.uikit.slider.track', function () {
@@ -10959,24 +10969,27 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		this.element.on('mousedown', function (event) {
 			var position = 0;
 			var percent = 0;
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var minimum = that.Mediator.getData('minimum');
+			var maximum = that.Mediator.getData('maximum');
 			if (that._type === 'horizontal') {
-				position = event.pageX - that.Model.coordinateSystem.xMin;
-				percent = 100 / that.Model.coordinateSystem.width * position;
+				position = event.pageX - coordinateSystem.xMin;
+				percent = 100 / coordinateSystem.width * position;
 			} else if (that._type === 'vertical') {
-				position = event.pageY - that.Model.coordinateSystem.yMin;
-				percent = 100 / that.Model.coordinateSystem.height * position;
+				position = event.pageY - coordinateSystem.yMin;
+				percent = 100 / coordinateSystem.height * position;
 				percent = 100 - percent;
 			}
-			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
-			that.Model.value = value;
+			var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
+			that.Mediator.setData('value', value);
 			startDrag();
 		});
 
 		this.element.on('mouseenter', function () {
-			that.EventsList.dispatch('track.hover', true);
+			that.Mediator.publish('track.hover', true);
 		});
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 			that._type = type;
 		});
@@ -11045,8 +11058,8 @@ exports.push([module.i, ".uikit-slider-track {\n  position: relative;\n  height:
 
 
 class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
 		var isDrag = false;
@@ -11055,27 +11068,31 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		var calculateValue = function (position) {
 			var percent = 0;
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var minimum = that.Mediator.getData('minimum');
+			var maximum = that.Mediator.getData('maximum');
 			if (that._type === 'horizontal') {
-				percent = 100 / that.Model.coordinateSystem.width * position;
+				percent = 100 / coordinateSystem.width * position;
 			} else if (that._type === 'vertical') {
-				percent = 100 / that.Model.coordinateSystem.height * position;
+				percent = 100 / coordinateSystem.height * position;
 				percent = 100 - percent;
 			}
-			var value = Math.round(percent * (that.Model.maximum - that.Model.minimum) / 100 + that.Model.minimum);
+			var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
 			return value;
 		};
 
 		var moveThumb = function (position) {
 			if (position >= 0) {
+				var coordinateSystem = that.Mediator.getData('coordinateSystem');
 				if (that._type === "horizontal") {
-					var percent = 100 / that.Model.coordinateSystem.width * position;
-					var maximum = 100 / that.Model.coordinateSystem.xMax * (that.Model.coordinateSystem.xMax - that.element.width() / 2);
-					var minimum = 100 / that.Model.coordinateSystem.width * that.element.width();
+					var percent = 100 / coordinateSystem.width * position;
+					var maximum = 100 / coordinateSystem.xMax * (coordinateSystem.xMax - that.element.width() / 2);
+					var minimum = 100 / coordinateSystem.width * that.element.width();
 					that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
 				} else if (that._type === 'vertical') {
-					var percent = 100 / that.Model.coordinateSystem.height * position;
-					var maximum = 100 / that.Model.coordinateSystem.yMax * (that.Model.coordinateSystem.yMax + that.element.width());
-					var minimum = 100 / that.Model.coordinateSystem.height * that.element.width() / 2;
+					var percent = 100 / coordinateSystem.height * position;
+					var maximum = 100 / coordinateSystem.yMax * (coordinateSystem.yMax + that.element.width());
+					var minimum = 100 / coordinateSystem.height * that.element.width() / 2;
 					that.element.css('top', 100 - Clamp(percent, -minimum, maximum) + '%');
 				}
 			}
@@ -11083,18 +11100,19 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		var startDrag = function () {
 			isDrag = true;
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
 			$(document).on('mousemove.uikit.slider.thumb', function (event) {
 				if (that._type === "horizontal") {
-					var position = event.pageX - that.Model.coordinateSystem.xMin;
+					var position = event.pageX - coordinateSystem.xMin;
 					var value = calculateValue(position);
-					if (value !== that.Model.value) {
-						that.Model.value = value;
+					if (value !== that.Mediator.getData('value')) {
+						that.Mediator.setData('value', value);
 					}
 				} else if (that._type === 'vertical') {
-					var position = event.pageY - that.Model.coordinateSystem.yMin;
+					var position = event.pageY - coordinateSystem.yMin;
 					var value = calculateValue(position);
-					if (value !== that.Model.value) {
-						that.Model.value = value;
+					if (value !== that.Mediator.getData('value')) {
+						that.Mediator.setData('value', value);
 					}
 				}
 			});
@@ -11105,25 +11123,28 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			});
 		};
 
-		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Model, this.EventsList);
+		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Mediator);
 
 		this.element.on('mouseenter', function () {
 			isHover = true;
-			that.EventsList.dispatch('thumb.hover', true);
+			that.Mediator.publish('thumb.hover', true);
 		});
 
 		this.element.on('mouseleave', function () {
 			isHover = false;
-			that.EventsList.dispatch('thumb.hover', false);
+			that.Mediator.publish('thumb.hover', false);
 		});
 
-		this.Model.subscribeTo('value', function (value) {
-			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum) * 100;
+		this.Mediator.subscribe('value', function (value) {
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var minimum = that.Mediator.getData('minimum');
+			var maximum = that.Mediator.getData('maximum');
+			var percent = Math.abs(value - minimum) / (maximum - minimum) * 100;
 			if (that._type === 'horizontal') {
-				var position = Math.round(percent * that.Model.coordinateSystem.width / 100);
+				var position = Math.round(percent * coordinateSystem.width / 100);
 				moveThumb(position);
 			} else if (that._type === 'vertical') {
-				var position = Math.round(percent * that.Model.coordinateSystem.height / 100);
+				var position = Math.round(percent * coordinateSystem.height / 100);
 				moveThumb(position);
 			}
 		});
@@ -11133,7 +11154,7 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			event.stopPropagation();
 		});
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 			that._type = type;
 		});
@@ -11200,8 +11221,8 @@ exports.push([module.i, ".uikit-slider-thumb {\n  position: absolute;\n  height:
 
 
 class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
 		var div = that.element.find('div.no-select');
 		var timerId = 0;
@@ -11219,27 +11240,27 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			timerId = setTimeout(disable, 1000);
 		};
 
-		this.Model.subscribeTo('value', function (value) {
+		this.Mediator.subscribe('value', function (value) {
 			print(value);
 		});
 
-		this.EventsList.add('thumb.hover', function (value) {
+		this.Mediator.subscribe('thumb.hover', function (value) {
 			if (value) {
 				show();
 			}
 		});
 
-		this.EventsList.add('track.hover', function (value) {
+		this.Mediator.subscribe('track.hover', function (value) {
 			if (value) {
 				show();
 			}
 		});
 
-		this.Model.subscribeTo('value', function () {
+		this.Mediator.subscribe('value', function () {
 			show();
 		});
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 		});
 	}
@@ -11306,12 +11327,12 @@ exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  h
 
 
 class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
-		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Model, this.EventsList);
+		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Mediator);
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 		});
 	}
@@ -11375,36 +11396,40 @@ exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 1
 
 
 class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
 		this._type = "";
 
 		var moveFilled = function (position) {
 			var percent = 0;
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
 			if (that._type === 'horizontal') {
-				percent = 100 / that.Model.coordinateSystem.width * position;
+				percent = 100 / coordinateSystem.width * position;
 				that.element.css('width', Clamp(percent, 0, 100) + '%');
 			} else if (that._type === 'vertical') {
-				percent = 100 / that.Model.coordinateSystem.height * position;
+				percent = 100 / coordinateSystem.height * position;
 				that.element.css('height', Clamp(percent, 0, 100) + '%');
 			}
 		};
 
-		this.Model.subscribeTo('value', function (value) {
-			var percent = Math.abs(value - that.Model.minimum) / (that.Model.maximum - that.Model.minimum);
+		this.Mediator.subscribe('value', function (value) {
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var minimum = that.Mediator.getData('minimum');
+			var maximum = that.Mediator.getData('maximum');
+			var percent = Math.abs(value - minimum) / (maximum - minimum);
 			percent *= 100;
 			var position = 0;
 			if (that._type === 'horizontal') {
-				position = Math.round(percent * that.Model.coordinateSystem.width / 100);
+				position = Math.round(percent * coordinateSystem.width / 100);
 			} else if (that._type === 'vertical') {
-				position = Math.round(percent * that.Model.coordinateSystem.height / 100);
+				position = Math.round(percent * coordinateSystem.height / 100);
 			}
 			moveFilled(position);
 		});
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.element.css('width', '').css('height', '');
 			that.reStyle(typesList, type);
 			that._type = type;
@@ -11471,16 +11496,18 @@ exports.push([module.i, ".uikit-slider-filled {\n  position: relative;\n  height
 
 
 class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, model, eventsList) {
-		super(dom, model, eventsList);
+	constructor(dom, mediator) {
+		super(dom, mediator);
 		var that = this;
 		var segments = this.element.attr('segments');
 
 		var getValues = function () {
 			if (segments > 0) {
+				var minimum = that.Mediator.getData('minimum');
+				var maximum = that.Mediator.getData('maximum');
 				var values = [];
-				var crat = (Math.abs(that.Model.minimum) + Math.abs(that.Model.maximum)) / (segments - 1);
-				var buf = that.Model.minimum;
+				var crat = (Math.abs(minimum) + Math.abs(maximum)) / (segments - 1);
+				var buf = minimum;
 				for (var i = 0; i < segments; i++) {
 					values.push(Math.round(buf));
 					buf += crat;
@@ -11490,7 +11517,7 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			return undefined;
 		};
 
-		this.EventsList.add('slider.type.change', function (typesList, type) {
+		this.Mediator.subscribe('slider.type', function (typesList, type) {
 			that.reStyle(typesList, type);
 			if (segments !== 0) {
 				var values = getValues();
@@ -11510,6 +11537,8 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		var divs = [];
 		var size = 100 / (values.length + 1);
 		var shiftType = '';
+		var minimum = that.Mediator.getData('minimum');
+		var maximum = that.Mediator.getData('maximum');
 
 		if (isHorizontal) {
 			shiftType = 'left';
@@ -11533,7 +11562,7 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		}
 
 		for (var i = 1; i < values.length - 1; i++) {
-			var percent = Math.abs(values[i] - that.Model.minimum) / (that.Model.maximum - that.Model.minimum) * 100;
+			var percent = Math.abs(values[i] - minimum) / (maximum - minimum) * 100;
 			divs[i].css(shiftType, percent + '%');
 			if (isHorizontal) {
 				divs[i].css('transform', 'translateX(1px) translateX(-50%)');
@@ -11546,7 +11575,7 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			that.element.append(item);
 			item.on('click', function () {
 				var value = Number($(this).attr('value'));
-				that.Model.value = value;
+				that.Mediator.setData('value', value);
 			});
 		});
 	}

@@ -1,15 +1,11 @@
 class UIKitElement{// AbstractBase
-	constructor(dom, model, eventsList){
+	constructor(dom, mediator){
 		if (dom !== undefined && dom !== null){
 			var that = this;
 			this.element = dom;
 
-			if (model !== undefined && model !== null){
-				this.Model = model;
-			}
-
-			if (eventsList !== undefined && eventsList !== null){
-				this.EventsList = eventsList;
+			if (mediator !== undefined && mediator !== null){
+				this.Mediator = mediator;
 			}
 
 		} else throw ReferenceError('Элемент пустой');
@@ -31,74 +27,6 @@ class UIKitElement{// AbstractBase
 		args.forEach(function(item){
 			that.element.addClass(item);
 		});
-	}
-}
-
-class UIKitEvent{
-	constructor(){
-		this._callbacks = []
-	}
-
-	addCallback(f){
-		if (typeof f === 'function'){
-			this._callbacks.push(f);
-		} else throw ReferenceError('Входящий параметр не является функцией!');
-	}
-
-	dispatch(...args){
-		this._callbacks.forEach(function(event){
-			event(...args);
-		});
-	}
-}
-
-class UIKitEventsList{
-	constructor(list){
-		this._events = {}
-		if (list !== null && list !== undefined){
-			if (Array.isArray(list)){
-				if (list.length > 0){
-					this._list = list;
-				}
-			}
-		}
-	}
-
-	get(name){
-		return this._events[name];
-	}
-
-	add(name, f){
-		var that = this;
-		var _addCallback = function(name, f){
-			var getted = that._events[name];
-			if (getted !== undefined){
-				getted.addCallback(f);
-			} else {
-				var event = new UIKitEvent();
-				event.addCallback(f);
-				that._events[name] = event;
-			}
-		}
-
-		if (this._list){
-			if (this._list.includes(name)){
-				_addCallback(name, f);
-				return true;
-			}
-			return false;
-		}
-		_addCallback(name, f);
-		return true;
-	}
-
-	dispatch(name, ...args){
-		var getted = this._events[name];
-		if (getted !== undefined){
-			getted.dispatch(...args);
-			return true;
-		}
-		return false;
 	}
 }
 
@@ -159,18 +87,15 @@ class UIKitCoordinateSystem{
 }
 
 class UIKitMediator{
-	constructor(isLogging){
+	constructor(Model, logsList){
 		var that = this;
 		this.channels = {}
 		this._isLogging = false;
-		if (isLogging){
-			if (typeof isLogging === 'boolean'){
-				this._isLogging = isLogging;
-			}
-		}
-		this._log = function(logText){
-			if (this._isLogging){
-				console.log(logText);
+		this._logsList = [];
+		this._model = Model;
+		if (logsList){
+			if (Array.isArray(logsList)){
+				this._logsList = logsList;
 			}
 		}
 	}
@@ -184,21 +109,41 @@ class UIKitMediator{
 		});
 	}
 
-	publish(channel, ...agrs){
+	publish(channel, ...args){
 		var that = this;
 		if (!this.channels[channel]){
 			return false;
 		}
 
-		that._log('try publish');
-		that._log("		channel: " + channel + '; args: ' + args);
-		this.channels[channel].forEach(function(subscription, index){
-			that._log('		subscriber{ index: ' + index + ' context: ' + subscription + ' }');
-			subscription.callback.apply(args);
+		this.channels[channel].forEach(function(subscription){
+			subscription.callback(...args);
 		});
-		that._log('publish success');
 
 		return true;
+	}
+
+	setData(name, value){
+		if (this._model[name] !== undefined){
+			this._model[name] = value;
+			value = this._model[name]; //на случай если модель как-то фильтрует значения
+			this.publish(name, value);
+			if (this.isLogging){
+				this._logsList.forEach(function(log){
+					log('mediator set data', {
+						name: name,
+						data: value
+					});
+				});
+			}
+		} else {
+			console.error('no such property named "' + name + '"');
+		}
+	}
+
+	getData(name){
+		if (this._model[name] !== undefined){
+			return this._model[name];
+		}
 	}
 
 	get isLogging(){
@@ -214,14 +159,21 @@ class UIKitMediator{
 	}	
 }
 
+class UIKitLogger{
+	constructor(){
+
+	}
+
+
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
-		UIKitEvent: UIKitEvent,
-		UIKitEventsList: UIKitEventsList,
 		UIKitMath: UIKitMath,
 		UIKitCoordinateSystem: UIKitCoordinateSystem,
-		UIKitMediator: UIKitMediator
+		UIKitMediator: UIKitMediator,
+		UIKitLogger: UIKitLogger
 	}
 }
 export default UIKit;

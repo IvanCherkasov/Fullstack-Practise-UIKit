@@ -11,37 +11,41 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		}
 		var that = this;
 
+		var loggers = [];
+		var logger = function(...args){
+			console.log(...args);
+		}
+		loggers.push(logger);
+
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
-		var list = ['thumb.hover', 'track.hover', 'slider.type.change'];
-		this.EventsList = new UIKit.Core.UIKitEventsList(list);
+		this.Mediator = new UIKit.Core.UIKitMediator(this.Model, loggers);
+		this.Mediator.isLogging = true;	 //включено логирование !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		this.Mediator.subscribe('value', function(value){
+			that.element.attr('value', value);
+		});
+
+		this.Mediator.subscribe('minimum', function(minimum){
+			that.element.attr('minimum', minimum);
+		});
+
+		this.Mediator.subscribe('maximum', function(maximum){
+			that.element.attr('maximum', maximum);
+		});
 
 		this.Track = new UIKitSlider_Track(
 			this.element.find('.uikit-slider-track'),
-			this.Model,
-			this.EventsList
+			this.Mediator
 			);
 
 		this.Rule = new UIKitSlider_Rule(
 			this.element.find('.uikit-slider-rule'), 
-			this.Model,
-			this.EventsList
+			this.Mediator
 			);
 
-		this.Model.subscribeTo('value', function(value){
-			that.element.attr('value', value);
-		});
-
-		this.element.on('dragstart', function(){
-			return false;
-		});
-		
-		this.element.on('selectstart', function(){
-			return false;
-		});
-
-		this.EventsList.add('slider.type.change', function(typesList, type){
+		this.Mediator.subscribe('slider.type', function(typesList, type){
 			that.reStyle(typesList, type);
 		});
 
@@ -52,7 +56,15 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			this.type = 'horizontal';
 		}
 
-		this.Model.value = Number(this.element.attr('value'));
+		this.Mediator.setData('value', Number(this.element.attr('value')));
+
+		this.element.on('dragstart', function(){
+			return false;
+		});
+		
+		this.element.on('selectstart', function(){
+			return false;
+		});
 	}
 
 	get type(){
@@ -63,7 +75,7 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		if (typeof value === 'string'){ // horizontal / vertical
 			if (this.TypesList.includes(value)){
 				this._type = value;
-				this.EventsList.dispatch('slider.type.change', this.TypesList, value);
+				this.Mediator.publish('slider.type', this.TypesList, value);
 			}
 		}
 	}
@@ -72,22 +84,15 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 class UIKitSlider_Model {
 	constructor(){
 		var that = this;
-		var list = ['value', 'minimum', 'maximum'];
-		this._eventsList = new UIKit.Core.UIKitEventsList(list);
 		this._value = 0;
 		this._minimum = 0;
 		this._maximum = 0;
-		this._cs = undefined;
-	}
-
-	subscribeTo(property, func){
-		this._eventsList.add(property, func);
+		this._cs = null;
 	}
 
 	set value(value){
 		value = UIKit.Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
 		this._value = value;
-		this._dispatchSubscribers('value', value);
 	}
 
 	get value(){
@@ -96,7 +101,6 @@ class UIKitSlider_Model {
 
 	set maximum(value){
 		this._maximum = value;
-		this._dispatchSubscribers('maximum', value);
 	}
 
 	get maximum(){
@@ -105,7 +109,6 @@ class UIKitSlider_Model {
 
 	set minimum(value){
 		this._minimum = value;
-		this._dispatchSubscribers('minimum', value);
 	}
 
 	get minimum(){
@@ -124,11 +127,6 @@ class UIKitSlider_Model {
 
 	resetCoordinateSystem(){
 		this._cs = undefined;
-		this._dispatchSubscribers('coordinateSystem.reset');
-	}
-
-	_dispatchSubscribers(property, ...args){
-		this._eventsList.dispatch(property, ...args);
 	}
 }
 

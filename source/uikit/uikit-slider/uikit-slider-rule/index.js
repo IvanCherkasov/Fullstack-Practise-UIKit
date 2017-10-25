@@ -2,16 +2,18 @@ import './index.styl'
 import UIKit from '../../uikit-core/index.js'
 
 class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
-	constructor(dom, model, eventsList){
-		super(dom, model, eventsList);
+	constructor(dom, mediator){
+		super(dom, mediator);
 		var that = this;
 		var segments = this.element.attr('segments');
 
 		var getValues = function(){
 			if (segments > 0){
+				var minimum = that.Mediator.getData('minimum');
+				var maximum = that.Mediator.getData('maximum');
 				var values = [];
-				var crat =((Math.abs(that.Model.minimum) + Math.abs(that.Model.maximum)) / (segments - 1));
-				var buf = that.Model.minimum;
+				var crat =((Math.abs(minimum) + Math.abs(maximum)) / (segments - 1));
+				var buf = minimum;
 				for (var i = 0; i < segments; i++) {
 					values.push(Math.round(buf));
 					buf += crat;
@@ -21,7 +23,7 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 			return undefined;
 		}
 
-		this.EventsList.add('slider.type.change', function(typesList, type){
+		this.Mediator.subscribe('slider.type', function(typesList, type){
 			that.reStyle(typesList, type);
 			if (segments !== 0){
 				var values = getValues();
@@ -41,6 +43,8 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 		var divs = [];
 		var size = (100/(values.length + 1));
 		var shiftType = '';
+		var minimum = that.Mediator.getData('minimum');
+		var maximum = that.Mediator.getData('maximum');
 
 		if (isHorizontal){
 			shiftType = 'left';
@@ -67,7 +71,7 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 		}
 
 		for(var i = 1; i < values.length - 1; i++){
-			var percent = Math.abs(values[i] - that.Model.minimum)/(that.Model.maximum - that.Model.minimum) * 100;
+			var percent = Math.abs(values[i] - minimum)/(maximum - minimum) * 100;
 			divs[i].css(shiftType, percent + '%');
 			if (isHorizontal){
 				divs[i].css('transform', 'translateX(1px) translateX(-50%)');
@@ -80,7 +84,7 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 			that.element.append(item);
 			item.on('click', function(){
 				var value = Number($(this).attr('value'));
-				that.Model.value = value;
+				that.Mediator.setData('value', value);
 			});
 		});
 	}

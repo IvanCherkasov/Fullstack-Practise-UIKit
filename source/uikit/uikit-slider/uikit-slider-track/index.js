@@ -4,23 +4,21 @@ import UIKitSlider_Thumb from './uikit-slider-thumb/index.js'
 import UIKitSlider_Fill from './uikit-slider-fill/index.js'
 
 class UIKitSlider_Track extends UIKit.Core.UIKitElement{
-	constructor(dom, model, eventsList){
-		super(dom, model, eventsList);
+	constructor(dom, mediator){
+		super(dom, mediator);
 		var that = this;
 		var isDrag = false;
-		this.Model.coordinateSystem = this.element;
 		this._type = "";
+		that.Mediator.setData('coordinateSystem', this.element);
 
 		this.Thumb = new UIKitSlider_Thumb(
 			this.element.find('.uikit-slider-thumb'),
-			this.Model,
-			this.EventsList
+			this.Mediator
 			);
 
 		this.Fill = new UIKitSlider_Fill(
 			this.element.find('.uikit-slider-fill'),
-			this.Model,
-			this.EventsList
+			this.Mediator
 			);
 
 		var startDrag = function(){
@@ -28,17 +26,20 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 			$(document).on('mousemove.uikit.slider.track', function(event){
 				var position = 0;
 				var percent = 0;
+				var coordinateSystem = that.Mediator.getData('coordinateSystem');
+				var minimum = that.Mediator.getData('minimum');
+				var maximum = that.Mediator.getData('maximum');
 				if (that._type === 'horizontal'){
-					position = event.pageX - that.Model.coordinateSystem.xMin;
-					percent = (100/(that.Model.coordinateSystem.width)) * position;
+					position = event.pageX - coordinateSystem.xMin;
+					percent = (100/(coordinateSystem.width)) * position;
 				} else if (that._type === 'vertical'){
-					position = event.pageY - that.Model.coordinateSystem.yMin;
-					percent = (100/(that.Model.coordinateSystem.height)) * position;
+					position = event.pageY - coordinateSystem.yMin;
+					percent = (100/(coordinateSystem.height)) * position;
 					percent = 100 - percent;
 				}
-				var value = Math.round(((percent * (that.Model.maximum - that.Model.minimum))/100) + that.Model.minimum);
-				if (value !== that.Model.value){
-					that.Model.value = value;
+				var value = Math.round(((percent * (maximum - minimum))/100) + minimum);
+				if (value !== that.Mediator.getData('value')){
+					that.Mediator.setData('value', value);
 				}
 			});
 			$(document).on('mouseup.uikit.slider.track', function(){
@@ -51,24 +52,27 @@ class UIKitSlider_Track extends UIKit.Core.UIKitElement{
 		this.element.on('mousedown', function(event){
 			var position = 0;
 			var percent = 0 ;
+			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var minimum = that.Mediator.getData('minimum');
+			var maximum = that.Mediator.getData('maximum');
 			if (that._type === 'horizontal'){
-				position = event.pageX - that.Model.coordinateSystem.xMin;
-				percent = (100/(that.Model.coordinateSystem.width)) * position;
+				position = event.pageX - coordinateSystem.xMin;
+				percent = (100/(coordinateSystem.width)) * position;
 			} else if (that._type === 'vertical'){
-				position = event.pageY - that.Model.coordinateSystem.yMin;
-				percent = (100/(that.Model.coordinateSystem.height)) * position;
+				position = event.pageY - coordinateSystem.yMin;
+				percent = (100/(coordinateSystem.height)) * position;
 				percent = 100 - percent;
 			}
-			var value = Math.round(((percent * (that.Model.maximum - that.Model.minimum))/100) + that.Model.minimum);
-			that.Model.value = value;
+			var value = Math.round(((percent * (maximum - minimum))/100) + minimum);
+			that.Mediator.setData('value', value);
 			startDrag();
 		});
 
 		this.element.on('mouseenter', function(){
-			that.EventsList.dispatch('track.hover', true);
+			that.Mediator.publish('track.hover', true);
 		});
 
-		this.EventsList.add('slider.type.change', function(typesList, type){
+		this.Mediator.subscribe('slider.type', function(typesList, type){
 			that.reStyle(typesList, type);
 			that._type = type;
 		});

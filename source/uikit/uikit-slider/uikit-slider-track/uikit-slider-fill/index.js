@@ -3,16 +3,15 @@ import UIKit from '../../../uikit-core/index.js'
 import UIKitSlider_Filled from './uikit-slider-filled/index.js'
 
 class UIKitSlider_Fill extends UIKit.Core.UIKitElement{
-	constructor(dom, model, eventsList){
-		super(dom, model, eventsList);
+	constructor(dom, mediator){
+		super(dom, mediator);
 		var that = this;
 		this.Filled = new UIKitSlider_Filled(
 			this.element.find('.uikit-slider-filled'),
-			this.Model,
-			this.EventsList
+			this.Mediator
 			);
 
-			this.EventsList.add('slider.type.change', function(typesList, type){
+			this.Mediator.subscribe('slider.type', function(typesList, type){
 				that.reStyle(typesList, type);
 			});
 	}
