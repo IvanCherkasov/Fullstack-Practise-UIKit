@@ -522,28 +522,18 @@ function updateLink (link, options, obj) {
 class UIKitElement {
 	// AbstractBase
 	constructor(dom, model, eventsList) {
-		if (dom !== null && dom !== undefined) {
+		if (dom !== undefined && dom !== null) {
 			var that = this;
 			this.element = dom;
-			if (model !== null && model !== undefined) {
+
+			if (model !== undefined && model !== null) {
 				this.Model = model;
 			}
-			if (eventsList !== null && eventsList !== undefined) {
+
+			if (eventsList !== undefined && eventsList !== null) {
 				this.EventsList = eventsList;
 			}
 		} else throw ReferenceError('Элемент пустой');
-	}
-
-	static Get(obj) {
-		if (!obj) {
-			throw new ReferenceError('Элемент пустой');
-		}
-		if (obj.data(this.name)) {
-			return obj.data(this.name);
-		}
-		var inst = new this(obj);
-		obj.data(this.name, inst);
-		return inst;
 	}
 
 	reStyle(typesList, ...args) {
@@ -10545,11 +10535,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-var sliderHor = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id'));
-var sliderHorhor = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-hor'));
-var sliderVer = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-vertical'));
-var sliderVerT = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-verticalt'));
-var sliderVerTh = __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider.Get($('#uikit-slider-id-verticalth'));
+var sliderHor = new __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider($('#uikit-slider-id'));
+var sliderHorhor = new __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider($('#uikit-slider-id-hor'));
+var sliderVer = new __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider($('#uikit-slider-id-vertical'));
+var sliderVerT = new __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider($('#uikit-slider-id-verticalt'));
+var sliderVerTh = new __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */].Core.UIKitSlider($('#uikit-slider-id-verticalth'));
+
+$('#slider-change-btn-id').on('click', function () {
+	if (sliderVer.type === 'horizontal') {
+		sliderVer.type = 'vertical';
+	} else if (sliderVer.type === 'vertical') {
+		sliderVer.type = 'horizontal';
+	}
+});
 /*slider.EventsList.addEvent('slider.valueChanged', function(val){
 	console.log('custom callback; value changed: ' + val);
 });
@@ -10748,7 +10746,7 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		this.Model = new UIKitSlider_Model();
 		this.Model.minimum = Number(this.element.attr('minimum'));
 		this.Model.maximum = Number(this.element.attr('maximum'));
-		var list = ['thumb.hover', 'track.hover', 'slider.type.change'];
+		var list = ['thumb.hover', 'track.hover', 'slider.type.change', 'slider.size.change'];
 		this.EventsList = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitEventsList(list);
 
 		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Model, this.EventsList);
@@ -11407,6 +11405,7 @@ class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 		});
 
 		this.EventsList.add('slider.type.change', function (typesList, type) {
+			that.element.css('width', '').css('height', '');
 			that.reStyle(typesList, type);
 			that._type = type;
 		});
@@ -11510,12 +11509,14 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		var that = this;
 		var divs = [];
 		var size = 100 / (values.length + 1);
-		var sizeType = '';
+		var shiftType = '';
 
 		if (isHorizontal) {
-			sizeType = 'width';
+			shiftType = 'left';
+			that.element.css('width', '100%');
 		} else {
-			sizeType = 'height';
+			shiftType = 'top';
+			that.element.css('height', '100%');
 		}
 
 		this.element.find('div.rule-item').each(function () {
@@ -11523,7 +11524,7 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		});
 
 		for (var i = 0; i < values.length; i++) {
-			var div = $('<div>').addClass('rule-item').css(sizeType, size + '%').attr('value', values[i]).html('<div><span>' + values[i] + '</span></div>');
+			var div = $('<div>').addClass('rule-item').html('<div>' + values[i] + '</div>').attr('value', values[i]);
 			divs.push(div);
 		}
 
@@ -11531,21 +11532,21 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			divs.reverse();
 		}
 
-		if (values.length & 1) {
-			//нечетное
-			var half = Math.floor(values.length / 2); //округление до меньшего целого
-			var div = $('<div>').addClass('rule-item').css(sizeType, size * 2 + '%').html('<div><span>' + values[half] + '</span></div>').attr('value', values[half]);
-			divs.splice(half, 1, div);
+		for (var i = 1; i < values.length - 1; i++) {
+			var percent = Math.abs(values[i] - that.Model.minimum) / (that.Model.maximum - that.Model.minimum) * 100;
+			divs[i].css(shiftType, percent + '%');
+			if (isHorizontal) {
+				divs[i].css('transform', 'translateX(1px) translateX(-50%)');
+			} else {
+				divs[i].css('transform', 'translateY(-50%)');
+			}
 		}
 
 		divs.forEach(function (item) {
 			that.element.append(item);
-		});
-
-		this.element.find('div').each(function () {
-			$(this).addClass('no-select');
-			$(this).on('click', function () {
-				that.Model.value = Number($(this).attr('value'));
+			item.on('click', function () {
+				var value = Number($(this).attr('value'));
+				that.Model.value = value;
 			});
 		});
 	}
@@ -11594,7 +11595,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".uikit-slider-rule {\n  position: relative;\n  display: table;\n  cursor: default;\n}\n.uikit-slider-rule div.rule-item {\n  position: relative;\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  cursor: pointer;\n}\n.uikit-slider-rule div.rule-item div {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.uikit-slider-rule div.rule-item:hover {\n  color: #e75735;\n}\n.uikit-slider-rule.horizontal {\n  width: 100%;\n  height: auto;\n  margin-top: 3px;\n}\n.uikit-slider-rule.horizontal div.rule-item {\n  display: table-cell;\n}\n.uikit-slider-rule.horizontal div.rule-item:first-child div {\n  justify-content: flex-start;\n}\n.uikit-slider-rule.horizontal div.rule-item:last-child div {\n  justify-content: flex-end;\n}\n.uikit-slider-rule.vertical {\n  height: 100%;\n  width: auto;\n  margin-left: 3px;\n}\n.uikit-slider-rule.vertical div.rule-item {\n  display: table-row;\n}\n.uikit-slider-rule.vertical div.rule-item div {\n  width: 100%;\n  height: 100%;\n}\n.uikit-slider-rule.vertical div.rule-item:first-child div {\n  align-items: flex-start;\n}\n.uikit-slider-rule.vertical div.rule-item:last-child div {\n  align-items: flex-end;\n}\n", ""]);
+exports.push([module.i, ".uikit-slider-rule {\n  position: relative;\n  display: flex;\n  justify-content: space-between;\n  cursor: default;\n  align-items: center;\n}\n.uikit-slider-rule div.rule-item {\n  position: absolute;\n}\n.uikit-slider-rule div.rule-item div {\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  cursor: pointer;\n}\n.uikit-slider-rule div.rule-item div:hover {\n  color: #e75735;\n}\n.uikit-slider-rule div.rule-item:first-child,\n.uikit-slider-rule div.rule-item:last-child {\n  position: relative;\n}\n.uikit-slider-rule.horizontal {\n  flex-direction: row;\n  margin-top: 3px;\n}\n.uikit-slider-rule.vertical {\n  flex-direction: column;\n  margin-left: 3px;\n}\n.uikit-slider-rule.vertical div.rule-item:first-child {\n  line-height: 7px;\n}\n.uikit-slider-rule.vertical div.rule-item:last-child {\n  line-height: 7px;\n}\n", ""]);
 
 // exports
 

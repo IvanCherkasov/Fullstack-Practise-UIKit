@@ -40,24 +40,25 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 		var that = this;
 		var divs = [];
 		var size = (100/(values.length + 1));
-		var sizeType = '';
+		var shiftType = '';
 
 		if (isHorizontal){
-			sizeType = 'width';
+			shiftType = 'left';
+			that.element.css('width', '100%');
 		} else {
-			sizeType = 'height';
+			shiftType = 'top';
+			that.element.css('height', '100%');
 		}
 
 		this.element.find('div.rule-item').each(function(){
 			$(this).remove();
 		});
 
-		for (var i = 0; i < values.length; i++){
+		for(var i = 0; i < values.length; i++){
 			var div = $('<div>')
 				.addClass('rule-item')
-				.css(sizeType, size + '%')
-				.attr('value', values[i])
-				.html('<div><span>'+ values[i] +'</span></div>')
+				.html('<div>' + values[i] + '</div>')
+				.attr('value', values[i]);
 			divs.push(div);
 		}
 
@@ -65,25 +66,21 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 			divs.reverse();
 		}
 
-		if (values.length & 1){
-			//нечетное
-			var half = Math.floor(values.length/2); //округление до меньшего целого
-			var div = $('<div>')
-				.addClass('rule-item')
-				.css(sizeType, (size * 2) + '%')
-				.html('<div><span>'+ values[half] +'</span></div>')
-				.attr('value', values[half]);
-			divs.splice(half, 1, div);
+		for(var i = 1; i < values.length - 1; i++){
+			var percent = Math.abs(values[i] - that.Model.minimum)/(that.Model.maximum - that.Model.minimum) * 100;
+			divs[i].css(shiftType, percent + '%');
+			if (isHorizontal){
+				divs[i].css('transform', 'translateX(1px) translateX(-50%)');
+			} else {
+				divs[i].css('transform', 'translateY(-50%)');
+			}
 		}
 
 		divs.forEach(function(item){
 			that.element.append(item);
-		});
-
-		this.element.find('div').each(function(){
-			$(this).addClass('no-select');
-			$(this).on('click', function(){
-				that.Model.value = Number($(this).attr('value'));
+			item.on('click', function(){
+				var value = Number($(this).attr('value'));
+				that.Model.value = value;
 			});
 		});
 	}

@@ -1,27 +1,18 @@
 class UIKitElement{// AbstractBase
 	constructor(dom, model, eventsList){
-		if (dom !== null && dom !== undefined){
+		if (dom !== undefined && dom !== null){
 			var that = this;
 			this.element = dom;
-			if (model !== null && model !== undefined){
+
+			if (model !== undefined && model !== null){
 				this.Model = model;
 			}
-			if (eventsList !== null && eventsList !== undefined){
+
+			if (eventsList !== undefined && eventsList !== null){
 				this.EventsList = eventsList;
 			}
-		} else throw ReferenceError('Элемент пустой');
-	}
 
-	static Get(obj){
-		if (!obj){
-			throw new ReferenceError('Элемент пустой');
-		}
-		if (obj.data(this.name)){
-			return obj.data(this.name);
-		}
-		var inst = new this(obj);
-		obj.data(this.name, inst);
-		return inst;
+		} else throw ReferenceError('Элемент пустой');
 	}
 
 	reStyle(typesList, ...args){
@@ -167,13 +158,70 @@ class UIKitCoordinateSystem{
 	}
 }
 
+class UIKitMediator{
+	constructor(isLogging){
+		var that = this;
+		this.channels = {}
+		this._isLogging = false;
+		if (isLogging){
+			if (typeof isLogging === 'boolean'){
+				this._isLogging = isLogging;
+			}
+		}
+		this._log = function(logText){
+			if (this._isLogging){
+				console.log(logText);
+			}
+		}
+	}
+
+	subscribe(channel, func){
+		if (!this.channels[channel]){
+			this.channels[channel] = [];
+		}
+		this.channels[channel].push({
+			callback: func
+		});
+	}
+
+	publish(channel, ...agrs){
+		var that = this;
+		if (!this.channels[channel]){
+			return false;
+		}
+
+		that._log('try publish');
+		that._log("		channel: " + channel + '; args: ' + args);
+		this.channels[channel].forEach(function(subscription, index){
+			that._log('		subscriber{ index: ' + index + ' context: ' + subscription + ' }');
+			subscription.callback.apply(args);
+		});
+		that._log('publish success');
+
+		return true;
+	}
+
+	get isLogging(){
+		return this._isLogging;
+	}
+
+	set isLogging(value){
+		if (value){
+			if (typeof value === 'boolean'){
+				this._isLogging = value;
+			}
+		}
+	}	
+}
+
 var UIKit = {
 	Core: {
 		UIKitElement: UIKitElement,
 		UIKitEvent: UIKitEvent,
 		UIKitEventsList: UIKitEventsList,
 		UIKitMath: UIKitMath,
-		UIKitCoordinateSystem: UIKitCoordinateSystem
+		UIKitCoordinateSystem: UIKitCoordinateSystem,
+		UIKitMediator: UIKitMediator
 	}
 }
 export default UIKit;

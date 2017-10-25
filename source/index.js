@@ -3,16 +3,26 @@ import './index.styl'
 import UIKit from './uikit/uikit-core/index.js'
 import './uikit/uikit-slider/index.js'
 
-var sliderHor = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id'));
-var sliderHorhor = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id-hor'));
-var sliderVer = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id-vertical'));
-var sliderVerT = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id-verticalt'));
-var sliderVerTh = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id-verticalth'));
-/*slider.EventsList.addEvent('slider.valueChanged', function(val){
-	console.log('custom callback; value changed: ' + val);
-});
-slider.value = 10;
-slider.value = 18;
+var sliderHor = new UIKit.Core.UIKitSlider($('#uikit-slider-id'));
+var sliderHorhor = new UIKit.Core.UIKitSlider($('#uikit-slider-id-hor'));
+var sliderVer = new UIKit.Core.UIKitSlider($('#uikit-slider-id-vertical'));
+var sliderVerT = new UIKit.Core.UIKitSlider($('#uikit-slider-id-verticalt'));
+var sliderVerTh = new UIKit.Core.UIKitSlider($('#uikit-slider-id-verticalth'));
 
-var slider2 = UIKit.Core.UIKitSlider.Get($('#uikit-slider-id'));
-slider2.value = 5;*/
+$('#slider-change-btn-id').on('click', function(){
+	if (sliderVer.type === 'horizontal'){
+		sliderVer.type = 'vertical';
+	} else if (sliderVer.type === 'vertical'){
+		sliderVer.type = 'horizontal';
+	}
+});
+
+//TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
+//		придумать куда его впихнуть
+
+//TODO: restyle => rebuild (запоминание начального состояния элемента(this.element))
+//TODO: по возможности: переделать систему координат на слайдер. Но учитывать трэк
+//TODO: по возможности: EventSystem от модели и EventSystem от сладйре надо объединить в "медиатор". Чтобы он один
+//		отвечал за все события внутри системы. Чтобы логирование велось одной строкой. Одна общая функция для обработки
+//		событий.
+

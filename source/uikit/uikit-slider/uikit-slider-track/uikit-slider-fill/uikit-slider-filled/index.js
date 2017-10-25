@@ -32,8 +32,10 @@ class UIKitSlider_Filled extends UIKit.Core.UIKitElement{
 		});
 		
 		this.EventsList.add('slider.type.change', function(typesList, type){
+			that.element.css('width', '').css('height', '');
 			that.reStyle(typesList, type);
 			that._type = type;
+
 		});
 	}
 }
