@@ -2,15 +2,15 @@ import './index.styl'
 import UIKit from '../../uikit-core/index.js'
 
 class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
-	constructor(dom, mediator){
-		super(dom, mediator);
+	constructor(dom, mediator, type){
+		super(dom, mediator, type);
 		var that = this;
 		var segments = this.element.attr('segments');
 
 		var getValues = function(){
 			if (segments > 0){
-				var minimum = that.Mediator.getData('minimum');
-				var maximum = that.Mediator.getData('maximum');
+				var minimum = that.Mediator.getData('model.minimum');
+				var maximum = that.Mediator.getData('model.maximum');
 				var values = [];
 				var crat =((Math.abs(minimum) + Math.abs(maximum)) / (segments - 1));
 				var buf = minimum;
@@ -23,19 +23,18 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 			return undefined;
 		}
 
-		this.Mediator.subscribe('slider.type', function(typesList, type){
-			that.reStyle(typesList, type);
-			if (segments !== 0){
-				var values = getValues();
-				if (values){
-					if (type === 'horizontal'){
-						that._build(values, true);
-					} else if (type === 'vertical'){
-						that._build(values, false);
-					}
+		this.stylize(this.Type);
+
+		if (segments !== 0){
+			var values = getValues();
+			if (values){
+				if (this.Type === 'horizontal'){
+					that._build(values, true);
+				} else if (this.Type === 'vertical'){
+					that._build(values, false);
 				}
 			}
-		});
+		}
 	}
 
 	_build(values, isHorizontal){
@@ -43,8 +42,8 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 		var divs = [];
 		var size = (100/(values.length + 1));
 		var shiftType = '';
-		var minimum = that.Mediator.getData('minimum');
-		var maximum = that.Mediator.getData('maximum');
+		var minimum = that.Mediator.getData('model.minimum');
+		var maximum = that.Mediator.getData('model.maximum');
 
 		if (isHorizontal){
 			shiftType = 'left';
@@ -84,7 +83,7 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement{
 			that.element.append(item);
 			item.on('click', function(){
 				var value = Number($(this).attr('value'));
-				that.Mediator.setData('value', value);
+				that.Mediator.setData('model.value', value);
 			});
 		});
 	}

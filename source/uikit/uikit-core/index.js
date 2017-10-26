@@ -1,5 +1,5 @@
 class UIKitElement{// AbstractBase
-	constructor(dom, mediator){
+	constructor(dom, mediator, type){
 		if (dom !== undefined && dom !== null){
 			var that = this;
 			this.element = dom;
@@ -8,25 +8,15 @@ class UIKitElement{// AbstractBase
 				this.Mediator = mediator;
 			}
 
+			if (type !== undefined && type !== null){
+				this.Type = type;
+			}
+
 		} else throw ReferenceError('Элемент пустой');
 	}
 
-	reStyle(typesList, ...args){
-		//typeList - array, список классов string
-		//args - array, список классов string
-		var that = this;
-		var toDelete = []; //список типов которые есть в typesList но нету в args
-		typesList.forEach(function(item){
-			if (!args.includes(item)){
-				toDelete.push(item);
-			}
-		});
-		toDelete.forEach(function(item){
-			that.element.removeClass(item);
-		});
-		args.forEach(function(item){
-			that.element.addClass(item);
-		});
+	stylize(type){
+		this.element.addClass(type);
 	}
 }
 
@@ -87,15 +77,14 @@ class UIKitCoordinateSystem{
 }
 
 class UIKitMediator{
-	constructor(Model, logsList){
+	constructor(Model, middleWare){
 		var that = this;
 		this.channels = {}
-		this._isLogging = false;
-		this._logsList = [];
+		this._middleWare = [];
 		this._model = Model;
-		if (logsList){
-			if (Array.isArray(logsList)){
-				this._logsList = logsList;
+		if (middleWare){
+			if (Array.isArray(middleWare)){
+				this._middleWare = middleWare;
 			}
 		}
 	}
@@ -122,41 +111,71 @@ class UIKitMediator{
 		return true;
 	}
 
-	setData(name, value){
-		if (this._model[name] !== undefined){
-			this._model[name] = value;
-			value = this._model[name]; //на случай если модель как-то фильтрует значения
-			this.publish(name, value);
+	setData(property, data){
+		var props = property.split('.');
+		var done = false;
+
+		if (props[0] === 'model'){
+			if (this._model.setData(props[1], data)){
+				done = true;
+			}
+		}
+		
+		if (done === false){
+			console.error('no such property named "' + property + '"');
+			return false;
+		}
+
+		this.publish(property, this._model.Data);
+
+		this._middleWare.forEach(function(func){
+			func('mediator set data', {
+				property: property,
+				data: data
+			});
+		});
+
+		/*if (this._model[property] !== undefined){
+			this._model[property] = value;
+			value = this._model[property]; //на случай если модель как-то фильтрует значения
+			this.publish(property, value);
 			if (this.isLogging){
 				this._logsList.forEach(function(log){
 					log('mediator set data', {
-						name: name,
+						property: property,
 						data: value
 					});
 				});
 			}
 		} else {
-			console.error('no such property named "' + name + '"');
-		}
+			
+		}*/
 	}
 
-	getData(name){
-		if (this._model[name] !== undefined){
-			return this._model[name];
-		}
-	}
+	getData(property){
+		var props = property.split('.');
+		var done = false;
+		var data = null;
 
-	get isLogging(){
-		return this._isLogging;
-	}
-
-	set isLogging(value){
-		if (value){
-			if (typeof value === 'boolean'){
-				this._isLogging = value;
+		if (props[0] === 'model'){
+			data = this._model.getData(props[1]);
+			if (data !== undefined){
+				done = true;
 			}
 		}
-	}	
+
+		if (done){
+			return data;
+		} else {
+			console.error('no such property named "' + property + '"');
+			return undefined;
+		}
+
+		/*
+		if (this._model[property] !== undefined){
+			return this._model[property];
+		}*/
+	}
 }
 
 class UIKitLogger{

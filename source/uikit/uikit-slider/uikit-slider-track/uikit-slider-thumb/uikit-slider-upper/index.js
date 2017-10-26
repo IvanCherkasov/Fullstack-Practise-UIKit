@@ -2,8 +2,8 @@ import './index.styl'
 import UIKit from '../../../../uikit-core/index.js'
 
 class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
-	constructor(dom, mediator){
-		super(dom, mediator);
+	constructor(dom, mediator, type){
+		super(dom, mediator, type);
 		var that = this;
 		var div = that.element.find('div.no-select');
 		var timerId = 0;
@@ -21,8 +21,8 @@ class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
 			timerId = setTimeout(disable, 1000);
 		}
 
-		this.Mediator.subscribe('value', function(value){
-			print(value);
+		this.Mediator.subscribe('model.value', function(modelData){
+			print(modelData.value);
 		});
 
 		this.Mediator.subscribe('thumb.hover', function(value){
@@ -37,13 +37,11 @@ class UIKitSlider_Upper extends UIKit.Core.UIKitElement{
 			}
 		});
 
-		this.Mediator.subscribe('value', function(){
+		this.Mediator.subscribe('model.value', function(){
 			show();
 		});
 
-		this.Mediator.subscribe('slider.type', function(typesList, type){
-			that.reStyle(typesList, type);
-		});
+		this.stylize(this.Type);
 	}
 }
 

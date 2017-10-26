@@ -521,7 +521,7 @@ function updateLink (link, options, obj) {
 "use strict";
 class UIKitElement {
 	// AbstractBase
-	constructor(dom, mediator) {
+	constructor(dom, mediator, type) {
 		if (dom !== undefined && dom !== null) {
 			var that = this;
 			this.element = dom;
@@ -529,25 +529,15 @@ class UIKitElement {
 			if (mediator !== undefined && mediator !== null) {
 				this.Mediator = mediator;
 			}
+
+			if (type !== undefined && type !== null) {
+				this.Type = type;
+			}
 		} else throw ReferenceError('Элемент пустой');
 	}
 
-	reStyle(typesList, ...args) {
-		//typeList - array, список классов string
-		//args - array, список классов string
-		var that = this;
-		var toDelete = []; //список типов которые есть в typesList но нету в args
-		typesList.forEach(function (item) {
-			if (!args.includes(item)) {
-				toDelete.push(item);
-			}
-		});
-		toDelete.forEach(function (item) {
-			that.element.removeClass(item);
-		});
-		args.forEach(function (item) {
-			that.element.addClass(item);
-		});
+	stylize(type) {
+		this.element.addClass(type);
 	}
 }
 
@@ -608,15 +598,14 @@ class UIKitCoordinateSystem {
 }
 
 class UIKitMediator {
-	constructor(Model, logsList) {
+	constructor(Model, middleWare) {
 		var that = this;
 		this.channels = {};
-		this._isLogging = false;
-		this._logsList = [];
+		this._middleWare = [];
 		this._model = Model;
-		if (logsList) {
-			if (Array.isArray(logsList)) {
-				this._logsList = logsList;
+		if (middleWare) {
+			if (Array.isArray(middleWare)) {
+				this._middleWare = middleWare;
 			}
 		}
 	}
@@ -643,40 +632,70 @@ class UIKitMediator {
 		return true;
 	}
 
-	setData(name, value) {
-		if (this._model[name] !== undefined) {
-			this._model[name] = value;
-			value = this._model[name]; //на случай если модель как-то фильтрует значения
-			this.publish(name, value);
-			if (this.isLogging) {
-				this._logsList.forEach(function (log) {
-					log('mediator set data', {
-						name: name,
-						data: value
-					});
-				});
+	setData(property, data) {
+		var props = property.split('.');
+		var done = false;
+
+		if (props[0] === 'model') {
+			if (this._model.setData(props[1], data)) {
+				done = true;
 			}
+		}
+
+		if (done === false) {
+			console.error('no such property named "' + property + '"');
+			return false;
+		}
+
+		this.publish(property, this._model.Data);
+
+		this._middleWare.forEach(function (func) {
+			func('mediator set data', {
+				property: property,
+				data: data
+			});
+		});
+
+		/*if (this._model[property] !== undefined){
+  	this._model[property] = value;
+  	value = this._model[property]; //на случай если модель как-то фильтрует значения
+  	this.publish(property, value);
+  	if (this.isLogging){
+  		this._logsList.forEach(function(log){
+  			log('mediator set data', {
+  				property: property,
+  				data: value
+  			});
+  		});
+  	}
+  } else {
+  	
+  }*/
+	}
+
+	getData(property) {
+		var props = property.split('.');
+		var done = false;
+		var data = null;
+
+		if (props[0] === 'model') {
+			data = this._model.getData(props[1]);
+			if (data !== undefined) {
+				done = true;
+			}
+		}
+
+		if (done) {
+			return data;
 		} else {
-			console.error('no such property named "' + name + '"');
+			console.error('no such property named "' + property + '"');
+			return undefined;
 		}
-	}
 
-	getData(name) {
-		if (this._model[name] !== undefined) {
-			return this._model[name];
-		}
-	}
-
-	get isLogging() {
-		return this._isLogging;
-	}
-
-	set isLogging(value) {
-		if (value) {
-			if (typeof value === 'boolean') {
-				this._isLogging = value;
-			}
-		}
+		/*
+  if (this._model[property] !== undefined){
+  	return this._model[property];
+  }*/
 	}
 }
 
@@ -10558,11 +10577,19 @@ $('#slider-change-btn-id').on('click', function () {
 //TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
 //		придумать куда его впихнуть
 
-//TODO: restyle => rebuild (запоминание начального состояния элемента(this.element))
+//DONE: restyle => rebuild (запоминание начального состояния элемента(this.element))
+
 //TODO: по возможности: переделать систему координат на слайдер. Но учитывать трэк
+
+
 //DONE: по возможности: EventSystem от модели и EventSystem от сладйре надо объединить в "медиатор". Чтобы он один
-//		отвечал за все события внутри системы. Чтобы логирование велось одной строкой. Одна общая функция для обработки
-//		событий.
+//			отвечал за все события внутри системы. Чтобы логирование велось одной строкой. Одна общая функция для обработки
+//			событий.
+
+//DONE: + подписчики получают ссылку на новую модель, и сами берут из неё то что им надо
+//		+ заменить сеттеры в модели на функции setData, getData
+//		+ middleware
+//		+ подписываемые события лучше сделать так: propertyChanged.* (propertyChanged.value)
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
@@ -10732,7 +10759,7 @@ module.exports = function (css) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(15);
@@ -10748,48 +10775,49 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		if (!this.element.hasClass('uikit-slider')) {
 			throw new ReferenceError('Элемент не является слайдером');
 		}
-		var that = this;
-
-		var loggers = [];
-		var logger = function (...args) {
-			console.log(...args);
-		};
-		loggers.push(logger);
-
-		this.Model = new UIKitSlider_Model();
-		this.Model.minimum = Number(this.element.attr('minimum'));
-		this.Model.maximum = Number(this.element.attr('maximum'));
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model, loggers);
-		this.Mediator.isLogging = true; //включено логирование !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-		this.Mediator.subscribe('value', function (value) {
-			that.element.attr('value', value);
-		});
-
-		this.Mediator.subscribe('minimum', function (minimum) {
-			that.element.attr('minimum', minimum);
-		});
-
-		this.Mediator.subscribe('maximum', function (maximum) {
-			that.element.attr('maximum', maximum);
-		});
-
-		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator);
-
-		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator);
-
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-		});
-
+		this.Type = 'horizontal';
+		this.Original = this.element.clone();
 		this.TypesList = ['horizontal', 'vertical'];
-		if (this.TypesList.includes(this.element.attr('type'))) {
-			this.type = this.element.attr('type');
-		} else {
-			this.type = 'horizontal';
+		var that = this;
+		if (this.element.attr('type') !== undefined) {
+			if (this.element.attr('type') !== '') {
+				if (this.TypesList.includes(this.element.attr('type'))) {
+					this.Type = this.element.attr('type');
+				}
+			}
 		}
 
-		this.Mediator.setData('value', Number(this.element.attr('value')));
+		this.init();
+	}
+
+	init() {
+		var that = this;
+		var middleWare = [];
+
+		this.Model = new UIKitSlider_Model();
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model, middleWare);
+		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
+		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+
+		this.Mediator.subscribe('model.value', function (modelData) {
+			that.element.attr('value', modelData.value);
+		});
+
+		this.Mediator.subscribe('model.minimum', function (modelData) {
+			that.element.attr('minimum', modelData.minimum);
+		});
+
+		this.Mediator.subscribe('model.maximum', function (modelData) {
+			that.element.attr('maximum', modelData.maximum);
+		});
+
+		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator, this.Type);
+
+		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator, this.Type);
+
+		setTimeout(function () {
+			that.Mediator.setData('model.value', Number(that.element.attr('value')));
+		}, 0);
 
 		this.element.on('dragstart', function () {
 			return false;
@@ -10798,18 +10826,76 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		this.element.on('selectstart', function () {
 			return false;
 		});
+
+		this.stylize(this.Type);
+	}
+
+	reBuild() {
+		var that = this;
+		var parent = this.element.parent();
+		var spawned = false;
+
+		var attributes = [];
+		this.element.each(function () {
+			$.each(this.attributes, function () {
+				if (this.specified) {
+					attributes.push({
+						name: this.name,
+						value: this.value
+					});
+				}
+			});
+		});
+
+		var index = -1;
+		parent.children().each(function (i) {
+			if ($(this).is(that.element)) {
+				index = i;
+				return;
+			}
+		});
+
+		this.element.remove();
+		this.element = this.Original.clone();
+
+		attributes.forEach(function (attr) {
+			if (attr.name !== 'class') {
+				that.element.attr(attr.name, attr.value);
+			}
+		});
+
+		parent.children().each(function (i) {
+			if (i === index) {
+				$(this).before(that.element);
+				spawned = true;
+				return;
+			}
+		});
+
+		if (!spawned) {
+			parent.append(this.element);
+		}
+
+		this.element.attr('type', this.Type);
+
+		this.element.ready(function () {
+			setTimeout(function () {
+				that.init(that.Type);
+			}, 0);
+		});
 	}
 
 	get type() {
-		return this._type;
+		return this.Type;
 	}
 
 	set type(value) {
 		if (typeof value === 'string') {
 			// horizontal / vertical
 			if (this.TypesList.includes(value)) {
-				this._type = value;
-				this.Mediator.publish('slider.type', this.TypesList, value);
+				this.Type = value;
+				//this.Mediator.publish('slider.type', this.TypesList, value);
+				this.reBuild(this.Type);
 			}
 		}
 	}
@@ -10822,49 +10908,101 @@ class UIKitSlider_Model {
 		this._minimum = 0;
 		this._maximum = 0;
 		this._cs = null;
+
+		this.Data = {
+			_value: 0,
+			_minimum: 0,
+			_maximum: 0,
+			_cs: null,
+			get value() {
+				return this._value;
+			},
+			get minimum() {
+				return this._minimum;
+			},
+			get maximum() {
+				return this._maximum;
+			},
+			get coordinateSystem() {
+				return this._cs;
+			}
+		};
 	}
 
-	set value(value) {
-		value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
-		this._value = value;
-	}
-
-	get value() {
-		return this._value;
-	}
-
-	set maximum(value) {
-		this._maximum = value;
-	}
-
-	get maximum() {
-		return this._maximum;
-	}
-
-	set minimum(value) {
-		this._minimum = value;
-	}
-
-	get minimum() {
-		return this._minimum;
-	}
-
-	get coordinateSystem() {
-		return this._cs;
-	}
-
-	set coordinateSystem(dom) {
-		if (!this._cs) {
-			this._cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitCoordinateSystem(dom);
+	getData(property) {
+		switch (property) {
+			case 'value':
+				return this.Data.value;
+			case 'minimum':
+				return this.Data.minimum;
+			case 'maximum':
+				return this.Data.maximum;
+			case 'coordinateSystem':
+				return this.Data.coordinateSystem;
+			default:
+				return undefined;
 		}
 	}
 
-	resetCoordinateSystem() {
-		this._cs = undefined;
+	setData(property, data) {
+		switch (property) {
+			case 'value':
+				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+				this.Data._value = value;
+				return true;
+			case 'minimum':
+				this.Data._minimum = data;
+				return true;
+			case 'maximum':
+				this.Data._maximum = data;
+				return true;
+			case 'coordinateSystem':
+				var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitCoordinateSystem(data);
+				this.Data._cs = cs;
+				return true;
+			default:
+				return false;
+		}
 	}
+
+	getProperties() {
+		return this.Data;
+	}
+
+	/*set value(value){
+ 	value = UIKit.Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
+ 	this._value = value;
+ }
+ 	get value(){
+ 	return this._value;
+ }
+ 	set maximum(value){
+ 	this._maximum = value;
+ }
+ 	get maximum(){
+ 	return this._maximum;
+ }
+ 	set minimum(value){
+ 	this._minimum = value;
+ }
+ 	get minimum(){
+ 	return this._minimum;
+ }
+ 	get coordinateSystem(){
+ 	return this._cs;
+ }
+ 	set coordinateSystem(dom){
+ 	if (!this._cs){
+ 		this._cs = new UIKit.Core.UIKitCoordinateSystem(dom);
+ 	}
+ }
+ 	resetCoordinateSystem(){
+ 	this._cs = null;
+ }*/
 }
 
 __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitSlider = UIKitSlider;
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(3)))
 
 /***/ }),
 /* 13 */
@@ -10927,36 +11065,35 @@ exports.push([module.i, ".uikit-slider {\n  position: relative;\n  width: auto;\
 
 
 class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
 		var isDrag = false;
-		this._type = "";
-		that.Mediator.setData('coordinateSystem', this.element);
+		this.Mediator.setData('model.coordinateSystem', this.element);
 
-		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Mediator);
+		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Mediator, this.Type);
 
-		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Mediator);
+		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Mediator, this.Type);
 
 		var startDrag = function () {
 			isDrag = true;
 			$(document).on('mousemove.uikit.slider.track', function (event) {
 				var position = 0;
 				var percent = 0;
-				var coordinateSystem = that.Mediator.getData('coordinateSystem');
-				var minimum = that.Mediator.getData('minimum');
-				var maximum = that.Mediator.getData('maximum');
-				if (that._type === 'horizontal') {
+				var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+				var minimum = that.Mediator.getData('model.minimum');
+				var maximum = that.Mediator.getData('model.maximum');
+				if (that.Type === 'horizontal') {
 					position = event.pageX - coordinateSystem.xMin;
 					percent = 100 / coordinateSystem.width * position;
-				} else if (that._type === 'vertical') {
+				} else if (that.Type === 'vertical') {
 					position = event.pageY - coordinateSystem.yMin;
 					percent = 100 / coordinateSystem.height * position;
 					percent = 100 - percent;
 				}
 				var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
-				if (value !== that.Mediator.getData('value')) {
-					that.Mediator.setData('value', value);
+				if (value !== that.Mediator.getData('model.value')) {
+					that.Mediator.setData('model.value', value);
 				}
 			});
 			$(document).on('mouseup.uikit.slider.track', function () {
@@ -10969,19 +11106,19 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 		this.element.on('mousedown', function (event) {
 			var position = 0;
 			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
-			var minimum = that.Mediator.getData('minimum');
-			var maximum = that.Mediator.getData('maximum');
-			if (that._type === 'horizontal') {
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+			var minimum = that.Mediator.getData('model.minimum');
+			var maximum = that.Mediator.getData('model.maximum');
+			if (that.Type === 'horizontal') {
 				position = event.pageX - coordinateSystem.xMin;
 				percent = 100 / coordinateSystem.width * position;
-			} else if (that._type === 'vertical') {
+			} else if (that.Type === 'vertical') {
 				position = event.pageY - coordinateSystem.yMin;
 				percent = 100 / coordinateSystem.height * position;
 				percent = 100 - percent;
 			}
 			var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
-			that.Mediator.setData('value', value);
+			that.Mediator.setData('model.value', value);
 			startDrag();
 		});
 
@@ -10989,10 +11126,7 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			that.Mediator.publish('track.hover', true);
 		});
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-			that._type = type;
-		});
+		this.stylize(this.Type);
 	}
 }
 
@@ -11058,22 +11192,21 @@ exports.push([module.i, ".uikit-slider-track {\n  position: relative;\n  height:
 
 
 class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
 		var isDrag = false;
 		var isHover = false;
-		this._type = "";
 
 		var calculateValue = function (position) {
 			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
-			var minimum = that.Mediator.getData('minimum');
-			var maximum = that.Mediator.getData('maximum');
-			if (that._type === 'horizontal') {
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+			var minimum = that.Mediator.getData('model.minimum');
+			var maximum = that.Mediator.getData('model.maximum');
+			if (that.Type === 'horizontal') {
 				percent = 100 / coordinateSystem.width * position;
-			} else if (that._type === 'vertical') {
+			} else if (that.Type === 'vertical') {
 				percent = 100 / coordinateSystem.height * position;
 				percent = 100 - percent;
 			}
@@ -11083,13 +11216,13 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		var moveThumb = function (position) {
 			if (position >= 0) {
-				var coordinateSystem = that.Mediator.getData('coordinateSystem');
-				if (that._type === "horizontal") {
+				var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+				if (that.Type === "horizontal") {
 					var percent = 100 / coordinateSystem.width * position;
 					var maximum = 100 / coordinateSystem.xMax * (coordinateSystem.xMax - that.element.width() / 2);
 					var minimum = 100 / coordinateSystem.width * that.element.width();
 					that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
-				} else if (that._type === 'vertical') {
+				} else if (that.Type === 'vertical') {
 					var percent = 100 / coordinateSystem.height * position;
 					var maximum = 100 / coordinateSystem.yMax * (coordinateSystem.yMax + that.element.width());
 					var minimum = 100 / coordinateSystem.height * that.element.width() / 2;
@@ -11100,19 +11233,19 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 		var startDrag = function () {
 			isDrag = true;
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
 			$(document).on('mousemove.uikit.slider.thumb', function (event) {
-				if (that._type === "horizontal") {
+				if (that.Type === "horizontal") {
 					var position = event.pageX - coordinateSystem.xMin;
 					var value = calculateValue(position);
-					if (value !== that.Mediator.getData('value')) {
-						that.Mediator.setData('value', value);
+					if (value !== that.Mediator.getData('model.value')) {
+						that.Mediator.setData('model.value', value);
 					}
-				} else if (that._type === 'vertical') {
+				} else if (that.Type === 'vertical') {
 					var position = event.pageY - coordinateSystem.yMin;
 					var value = calculateValue(position);
-					if (value !== that.Mediator.getData('value')) {
-						that.Mediator.setData('value', value);
+					if (value !== that.Mediator.getData('model.value')) {
+						that.Mediator.setData('model.value', value);
 					}
 				}
 			});
@@ -11123,7 +11256,7 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			});
 		};
 
-		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Mediator);
+		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Mediator, this.Type);
 
 		this.element.on('mouseenter', function () {
 			isHover = true;
@@ -11135,15 +11268,15 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			that.Mediator.publish('thumb.hover', false);
 		});
 
-		this.Mediator.subscribe('value', function (value) {
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
-			var minimum = that.Mediator.getData('minimum');
-			var maximum = that.Mediator.getData('maximum');
-			var percent = Math.abs(value - minimum) / (maximum - minimum) * 100;
-			if (that._type === 'horizontal') {
+		this.Mediator.subscribe('model.value', function (modelData) {
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+			var minimum = that.Mediator.getData('model.minimum');
+			var maximum = that.Mediator.getData('model.maximum');
+			var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
+			if (that.Type === 'horizontal') {
 				var position = Math.round(percent * coordinateSystem.width / 100);
 				moveThumb(position);
-			} else if (that._type === 'vertical') {
+			} else if (that.Type === 'vertical') {
 				var position = Math.round(percent * coordinateSystem.height / 100);
 				moveThumb(position);
 			}
@@ -11154,10 +11287,7 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			event.stopPropagation();
 		});
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-			that._type = type;
-		});
+		this.stylize(this.Type);
 	}
 }
 
@@ -11221,8 +11351,8 @@ exports.push([module.i, ".uikit-slider-thumb {\n  position: absolute;\n  height:
 
 
 class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
 		var div = that.element.find('div.no-select');
 		var timerId = 0;
@@ -11240,8 +11370,8 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			timerId = setTimeout(disable, 1000);
 		};
 
-		this.Mediator.subscribe('value', function (value) {
-			print(value);
+		this.Mediator.subscribe('model.value', function (modelData) {
+			print(modelData.value);
 		});
 
 		this.Mediator.subscribe('thumb.hover', function (value) {
@@ -11256,13 +11386,11 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 			}
 		});
 
-		this.Mediator.subscribe('value', function () {
+		this.Mediator.subscribe('model.value', function () {
 			show();
 		});
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-		});
+		this.stylize(this.Type);
 	}
 }
 
@@ -11327,14 +11455,12 @@ exports.push([module.i, ".uikit-slider-thumb-upper {\n  position: absolute;\n  h
 
 
 class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
-		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Mediator);
+		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Mediator, this.Type);
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-		});
+		this.stylize(this.Type);
 	}
 }
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
@@ -11396,44 +11522,39 @@ exports.push([module.i, ".uikit-slider-fill {\n  position: relative;\n  width: 1
 
 
 class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
 		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
-		this._type = "";
 
 		var moveFilled = function (position) {
 			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
-			if (that._type === 'horizontal') {
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+			if (that.Type === 'horizontal') {
 				percent = 100 / coordinateSystem.width * position;
 				that.element.css('width', Clamp(percent, 0, 100) + '%');
-			} else if (that._type === 'vertical') {
+			} else if (that.Type === 'vertical') {
 				percent = 100 / coordinateSystem.height * position;
 				that.element.css('height', Clamp(percent, 0, 100) + '%');
 			}
 		};
 
-		this.Mediator.subscribe('value', function (value) {
-			var coordinateSystem = that.Mediator.getData('coordinateSystem');
-			var minimum = that.Mediator.getData('minimum');
-			var maximum = that.Mediator.getData('maximum');
-			var percent = Math.abs(value - minimum) / (maximum - minimum);
+		this.Mediator.subscribe('model.value', function (modelData) {
+			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
+			var minimum = that.Mediator.getData('model.minimum');
+			var maximum = that.Mediator.getData('model.maximum');
+			var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
 			percent *= 100;
 			var position = 0;
-			if (that._type === 'horizontal') {
+			if (that.Type === 'horizontal') {
 				position = Math.round(percent * coordinateSystem.width / 100);
-			} else if (that._type === 'vertical') {
+			} else if (that.Type === 'vertical') {
 				position = Math.round(percent * coordinateSystem.height / 100);
 			}
 			moveFilled(position);
 		});
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.element.css('width', '').css('height', '');
-			that.reStyle(typesList, type);
-			that._type = type;
-		});
+		this.stylize(this.Type);
 	}
 }
 
@@ -11496,15 +11617,15 @@ exports.push([module.i, ".uikit-slider-filled {\n  position: relative;\n  height
 
 
 class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
 		var that = this;
 		var segments = this.element.attr('segments');
 
 		var getValues = function () {
 			if (segments > 0) {
-				var minimum = that.Mediator.getData('minimum');
-				var maximum = that.Mediator.getData('maximum');
+				var minimum = that.Mediator.getData('model.minimum');
+				var maximum = that.Mediator.getData('model.maximum');
 				var values = [];
 				var crat = (Math.abs(minimum) + Math.abs(maximum)) / (segments - 1);
 				var buf = minimum;
@@ -11517,19 +11638,18 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			return undefined;
 		};
 
-		this.Mediator.subscribe('slider.type', function (typesList, type) {
-			that.reStyle(typesList, type);
-			if (segments !== 0) {
-				var values = getValues();
-				if (values) {
-					if (type === 'horizontal') {
-						that._build(values, true);
-					} else if (type === 'vertical') {
-						that._build(values, false);
-					}
+		this.stylize(this.Type);
+
+		if (segments !== 0) {
+			var values = getValues();
+			if (values) {
+				if (this.Type === 'horizontal') {
+					that._build(values, true);
+				} else if (this.Type === 'vertical') {
+					that._build(values, false);
 				}
 			}
-		});
+		}
 	}
 
 	_build(values, isHorizontal) {
@@ -11537,8 +11657,8 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 		var divs = [];
 		var size = 100 / (values.length + 1);
 		var shiftType = '';
-		var minimum = that.Mediator.getData('minimum');
-		var maximum = that.Mediator.getData('maximum');
+		var minimum = that.Mediator.getData('model.minimum');
+		var maximum = that.Mediator.getData('model.maximum');
 
 		if (isHorizontal) {
 			shiftType = 'left';
@@ -11575,7 +11695,7 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 			that.element.append(item);
 			item.on('click', function () {
 				var value = Number($(this).attr('value'));
-				that.Mediator.setData('value', value);
+				that.Mediator.setData('model.value', value);
 			});
 		});
 	}
