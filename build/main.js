@@ -655,22 +655,6 @@ class UIKitMediator {
 				data: data
 			});
 		});
-
-		/*if (this._model[property] !== undefined){
-  	this._model[property] = value;
-  	value = this._model[property]; //на случай если модель как-то фильтрует значения
-  	this.publish(property, value);
-  	if (this.isLogging){
-  		this._logsList.forEach(function(log){
-  			log('mediator set data', {
-  				property: property,
-  				data: value
-  			});
-  		});
-  	}
-  } else {
-  	
-  }*/
 	}
 
 	getData(property) {
@@ -691,11 +675,6 @@ class UIKitMediator {
 			console.error('no such property named "' + property + '"');
 			return undefined;
 		}
-
-		/*
-  if (this._model[property] !== undefined){
-  	return this._model[property];
-  }*/
 	}
 }
 
@@ -10764,6 +10743,8 @@ module.exports = function (css) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__ = __webpack_require__(33);
+
 
 
 
@@ -10814,6 +10795,8 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator, this.Type);
 
 		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator, this.Type);
+
+		this.Input = new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__["a" /* default */](this.element.find('.uikit-slider-input'), this.Mediator, this.Type);
 
 		setTimeout(function () {
 			that.Mediator.setData('model.value', Number(that.element.attr('value')));
@@ -10894,7 +10877,6 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			// horizontal / vertical
 			if (this.TypesList.includes(value)) {
 				this.Type = value;
-				//this.Mediator.publish('slider.type', this.TypesList, value);
 				this.reBuild(this.Type);
 			}
 		}
@@ -10968,37 +10950,6 @@ class UIKitSlider_Model {
 	getProperties() {
 		return this.Data;
 	}
-
-	/*set value(value){
- 	value = UIKit.Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
- 	this._value = value;
- }
- 	get value(){
- 	return this._value;
- }
- 	set maximum(value){
- 	this._maximum = value;
- }
- 	get maximum(){
- 	return this._maximum;
- }
- 	set minimum(value){
- 	this._minimum = value;
- }
- 	get minimum(){
- 	return this._minimum;
- }
- 	get coordinateSystem(){
- 	return this._cs;
- }
- 	set coordinateSystem(dom){
- 	if (!this._cs){
- 		this._cs = new UIKit.Core.UIKitCoordinateSystem(dom);
- 	}
- }
- 	resetCoordinateSystem(){
- 	this._cs = null;
- }*/
 }
 
 __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitSlider = UIKitSlider;
@@ -11745,6 +11696,95 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 // module
 exports.push([module.i, ".uikit-slider-rule {\n  position: relative;\n  display: flex;\n  justify-content: space-between;\n  cursor: default;\n  align-items: center;\n}\n.uikit-slider-rule div.rule-item {\n  position: absolute;\n}\n.uikit-slider-rule div.rule-item div {\n  font-family: Lato;\n  font-size: 11px;\n  color: #d1d1d1;\n  font-weight: bold;\n  cursor: pointer;\n}\n.uikit-slider-rule div.rule-item div:hover {\n  color: #e75735;\n}\n.uikit-slider-rule div.rule-item:first-child,\n.uikit-slider-rule div.rule-item:last-child {\n  position: relative;\n}\n.uikit-slider-rule.horizontal {\n  flex-direction: row;\n  margin-top: 3px;\n}\n.uikit-slider-rule.vertical {\n  flex-direction: column;\n  margin-left: 3px;\n}\n.uikit-slider-rule.vertical div.rule-item:first-child {\n  line-height: 7px;\n}\n.uikit-slider-rule.vertical div.rule-item:last-child {\n  line-height: 7px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(2);
+
+
+
+class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, mediator, type) {
+		super(dom, mediator, type);
+		var that = this;
+
+		this.Mediator.subscribe('model.value', function (modelData) {
+			var val = parseInt(that.element.val());
+			if (val !== NaN) {
+				that.element.val(modelData.value);
+			} else {
+				if (modelData.value !== val) {
+					that.element.val(modelData.value);
+				}
+			}
+		});
+
+		this.element.on('change.uikit.slider.input', function () {
+			if (that.element.val()) {
+				var val = parseInt(that.element.val());
+				if (val !== NaN) {
+					if (val !== that.Mediator.getData('model.value')) {
+						that.Mediator.setData('model.value', val);
+					}
+				}
+			}
+		});
+
+		this.stylize(this.Type);
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(35);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(1)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl", function() {
+			var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/stylus-loader/index.js!./index.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, ".uikit-slider-input {\n  position: relative;\n  height: 21px;\n  width: 100px;\n  background-color: #fff;\n  border: 1px solid #e5e5e5;\n  border-radius: 3px;\n  font-family: Lato;\n  font-size: 11px;\n  color: #e75735;\n  padding-left: 5px;\n  padding-right: 5px;\n  transition: box-shadow 0.2s, color 0.2s;\n}\n.uikit-slider-input:focus {\n  outline: none;\n  border-color: #e75735;\n  box-shadow: 0 2px 0 0 #e75735;\n}\n", ""]);
 
 // exports
 

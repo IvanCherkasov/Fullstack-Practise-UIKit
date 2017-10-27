@@ -134,22 +134,6 @@ class UIKitMediator{
 				data: data
 			});
 		});
-
-		/*if (this._model[property] !== undefined){
-			this._model[property] = value;
-			value = this._model[property]; //на случай если модель как-то фильтрует значения
-			this.publish(property, value);
-			if (this.isLogging){
-				this._logsList.forEach(function(log){
-					log('mediator set data', {
-						property: property,
-						data: value
-					});
-				});
-			}
-		} else {
-			
-		}*/
 	}
 
 	getData(property){
@@ -170,11 +154,6 @@ class UIKitMediator{
 			console.error('no such property named "' + property + '"');
 			return undefined;
 		}
-
-		/*
-		if (this._model[property] !== undefined){
-			return this._model[property];
-		}*/
 	}
 }
 

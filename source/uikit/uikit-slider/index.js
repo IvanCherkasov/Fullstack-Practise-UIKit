@@ -2,6 +2,7 @@ import './index.styl'
 import UIKit from '../uikit-core/index.js'
 import UIKitSlider_Track from './uikit-slider-track/index.js'
 import UIKitSlider_Rule from './uikit-slider-rule/index.js'
+import UIKitSlider_Input from './uikit-slider-input/index.js'
 
 class UIKitSlider extends UIKit.Core.UIKitElement {
 	constructor(dom){
@@ -53,6 +54,12 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 
 		this.Rule = new UIKitSlider_Rule(
 			this.element.find('.uikit-slider-rule'), 
+			this.Mediator,
+			this.Type
+			);
+
+		this.Input = new UIKitSlider_Input(
+			this.element.find('.uikit-slider-input'),
 			this.Mediator,
 			this.Type
 			);
@@ -135,7 +142,6 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		if (typeof value === 'string'){ // horizontal / vertical
 			if (this.TypesList.includes(value)){
 				this.Type = value;
-				//this.Mediator.publish('slider.type', this.TypesList, value);
 				this.reBuild(this.Type);
 			}
 		}
@@ -210,45 +216,6 @@ class UIKitSlider_Model {
 	getProperties(){
 		return this.Data;
 	}
-
-	/*set value(value){
-		value = UIKit.Core.UIKitMath.Clamp(value, this.minimum, this.maximum);
-		this._value = value;
-	}
-
-	get value(){
-		return this._value;
-	}
-
-	set maximum(value){
-		this._maximum = value;
-	}
-
-	get maximum(){
-		return this._maximum;
-	}
-
-	set minimum(value){
-		this._minimum = value;
-	}
-
-	get minimum(){
-		return this._minimum;
-	}
-
-	get coordinateSystem(){
-		return this._cs;
-	}
-
-	set coordinateSystem(dom){
-		if (!this._cs){
-			this._cs = new UIKit.Core.UIKitCoordinateSystem(dom);
-		}
-	}
-
-	resetCoordinateSystem(){
-		this._cs = null;
-	}*/
 }
 
 UIKit.Core.UIKitSlider = UIKitSlider;
