@@ -74,6 +74,7 @@ class UIKitElement {
 		if (dom !== undefined && dom !== null) {
 			var that = this;
 			this.element = dom;
+			this.Original = dom.clone();
 
 			if (mediator !== undefined && mediator !== null) {
 				this.Mediator = mediator;
@@ -87,6 +88,13 @@ class UIKitElement {
 
 	stylize(type) {
 		this.element.addClass(type);
+	}
+
+	safeRebuild(type) {
+		var baseClasses = this.Original.attr('class');
+		this.element.attr('class', '');
+		this.element.attr('class', baseClasses);
+		this.element.attr('class', this.element.attr('class') + type);
 	}
 }
 
@@ -10150,7 +10158,6 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		this.Type = 'horizontal';
-		this.Original = this.element.clone();
 		this.TypesList = ['horizontal', 'vertical'];
 		var that = this;
 		if (this.element.attr('type') !== undefined) {
