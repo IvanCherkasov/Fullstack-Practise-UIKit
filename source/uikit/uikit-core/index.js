@@ -3,6 +3,7 @@ class UIKitElement{// AbstractBase
 		if (dom !== undefined && dom !== null){
 			var that = this;
 			this.element = dom;
+			this.Original = dom.clone();
 
 			if (mediator !== undefined && mediator !== null){
 				this.Mediator = mediator;
@@ -17,6 +18,13 @@ class UIKitElement{// AbstractBase
 
 	stylize(type){
 		this.element.addClass(type);
+	}
+
+	safeRebuild(type){
+		var baseClasses = this.Original.attr('class');
+		this.element.attr('class', '');
+		this.element.attr('class', baseClasses);
+		this.element.attr('class', this.element.attr('class') + type);
 	}
 }
 
@@ -157,12 +165,20 @@ class UIKitMediator{
 	}
 }
 
-class UIKitLogger{
-	constructor(){
-
+//типа абстрактый класс
+class UIKitModel{
+	constructor(data){
+		this.Data = {}
+		if (data){
+			if (data !== null){
+				this.Data = data;
+			}
+		}
 	}
 
+	getData(property){}
 
+	setData(property, data){}
 }
 
 var UIKit = {
@@ -171,7 +187,7 @@ var UIKit = {
 		UIKitMath: UIKitMath,
 		UIKitCoordinateSystem: UIKitCoordinateSystem,
 		UIKitMediator: UIKitMediator,
-		UIKitLogger: UIKitLogger
+		UIKitModel: UIKitModel
 	}
 }
 export default UIKit;

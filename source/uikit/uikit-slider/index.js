@@ -11,7 +11,6 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			throw new ReferenceError('Элемент не является слайдером');
 		}
 		this.Type = 'horizontal';
-		this.Original = this.element.clone();
 		this.TypesList = ['horizontal', 'vertical'];
 		var that = this;
 		if (this.element.attr('type') !== undefined){
@@ -148,15 +147,9 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 	}
 }
 
-class UIKitSlider_Model {
+class UIKitSlider_Model extends UIKit.Core.UIKitModel{
 	constructor(){
-		var that = this;
-		this._value = 0;
-		this._minimum = 0;
-		this._maximum = 0;
-		this._cs = null;
-
-		this.Data = {
+		super({
 			_value: 0,
 			_minimum: 0,
 			_maximum: 0,
@@ -173,8 +166,8 @@ class UIKitSlider_Model {
 			get coordinateSystem(){
 				return this._cs;
 			}
-		}
-
+		});
+		var that = this;
 	}
 
 	getData(property){
@@ -213,9 +206,6 @@ class UIKitSlider_Model {
 		}
 	}
 
-	getProperties(){
-		return this.Data;
-	}
 }
 
 UIKit.Core.UIKitSlider = UIKitSlider;

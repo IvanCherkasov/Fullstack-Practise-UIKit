@@ -1,0 +1,23 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+	head
+		meta(charset="utf-8")
+		meta(viewport="width=device-width")
+		title UIKit - Slider
+	body
+		a(href='../') Back
+		br
+		br
+		br
+		div(style="height: 200px; width 150px; display: flex; justify-content: space-evenly; flex-direction: column;")
+			+addUIKit_Slider('uikit-slider-id', 'horizontal', -30, 30, 0, true, 5)
+			+addUIKit_Slider('uikit-slider-id-hor', 'horizontal',  0, 100, 33, true, 7)
+		br
+		input(id='slider-change-btn-id' type='button' style="height: 12px; width: 36px;")
+		br
+		div(style="height: 250px; width 150px; display: flex; justify-content: space-evenly;")
+			+addUIKit_Slider('uikit-slider-id-vertical', 'vertical', -30, 30, 15, true, 5)
+			+addUIKit_Slider('uikit-slider-id-verticalt', 'vertical', -30, 30, -10, true, 4)
+			+addUIKit_Slider('uikit-slider-id-verticalth', 'vertical', -30, 30, 0, true, 7)

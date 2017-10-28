@@ -2,6 +2,7 @@
 const path = require('path');
 const webpack  = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const PATHS = {
     source: path.join(__dirname, 'source'),
@@ -10,7 +11,11 @@ const PATHS = {
 
 module.exports = {
     context: PATHS.source,
-    entry: './index',
+    entry: {
+        main: './index',
+        slider: './pages/slider/index',
+        button: './pages/button/index'
+    },
     output:{
         path: PATHS.build,
         filename: '[name].js'
@@ -28,10 +33,16 @@ module.exports = {
             }
         },{
             test: /\.css$/,
-            loader: 'style-loader!css-loader'
+            loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader']
+            })
         },{
             test: /\.styl$/,
-            loader: 'style-loader!css-loader!stylus-loader'
+            loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'stylus-loader']
+            })
         },{
             test: /\.(png|jpg|svg)$/,
             loader: 'url-loader?name=pic/[name].[ext]&limit=4096'
@@ -43,11 +54,24 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: PATHS.source + '/index.pug'
+            template: PATHS.source + '/index.pug',
+            filename: PATHS.build + '/index.html',
+            chunks: ['main']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/slider/index.pug',
+            filename: PATHS.build + '/slider/index.html',
+            chunks: ['slider']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/button/index.pug',
+            filename: PATHS.build + '/button/index.html',
+            chunks: ['button']
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery'
-        })
+        }),
+        new ExtractTextPlugin('style.css')
     ]
 }

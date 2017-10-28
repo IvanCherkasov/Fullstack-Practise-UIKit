@@ -1,0 +1,7 @@
+include ./uikit-button-caption/index.pug
+include ./uikit-button-radial/index.pug
+
+mixin addUIKitButton(caption, colors)
+	div.uikit-button(colors=colors)
+		+addUIKitButton_Caption(caption)
+		+addUIKitButton_Radial()

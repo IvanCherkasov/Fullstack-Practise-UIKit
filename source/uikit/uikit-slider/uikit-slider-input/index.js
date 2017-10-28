@@ -7,7 +7,7 @@ class UIKitSlider_Input extends UIKit.Core.UIKitElement{
 		var that = this;
 
 		this.Mediator.subscribe('model.value', function(modelData){
-			var val = parseInt(that.element.val());
+			var val = parseInt(that.element.val(), 10);
 			if (val !== NaN){
 				that.element.val(modelData.value);
 			}
@@ -20,7 +20,7 @@ class UIKitSlider_Input extends UIKit.Core.UIKitElement{
 
 		this.element.on('change.uikit.slider.input', function(){
 			if (that.element.val()){
-				var val = parseInt(that.element.val());
+				var val = parseInt(that.element.val(), 10);
 				if (val !== NaN){
 					if (val !== that.Mediator.getData('model.value')){
 						that.Mediator.setData('model.value', val);

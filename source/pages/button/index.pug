@@ -1,13 +1,13 @@
-include ./mixins.pug
+include ../../mixins.pug
 
 doctype html
 html(lang='ru')
 	head
 		meta(charset="utf-8")
 		meta(viewport="width=device-width")
-		title UI Kit
+		title UIKit - Button
 	body
 		div
-			a(href='./slider') Slider
-		div
-			a(href='./button') Button
+			a(href='../') Back
+		br
+		+addUIKitButton('Button')
