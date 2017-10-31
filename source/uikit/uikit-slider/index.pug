@@ -3,7 +3,7 @@ include ./uikit-slider-rule/index.pug
 include ./uikit-slider-input/index.pug
 
 mixin addUIKit_Slider(id, type, minimum, maximum, value, ruleEnabled, ruleSegments)
-	div.uikit-slider(id=id, maximum=maximum, minimum=minimum, value=value, type=type)
+	div.uikit.uikit-slider(id=id, maximum=maximum, minimum=minimum, value=value, type=type)
 		+addUIKitSlider_Track()
 		+addUIKitSlider_Rule(ruleEnabled, ruleSegments)
 		+addUIKitSlider_Input()
