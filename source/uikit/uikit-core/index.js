@@ -30,6 +30,21 @@ class UIKitElement{// AbstractBase
 		this.element.attr('class', this.element.attr('class') + type);
 	}
 
+	clearStyle(){
+		var that = this;
+		UIKit.styles.forEach(function(item){
+			that.element.removeClass(item);
+		});
+	}
+
+	set style(name){
+		var that = this;
+		if (UIKit.styles.includes(name)){
+			this.clearStyle();
+			that.element.addClass(name);
+		}
+	}
+
 	//полное перестроение элемента
 	//каждый элемент сам решает как ему перестроиться
 	rebuild(){}
@@ -214,28 +229,7 @@ jsonObject.forEach(function(item){
 				break;
 			}
 		}
-
-		/*item['selectors'].forEach(function(selector){
-			var ok = false;
-			if (selector.search('uikit-style-') > -1){
-				var strings = selector.split('.');
-				strings.forEach(function(str){
-					if (str.search('uikit-style-') > -1){
-						styles.push(str.trim());
-						throw BreakException;
-					}
-				});
-				throw BreakException;
-			}
-		});*/
 	}
-	//item['selectors'].forEach(function(selector){
-		//var sels = selector.split('.');
-		//if (sels)
-		//console.log(selector);
-	//});
-	//if (item['selectors'].search())
-	//styles.push(item['selectors'][0].split('.')[1].trim());
 });
 
 console.log(styles);

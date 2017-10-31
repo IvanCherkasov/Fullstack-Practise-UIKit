@@ -41,23 +41,6 @@ class UIKitButton extends UIKit.Core.UIKitElement{
 	set caption(value){
 		this.Mediator.publish('button.caption', value);
 	}
-
-	set style(name){
-		var that = this;
-		console.log(name, UIKit.styles, UIKit.styles.includes(name));
-		if (UIKit.styles.includes(name)){
-			console.log('ok');
-			this.clearStyle();
-			that.element.addClass(name);
-		}
-	}
-
-	clearStyle(){
-		var that = this;
-		UIKit.styles.forEach(function(item){
-			that.element.removeClass(item);
-		});
-	}
 }
 
 //Пустая модель

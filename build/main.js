@@ -102,6 +102,21 @@ class UIKitElement {
 		this.element.attr('class', this.element.attr('class') + type);
 	}
 
+	clearStyle() {
+		var that = this;
+		UIKit.styles.forEach(function (item) {
+			that.element.removeClass(item);
+		});
+	}
+
+	set style(name) {
+		var that = this;
+		if (UIKit.styles.includes(name)) {
+			this.clearStyle();
+			that.element.addClass(name);
+		}
+	}
+
 	//полное перестроение элемента
 	//каждый элемент сам решает как ему перестроиться
 	rebuild() {}
@@ -286,28 +301,7 @@ jsonObject.forEach(function (item) {
 				break;
 			}
 		}
-
-		/*item['selectors'].forEach(function(selector){
-  	var ok = false;
-  	if (selector.search('uikit-style-') > -1){
-  		var strings = selector.split('.');
-  		strings.forEach(function(str){
-  			if (str.search('uikit-style-') > -1){
-  				styles.push(str.trim());
-  				throw BreakException;
-  			}
-  		});
-  		throw BreakException;
-  	}
-  });*/
 	}
-	//item['selectors'].forEach(function(selector){
-	//var sels = selector.split('.');
-	//if (sels)
-	//console.log(selector);
-	//});
-	//if (item['selectors'].search())
-	//styles.push(item['selectors'][0].split('.')[1].trim());
 });
 
 console.log(styles);
@@ -10182,10 +10176,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_js__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_js__ = __webpack_require__(28);
 
 
 
 // Slider
+
 
 
 
@@ -11009,23 +11005,6 @@ class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	set caption(value) {
 		this.Mediator.publish('button.caption', value);
 	}
-
-	set style(name) {
-		var that = this;
-		console.log(name, __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles, __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.includes(name));
-		if (__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.includes(name)) {
-			console.log('ok');
-			this.clearStyle();
-			that.element.addClass(name);
-		}
-	}
-
-	clearStyle() {
-		var that = this;
-		__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.forEach(function (item) {
-			that.element.removeClass(item);
-		});
-	}
 }
 
 //Пустая модель
@@ -11108,6 +11087,171 @@ class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 
 /***/ }),
 /* 27 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index_js__ = __webpack_require__(30);
+
+
+
+
+class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom) {
+		super(dom);
+		if (!this.element.hasClass('uikit-radial-progress')) {
+			throw new ReferenceError('Элемент не является радиальным прогресс баром');
+		}
+		var that = this;
+
+		this.Model = new UIKitRadialProgress_Model();
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
+		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+
+		this.Mediator.subscribe('model.value', function (modelData) {
+			that.element.attr('value', modelData.value);
+		});
+
+		this.Mediator.subscribe('model.minimum', function (modelData) {
+			that.element.attr('minimum', modelData.minimum);
+		});
+
+		this.Mediator.subscribe('model.maximum', function (modelData) {
+			that.element.attr('maximum', modelData.maximum);
+		});
+
+		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index_js__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.Mediator);
+
+		this.Mediator.subscribe('model.value', function (modelData) {
+			var item_right = that.element.find('.progress-right');
+			var item_left = that.element.find('.progress-left');
+			var percent = Math.abs(modelData.value - modelData.minimum) / (modelData.maximum - modelData.minimum) * 100;
+			var value = Math.round(percent * 360 / 100);
+			if (value <= 180 && value >= 0) {
+				item_right.css('transform', 'rotate(' + value + 'deg)');
+				item_left.css('transform', 'rotate(180deg)');
+			} else if (value <= 360 && value > 180) {
+				item_right.css('transform', 'rotate(180deg)');
+				item_left.css('transform', 'rotate(' + value + 'deg)');
+			}
+		});
+
+		this.element.on('dragstart', function () {
+			return false;
+		});
+
+		this.element.on('selectstart', function () {
+			return false;
+		});
+
+		this.value = Number(this.element.attr('value'));
+	}
+
+	get value() {
+		return this.Mediator.getData('model.value');
+	}
+
+	set value(val) {
+		this.Mediator.setData('model.value', val);
+	}
+}
+
+class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+	constructor() {
+		super({
+			_value: 0,
+			_minimum: 0,
+			_maximum: 0,
+			get value() {
+				return this._value;
+			},
+			get minimum() {
+				return this._minimum;
+			},
+			get maximum() {
+				return this._maximum;
+			}
+		});
+	}
+
+	getData(property) {
+		switch (property) {
+			case 'value':
+				return this.Data.value;
+			case 'minimum':
+				return this.Data.minimum;
+			case 'maximum':
+				return this.Data.maximum;
+			default:
+				return undefined;
+		}
+	}
+
+	setData(property, data) {
+		switch (property) {
+			case 'value':
+				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+				this.Data._value = value;
+				return true;
+			case 'minimum':
+				this.Data._minimum = data;
+				return true;
+			case 'maximum':
+				this.Data._maximum = data;
+				return true;
+			default:
+				return false;
+		}
+	}
+}
+
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+
+
+
+class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, mediator) {
+		super(dom, mediator);
+		var that = this;
+
+		var print = function (value) {
+			that.element.text(value);
+		};
+
+		this.Mediator.subscribe('model.value', function (modelData) {
+			print(modelData.value);
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress_Caption);
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

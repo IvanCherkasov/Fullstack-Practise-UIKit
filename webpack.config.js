@@ -12,9 +12,10 @@ const PATHS = {
 module.exports = {
     context: PATHS.source,
     entry: {
-        main: './index',
-        slider: './pages/slider/index',
-        button: './pages/button/index'
+        'main': './index',
+        'slider': './pages/slider/index',
+        'button': './pages/button/index',
+        'radial-progress': './pages/radial-progress/index'
     },
     output:{
         path: PATHS.build,
@@ -67,6 +68,11 @@ module.exports = {
             template: PATHS.source + '/pages/button/index.pug',
             filename: PATHS.build + '/button/index.html',
             chunks: ['button']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/radial-progress/index.pug',
+            filename: PATHS.build + '/radial-progress/index.html',
+            chunks: ['radial-progress']
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

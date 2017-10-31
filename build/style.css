@@ -373,3 +373,50 @@ div.uikit.uikit-style-lightblue,
     transform: scale(3);
   }
 }
+.uikit-radial-progress {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.uikit-radial-progress .wrapper-right {
+  width: inherit;
+  height: inherit;
+  position: absolute;
+  clip: rect(0px, 100px, 100px, 50px);
+  background-color: transparent;
+}
+.uikit-radial-progress .wrapper-right .progress-right {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  position: absolute;
+  border-radius: 50%;
+  border: 5px solid var(--color-1);
+  background-color: transparent;
+  clip: rect(0px, 50px, 100px, 0px);
+  transform: rotate(0deg);
+}
+.uikit-radial-progress .wrapper-left {
+  width: inherit;
+  height: inherit;
+  position: absolute;
+  clip: rect(0px, 50px, 100px, 0px);
+  background-color: transparent;
+}
+.uikit-radial-progress .wrapper-left .progress-left {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  position: absolute;
+  border-radius: 50%;
+  border: 5px solid var(--color-1);
+  background-color: transparent;
+  clip: rect(0px, 50px, 100px, 0px);
+  transform: rotate(180deg);
+}
+.uikit-radial-progress-caption {
+  font-family: Lato;
+  color: #9d9d9d;
+  font-size: 40px;
+  font-weight: 200;
+}
