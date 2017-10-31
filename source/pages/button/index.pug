@@ -10,4 +10,17 @@ html(lang='ru')
 		div
 			a(href='../') Back
 		br
-		+addUIKitButton('Button')
+		div(style='height: 36px; width: 100px;')
+			select(id="style-select-id")
+		br
+		br
+		div(style='width: 80px; height: 28px;')
+			+addUIKitButton('Button 1', 'uikit-button-id')
+		br
+		br
+		div(style='width: 80px; height: 28px;')
+			+addUIKitButton('Button 2', 'uikit-button-id-2')
+		br
+		br
+		div(style='width: 80px; height: 28px;')
+			+addUIKitButton('Button 3', 'uikit-button-id-3')

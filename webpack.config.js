@@ -73,5 +73,11 @@ module.exports = {
             jQuery: 'jquery'
         }),
         new ExtractTextPlugin('style.css')
-    ]
+    ],
+
+    resolveLoader:{
+        alias:{
+            'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js')
+        }
+    }
 }

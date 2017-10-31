@@ -40,6 +40,38 @@ html {
   -ms-user-select: none /* Internet Explorer/Edge */;
   user-select: none;
 }
+/*.uikit-aqua
+	.uikit
+	& div.uikit
+		--color-1 #4EB7A8
+		--color-2 #28A290
+
+.uikit-lightred
+	.uikit
+	& div.uikit
+		--color-1 #E75735
+		--color-2 #BF3E1F
+		
+.uikit-lightblue
+	.uikit
+	& div.uikit
+		--color-1 #5b63ff
+		--color-2 #343891*/
+div.uikit.uikit-style-aqua,
+.uikit-style-aqua .uikit {
+  --color-1: #4eb7a8;
+  --color-2: #28a290;
+}
+div.uikit.uikit-style-lightred,
+.uikit-style-lightred .uikit {
+  --color-1: #e75735;
+  --color-2: #bf3e1f;
+}
+div.uikit.uikit-style-lightblue,
+.uikit-style-lightblue .uikit {
+  --color-1: #5b63ff;
+  --color-2: #343891;
+}
 .uikit-slider {
   position: relative;
   width: auto;
@@ -270,4 +302,74 @@ html {
   outline: none;
   border-color: #e75735;
   box-shadow: 0 2px 0 0 #e75735;
+}
+.uikit-button {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid var(--color-1);
+  border-radius: 3px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0px 0px var(--color-1);
+  color: var(--color-1);
+  transition: 0.2s;
+  overflow: hidden;
+}
+.uikit-button:hover {
+  box-shadow: 0 3px 0px 0px var(--color-2);
+  background-color: var(--color-1);
+  color: #fff;
+}
+.uikit-button:active {
+  box-shadow: 0 0px 0px 0px var(--color-2);
+}
+.uikit-button-caption {
+  font-family: Lato;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+  margin: auto 0;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.uikit-button-effect {
+  position: absolute;
+  border-radius: 50%;
+  width: 0px;
+  height: 0px;
+  top: 25px;
+  left: 20px;
+  background-color: #fff;
+  opacity: 1;
+  transform: scale(0);
+}
+.uikit-button-effect.animate {
+  animation: radial 0.5s linear;
+}
+@-moz-keyframes radial {
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+@-webkit-keyframes radial {
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+@-o-keyframes radial {
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+@keyframes radial {
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
 }

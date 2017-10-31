@@ -1,44 +1,29 @@
 import './index.styl'
-import './colors.styl'
 import UIKit from '../uikit-core/index.js'
 import UIKitButton_Caption from './uikit-button-caption/index.js'
-import UIKitButton_Radial from './uikit-button-radial/index.js'
+import UIKitButton_Effect from './uikit-button-effect/index.js'
 
 class UIKitButton extends UIKit.Core.UIKitElement{
 	constructor(dom){
 		super(dom);
 		var that = this;
-
-		this.TypesList = ['aqua', 'lightred'];
-		if (!this.element.attr('colors')){
-			if (!this.TypesList.includes(this.element.attr('colors'))){
-				this.element.attr('colors', 'aqua');
-				this.Type = 'aqua';
-			} else {
-				this.Type = this.element.attr('colors');
-			}
-		} else {
-			this.element.attr('colors', 'aqua');
-			this.Type = 'aqua';
-		}
+		var style = '';
 
 		this.Model = new UIKitButton_Model();
 		this.Mediator = new UIKit.Core.UIKitMediator(this.Model);
 
 		this.Caption = new UIKitButton_Caption(
 			this.element.find('.uikit-button-caption'),
-			this.Model,
-			this.Type
+			this.Mediator
 			);
 
-		this.Radial = new UIKitButton_Radial(
-			this.element.find('.uikit-button-radial'),
-			this.Model,
-			this.Type
+		this.Radial = new UIKitButton_Effect(
+			this.element.find('.uikit-button-effect'),
+			this.Mediator
 			);
 
 		this.element.on('click', function(event){
-			that.Mediator.publish('button.click', event); //запуск анимации у элемента radial
+			that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
 			event.stopPropagation();
 		});
 
@@ -50,35 +35,36 @@ class UIKitButton extends UIKit.Core.UIKitElement{
 			that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
 		});
 
-		this.Mediator.subscribe('element.safeRebuild', function(type){
-			this.safeRebuild(type);
-		});
-
-		this.stylize(this.Type);
+		this.caption = this.element.attr('caption');
 	}
 
 	set caption(value){
 		this.Mediator.publish('button.caption', value);
 	}
 
-	set colors(type){
-		if (typeof type === 'string'){
-			if (this.TypesList.includes(type)){
-				this.Type = type;
-				this.Mediator.publish('element.safeRebuild', type);
-			}
+	set style(name){
+		var that = this;
+		console.log(name, UIKit.styles, UIKit.styles.includes(name));
+		if (UIKit.styles.includes(name)){
+			console.log('ok');
+			this.clearStyle();
+			that.element.addClass(name);
 		}
 	}
 
-	get colors(){
-		return this.Type;
+	clearStyle(){
+		var that = this;
+		UIKit.styles.forEach(function(item){
+			that.element.removeClass(item);
+		});
 	}
 }
 
-
 //Пустая модель
-class UIKitButton_Model extends UIKitModel{
+class UIKitButton_Model extends UIKit.Core.UIKitModel{
 	constructor(){
 		super();
 	}
 }
+
+UIKit.Core.UIKitButton = UIKitButton;

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 21);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,6 +68,10 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__);
+
+
 class UIKitElement {
 	// AbstractBase
 	constructor(dom, mediator, type) {
@@ -90,12 +94,17 @@ class UIKitElement {
 		this.element.addClass(type);
 	}
 
+	//смена класса
 	safeRebuild(type) {
 		var baseClasses = this.Original.attr('class');
 		this.element.attr('class', '');
 		this.element.attr('class', baseClasses);
 		this.element.attr('class', this.element.attr('class') + type);
 	}
+
+	//полное перестроение элемента
+	//каждый элемент сам решает как ему перестроиться
+	rebuild() {}
 }
 
 class UIKitMath {
@@ -247,9 +256,61 @@ class UIKitModel {
 	}
 
 	getData(property) {}
-
 	setData(property, data) {}
 }
+
+var BreakException = {};
+var style = '';
+var styles = [];
+var rawObject = __webpack_require__(5);
+var jsonObject = JSON.parse(rawObject.raw);
+jsonObject.forEach(function (item) {
+	if (Array.isArray(item['selectors'])) {
+		for (var i = 0; i < item['selectors'].length; i++) {
+
+			var ok = false;
+			var selector = item['selectors'][i];
+			if (selector.search('uikit-style-') > -1) {
+				var strings = selector.split('.');
+				for (var j = 0; j < strings.length; j++) {
+					if (strings[j].search('uikit-style-') > -1) {
+						styles.push(strings[j].trim());
+						ok = true;
+					}
+					if (ok) {
+						break;
+					}
+				}
+			}
+			if (ok) {
+				break;
+			}
+		}
+
+		/*item['selectors'].forEach(function(selector){
+  	var ok = false;
+  	if (selector.search('uikit-style-') > -1){
+  		var strings = selector.split('.');
+  		strings.forEach(function(str){
+  			if (str.search('uikit-style-') > -1){
+  				styles.push(str.trim());
+  				throw BreakException;
+  			}
+  		});
+  		throw BreakException;
+  	}
+  });*/
+	}
+	//item['selectors'].forEach(function(selector){
+	//var sels = selector.split('.');
+	//if (sels)
+	//console.log(selector);
+	//});
+	//if (item['selectors'].search())
+	//styles.push(item['selectors'][0].split('.')[1].trim());
+});
+
+console.log(styles);
 
 var UIKit = {
 	Core: {
@@ -258,9 +319,27 @@ var UIKit = {
 		UIKitCoordinateSystem: UIKitCoordinateSystem,
 		UIKitMediator: UIKitMediator,
 		UIKitModel: UIKitModel
+	},
+	set style(name) {
+		if (styles.includes(name)) {
+			styles.forEach(function (item) {
+				$('body').removeClass(item);
+			});
+			$('body').addClass(name);
+			style = name;
+		}
+	},
+	get style() {
+		return style;
+	},
+	get styles() {
+		return styles;
 	}
 };
+
+UIKit.style = styles[0]; //default
 /* harmony default export */ __webpack_exports__["a"] = (UIKit);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 1 */
@@ -10101,11 +10180,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_js__ = __webpack_require__(22);
 
 
 
 // Slider
+
 
 
 //TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
@@ -10136,15 +10217,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+exports.raw = "[\n\t{\n\t\t\"type\": \"comment\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t}\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#28a290\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-aqua\",\n\t\t\t\".uikit-style-aqua .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#bf3e1f\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightred\",\n\t\t\t\".uikit-style-lightred .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#5b63ff\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#343891\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightblue\",\n\t\t\t\".uikit-style-lightblue .uikit\"\n\t\t]\n\t}\n]"
+
+/***/ }),
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(5);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__ = __webpack_require__(20);
 
 
 
@@ -10348,21 +10441,21 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(7);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__ = __webpack_require__(14);
 
 
 
@@ -10438,20 +10531,20 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(12);
 
 
 
@@ -10560,17 +10653,17 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
 
@@ -10623,20 +10716,20 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__ = __webpack_require__(16);
 
 
 
@@ -10653,17 +10746,17 @@ class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
 
@@ -10709,17 +10802,17 @@ class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
 
@@ -10814,17 +10907,17 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
 
@@ -10864,20 +10957,189 @@ class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 20 */,
-/* 21 */
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index_js__ = __webpack_require__(26);
+
+
+
+
+
+class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom) {
+		super(dom);
+		var that = this;
+		var style = '';
+
+		this.Model = new UIKitButton_Model();
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+
+		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__["a" /* default */](this.element.find('.uikit-button-caption'), this.Mediator);
+
+		this.Radial = new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index_js__["a" /* default */](this.element.find('.uikit-button-effect'), this.Mediator);
+
+		this.element.on('click', function (event) {
+			that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
+			event.stopPropagation();
+		});
+
+		this.element.on('mouseenter', function () {
+			that.Mediator.publish('button.hover', true); //обработка наведения там, где это невозможно сдлать через стили
+		});
+
+		this.element.on('mouseleave', function () {
+			that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
+		});
+
+		this.caption = this.element.attr('caption');
+	}
+
+	set caption(value) {
+		this.Mediator.publish('button.caption', value);
+	}
+
+	set style(name) {
+		var that = this;
+		console.log(name, __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles, __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.includes(name));
+		if (__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.includes(name)) {
+			console.log('ok');
+			this.clearStyle();
+			that.element.addClass(name);
+		}
+	}
+
+	clearStyle() {
+		var that = this;
+		__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].styles.forEach(function (item) {
+			that.element.removeClass(item);
+		});
+	}
+}
+
+//Пустая модель
+class UIKitButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+	constructor() {
+		super();
+	}
+}
+
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitButton = UIKitButton;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+
+
+
+class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, mediator) {
+		super(dom, mediator);
+		var that = this;
+
+		this.Mediator.subscribe('button.caption', function (caption) {
+			that.element.text(caption);
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Caption);
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+
+
+
+class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom, mediator) {
+		super(dom, mediator);
+		var that = this;
+
+		this.Mediator.subscribe('button.click', function (event) {
+			//включение анимации
+			var target = $(event.currentTarget);
+			var offset = target.offset();
+			var x = event.pageX - offset.left;
+			var y = event.pageY - offset.top;
+			that.element.removeClass('animate');
+			var size = Math.max(target.outerWidth(), target.outerHeight());
+			that.element.css("top", y - size / 2).css("left", x - size / 2).css("width", size).css("height", size);
+			that.element.addClass("animate");
+		});
+	}
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Effect);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 28 */,
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(2);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(2);
 
+
+var btnKit = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id'));
+var btnKit2 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-2'));
+var btnKit3 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-3'));
+var select = $('#style-select-id');
+
+__WEBPACK_IMPORTED_MODULE_0__index_js__["default"].styles.forEach(function (item) {
+  select.append($('<option>', {
+    value: item,
+    text: item
+  }));
+});
+
+select.on('change', function () {
+  __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].style = select.val();
+});
+
+btnKit2.style = 'uikit-style-lightred';
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })
 /******/ ]);

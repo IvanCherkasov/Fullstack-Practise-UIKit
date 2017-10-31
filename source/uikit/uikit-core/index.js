@@ -1,3 +1,5 @@
+import './uikit-styles.styl'
+
 class UIKitElement{// AbstractBase
 	constructor(dom, mediator, type){
 		if (dom !== undefined && dom !== null){
@@ -20,12 +22,17 @@ class UIKitElement{// AbstractBase
 		this.element.addClass(type);
 	}
 
+	//смена класса
 	safeRebuild(type){
 		var baseClasses = this.Original.attr('class');
 		this.element.attr('class', '');
 		this.element.attr('class', baseClasses);
 		this.element.attr('class', this.element.attr('class') + type);
 	}
+
+	//полное перестроение элемента
+	//каждый элемент сам решает как ему перестроиться
+	rebuild(){}
 }
 
 class UIKitMath{
@@ -177,9 +184,61 @@ class UIKitModel{
 	}
 
 	getData(property){}
-
 	setData(property, data){}
 }
+
+var BreakException = {};
+var style = '';
+var styles = []
+var rawObject = require('!!to-raw-loader!css-as-json-loader!stylus-loader!./uikit-styles.styl');
+var jsonObject = JSON.parse(rawObject.raw);
+jsonObject.forEach(function(item){
+	if (Array.isArray(item['selectors'])){
+		for(var i = 0; i < item['selectors'].length; i++){
+
+			var ok = false;
+			var selector = item['selectors'][i];
+			if (selector.search('uikit-style-') > -1){
+				var strings = selector.split('.');
+				for (var j = 0; j < strings.length; j++){
+					if (strings[j].search('uikit-style-') > -1){
+						styles.push(strings[j].trim());
+						ok = true;
+					}
+					if (ok){
+						break;
+					}
+				}
+			}
+			if (ok){
+				break;
+			}
+		}
+
+		/*item['selectors'].forEach(function(selector){
+			var ok = false;
+			if (selector.search('uikit-style-') > -1){
+				var strings = selector.split('.');
+				strings.forEach(function(str){
+					if (str.search('uikit-style-') > -1){
+						styles.push(str.trim());
+						throw BreakException;
+					}
+				});
+				throw BreakException;
+			}
+		});*/
+	}
+	//item['selectors'].forEach(function(selector){
+		//var sels = selector.split('.');
+		//if (sels)
+		//console.log(selector);
+	//});
+	//if (item['selectors'].search())
+	//styles.push(item['selectors'][0].split('.')[1].trim());
+});
+
+console.log(styles);
 
 var UIKit = {
 	Core: {
@@ -188,6 +247,23 @@ var UIKit = {
 		UIKitCoordinateSystem: UIKitCoordinateSystem,
 		UIKitMediator: UIKitMediator,
 		UIKitModel: UIKitModel
+	},
+	set style(name){
+		if (styles.includes(name)){
+			styles.forEach(function(item){
+				$('body').removeClass(item);
+			});
+			$('body').addClass(name);
+			style = name;
+		}
+	},
+	get style(){
+		return style;
+	},
+	get styles(){
+		return styles;
 	}
 }
+
+UIKit.style = styles[0]; //default
 export default UIKit;

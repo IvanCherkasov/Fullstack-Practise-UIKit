@@ -3,6 +3,7 @@ import UIKit from './uikit/uikit-core/index.js'
 
 // Slider
 import './uikit/uikit-slider/index.js'
+import './uikit/uikit-button/index.js'
 
 //TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
 //		придумать куда его впихнуть
