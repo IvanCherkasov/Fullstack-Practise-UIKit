@@ -1,0 +1,78 @@
+.uikit-arrow-button
+	position relative
+	border-radius 50%
+	background-color white
+	border 3px solid var(--color-1)
+	width 42px
+	height 42px
+	transition background-color 0.2s
+	cursor pointer
+	
+.uikit-arrow-button.disabled
+	background-color #e4e4e4
+	border-color #e4e4e4
+	cursor default
+	
+.uikit-arrow-button.disabled::after
+	background-color white !important
+	cursor default !important
+	
+.uikit-arrow-button.disabled::before
+	background-color white !important
+	cursor default !important
+	 
+.uikit-arrow-button.right::after
+	content ""
+	position absolute
+	background-color var(--color-1)
+	width 18px
+	height 4px
+	top 14px
+	left 14px
+	transform rotate(45deg)
+	transition background-color 0.2s
+
+.uikit-arrow-button.right::before
+	content ""
+	position absolute
+	background-color var(--color-1)
+	width 18px
+	height 4px
+	top 24px
+	left 14px
+	transform rotate(-45deg)
+	transition background-color 0.2s
+	
+.uikit-arrow-button.left::after
+	content ""
+	position absolute
+	background-color var(--color-1)
+	width 18px
+	height 4px
+	top 14px
+	left 14px
+	transform rotate(45deg)
+	transition background-color 0.2s
+	
+.uikit-arrow-button.left::before
+	content ""
+	position absolute
+	background-color var(--color-1)
+	width 18px
+	height 4px
+	top 24px
+	left 14px
+	transform rotate(-45deg)
+	transition background-color 0.2s
+
+.uikit-arrow-button.left
+	transform scale(-1, 1)
+
+.uikit-arrow-button:not(.disabled):hover
+	background-color var(--color-1)
+
+.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::after
+	background-color white
+
+.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::before
+	background-color white

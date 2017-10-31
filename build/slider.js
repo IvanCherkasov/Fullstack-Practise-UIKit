@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 34);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,6 +79,7 @@ class UIKitElement {
 			var that = this;
 			this.element = dom;
 			this.Original = dom.clone();
+			this.Enabled = true;
 
 			if (mediator !== undefined && mediator !== null) {
 				this.Mediator = mediator;
@@ -94,12 +95,14 @@ class UIKitElement {
 		this.element.addClass(type);
 	}
 
-	//смена класса
-	safeRebuild(type) {
-		var baseClasses = this.Original.attr('class');
-		this.element.attr('class', '');
-		this.element.attr('class', baseClasses);
-		this.element.attr('class', this.element.attr('class') + type);
+	//смена Типа
+	acceptType(type) {
+		if (!this.element.hasClass(type)) {
+			var baseClasses = this.Original.attr('class');
+			this.element.attr('class', '');
+			this.element.attr('class', baseClasses);
+			this.element.addClass(type);
+		}
 	}
 
 	clearStyle() {
@@ -114,6 +117,27 @@ class UIKitElement {
 		if (UIKit.styles.includes(name)) {
 			this.clearStyle();
 			that.element.addClass(name);
+			if (this.Mediator) {
+				this.Mediator.publish('element.style', name);
+			}
+		}
+	}
+
+	get enabled() {
+		return this.Enabled;
+	}
+
+	set enabled(val) {
+		if (typeof val === 'boolean') {
+			this.Enabled = val;
+			if (val) {
+				this.element.removeClass('disabled');
+			} else {
+				this.element.addClass('disabled');
+			}
+			if (this.Mediator) {
+				this.Mediator.publish('element.enabled', val);
+			}
 		}
 	}
 
@@ -274,7 +298,6 @@ class UIKitModel {
 	setData(property, data) {}
 }
 
-var BreakException = {};
 var style = '';
 var styles = [];
 var rawObject = __webpack_require__(5);
@@ -282,7 +305,6 @@ var jsonObject = JSON.parse(rawObject.raw);
 jsonObject.forEach(function (item) {
 	if (Array.isArray(item['selectors'])) {
 		for (var i = 0; i < item['selectors'].length; i++) {
-
 			var ok = false;
 			var selector = item['selectors'][i];
 			if (selector.search('uikit-style-') > -1) {
@@ -10177,10 +10199,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_js__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_js__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_js__ = __webpack_require__(32);
 
 
 
 // Slider
+
 
 
 
@@ -10221,7 +10245,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* 5 */
 /***/ (function(module, exports) {
 
-exports.raw = "[\n\t{\n\t\t\"type\": \"comment\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t}\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#28a290\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-aqua\",\n\t\t\t\".uikit-style-aqua .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#bf3e1f\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightred\",\n\t\t\t\".uikit-style-lightred .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#5b63ff\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#343891\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightblue\",\n\t\t\t\".uikit-style-lightblue .uikit\"\n\t\t]\n\t}\n]"
+exports.raw = "[\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#28a290\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-aqua\",\n\t\t\t\".uikit-style-aqua .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#bf3e1f\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightred\",\n\t\t\t\".uikit-style-lightred .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#5b63ff\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#343891\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightblue\",\n\t\t\t\".uikit-style-lightblue .uikit\"\n\t\t]\n\t}\n]"
 
 /***/ }),
 /* 6 */
@@ -11258,6 +11282,73 @@ class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_cor
 
 /***/ }),
 /* 32 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+
+
+
+class UIKitArrowButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+	constructor(dom) {
+		super(dom);
+		var that = this;
+
+		this.Model = new UIKitArrowButton_Model();
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+
+		this.Type = 'left';
+		this.TypesList = ['left', 'right'];
+		var that = this;
+		if (this.element.attr('type') !== undefined) {
+			if (this.element.attr('type') !== '') {
+				if (this.TypesList.includes(this.element.attr('type'))) {
+					this.Type = this.element.attr('type');
+				}
+			}
+		}
+
+		this.Mediator.subscribe('arrowbutton.type', function (value) {
+			that.acceptType(value);
+		});
+
+		that.acceptType(this.Type);
+	}
+
+	set type(value) {
+		if (typeof value === 'string') {
+			// horizontal / vertical
+			if (this.TypesList.includes(value)) {
+				this.Type = value;
+				this.Mediator.publish('arrowbutton.type', value);
+			}
+		}
+	}
+
+	get type() {
+		return this.Type;
+	}
+}
+
+//пустая модель
+class UIKitArrowButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+	constructor() {
+		super();
+	}
+}
+
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitArrowButton = UIKitArrowButton;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

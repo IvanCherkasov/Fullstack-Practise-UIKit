@@ -6,6 +6,7 @@ class UIKitElement{// AbstractBase
 			var that = this;
 			this.element = dom;
 			this.Original = dom.clone();
+			this.Enabled = true;
 
 			if (mediator !== undefined && mediator !== null){
 				this.Mediator = mediator;
@@ -22,12 +23,14 @@ class UIKitElement{// AbstractBase
 		this.element.addClass(type);
 	}
 
-	//смена класса
-	safeRebuild(type){
-		var baseClasses = this.Original.attr('class');
-		this.element.attr('class', '');
-		this.element.attr('class', baseClasses);
-		this.element.attr('class', this.element.attr('class') + type);
+	//смена Типа
+	acceptType(type){
+		if (!this.element.hasClass(type)){
+			var baseClasses = this.Original.attr('class');
+			this.element.attr('class', '');
+			this.element.attr('class', baseClasses);
+			this.element.addClass(type);
+		}
 	}
 
 	clearStyle(){
@@ -42,6 +45,27 @@ class UIKitElement{// AbstractBase
 		if (UIKit.styles.includes(name)){
 			this.clearStyle();
 			that.element.addClass(name);
+			if (this.Mediator){
+				this.Mediator.publish('element.style', name);
+			}
+		}
+	}
+
+	get enabled(){
+		return this.Enabled;
+	}
+
+	set enabled(val){
+		if (typeof val === 'boolean'){
+			this.Enabled = val;
+			if (val){
+				this.element.removeClass('disabled');
+			} else {
+				this.element.addClass('disabled');
+			}
+			if (this.Mediator){
+				this.Mediator.publish('element.enabled', val);
+			}
 		}
 	}
 
@@ -202,7 +226,6 @@ class UIKitModel{
 	setData(property, data){}
 }
 
-var BreakException = {};
 var style = '';
 var styles = []
 var rawObject = require('!!to-raw-loader!css-as-json-loader!stylus-loader!./uikit-styles.styl');
@@ -210,7 +233,6 @@ var jsonObject = JSON.parse(rawObject.raw);
 jsonObject.forEach(function(item){
 	if (Array.isArray(item['selectors'])){
 		for(var i = 0; i < item['selectors'].length; i++){
-
 			var ok = false;
 			var selector = item['selectors'][i];
 			if (selector.search('uikit-style-') > -1){

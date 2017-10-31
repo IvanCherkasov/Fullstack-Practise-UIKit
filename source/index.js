@@ -5,6 +5,7 @@ import UIKit from './uikit/uikit-core/index.js'
 import './uikit/uikit-slider/index.js'
 import './uikit/uikit-button/index.js'
 import './uikit/uikit-radial-progress/index.js'
+import './uikit/uikit-arrow-button/index.js'
 
 //TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
 //		придумать куда его впихнуть
