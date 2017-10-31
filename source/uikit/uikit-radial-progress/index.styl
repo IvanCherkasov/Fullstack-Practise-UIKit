@@ -1,0 +1,40 @@
+.uikit-radial-progress
+	width 100px
+	height 100px
+	display flex
+	justify-content center
+	align-items center
+	
+	.wrapper-right
+		width inherit
+		height inherit
+		position absolute
+		clip rect(0px, 100px, 100px, 50px)
+		background-color transparent
+
+		.progress-right
+			width calc(100% - 10px)
+			height calc(100% - 10px)
+			position absolute
+			border-radius 50%
+			border 5px solid var(--color-1)
+			background-color transparent
+			clip rect(0px, 50px, 100px, 0px)
+			transform rotate(0deg)
+			
+	.wrapper-left
+		width inherit
+		height inherit
+		position absolute
+		clip rect(0px, 50px, 100px, 0px)
+		background-color transparent
+		
+		.progress-left
+			width calc(100% - 10px)
+			height calc(100% - 10px)
+			position absolute
+			border-radius 50%
+			border 5px solid var(--color-1)
+			background-color transparent
+			clip rect(0px, 50px, 100px, 0px)
+			transform rotate(180deg)

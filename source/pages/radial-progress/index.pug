@@ -1,0 +1,25 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+	head
+		meta(charset="utf-8")
+		meta(viewport="width=device-width")
+		title UIKit - Button
+	body
+		div
+			a(href='../') Back
+		br
+		span styles
+		select(id="radial-progress-id-1")
+		br
+		br
+		+addUIKitRadialProgress('uikit-radial-progress-id-1', -100, 100, 25)
+		br
+		br
+		+addUIKitRadialProgress('uikit-radial-progress-id-2', 0, 100, 25)
+		br
+		br
+		+addUIKitRadialProgress('uikit-radial-progress-id-3', 0, 100, 75)
+		input(type='text', id='radial-progress-input')
+		

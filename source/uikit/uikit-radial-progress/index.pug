@@ -1,0 +1,9 @@
+include ./uikit-radial-progress-caption/index.pug
+
+mixin addUIKitRadialProgress(id, minimum, maximum, def)
+	div.uikit.uikit-radial-progress(id=id, value=def, minimum=minimum, maximum=maximum)
+		div.wrapper-right
+			div.progress-right
+		div.wrapper-left
+			div.progress-left
+		+addUIKitRadialProgress_Caption(def)
