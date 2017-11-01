@@ -21,10 +21,10 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			}
 		}
 
-		this.init();
+		this._init();
 	}
 
-	init(){
+	_init(){
 		var that = this;
 		var middleWare = [];
 
@@ -76,74 +76,6 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		});
 
 		this.stylize(this.Type);
-	}
-
-	reBuild(){
-		var that = this;
-		var parent = this.element.parent();
-		var spawned = false;
-
-		var attributes = [];
-		this.element.each(function(){
-			$.each(this.attributes, function(){
-				if (this.specified){
-					attributes.push({
-						name: this.name,
-						value: this.value
-					});
-				}
-			});
-		});
-
-		var index = -1;
-		parent.children().each(function(i){
-			if ($(this).is(that.element)) {
-				index = i;
-				return;
-			}
-		});
-
-		this.element.remove();
-		this.element = this.Original.clone();
-
-		attributes.forEach(function(attr){
-			if (attr.name !== 'class'){
-				that.element.attr(attr.name, attr.value);
-			}
-		});
-
-		parent.children().each(function(i){
-			if (i === index){
-				$(this).before(that.element);
-				spawned = true;
-				return;
-			}
-		});
-
-		if (!spawned){
-			parent.append(this.element);
-		}
-
-		this.element.attr('type', this.Type);
-
-		this.element.ready(function(){
-			setTimeout(function(){
-				that.init(that.Type);
-			}, 0);
-		});
-	}
-
-	get type(){
-		return this.Type;
-	}
-
-	set type(value){
-		if (typeof value === 'string'){ // horizontal / vertical
-			if (this.TypesList.includes(value)){
-				this.Type = value;
-				this.reBuild(this.Type);
-			}
-		}
 	}
 }
 

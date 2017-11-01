@@ -7,6 +7,8 @@ class UIKitElement{// AbstractBase
 			this.element = dom;
 			this.Original = dom.clone();
 			this.Enabled = true;
+			this.Type = '';
+			this.TypesList = [];
 
 			if (mediator !== undefined && mediator !== null){
 				this.Mediator = mediator;
@@ -69,9 +71,85 @@ class UIKitElement{// AbstractBase
 		}
 	}
 
+	//инициализация
+	_init(){}
+
 	//полное перестроение элемента
-	//каждый элемент сам решает как ему перестроиться
-	rebuild(){}
+	rebuild(){
+		var that = this;
+		var parent = this.element.parent();
+		var spawned = false;
+
+		//сохраняю все аттрибуты
+		var attributes = [];
+		this.element.each(function(){
+			$.each(this.attributes, function(){
+				if (this.specified){
+					attributes.push({
+						name: this.name,
+						value: this.value
+					});
+				}
+			});
+		});
+
+		//получаю индекс местоположения элемента внутри родителя
+		var index = -1;
+		parent.children().each(function(i){
+			if ($(this).is(that.element)) {
+				index = i;
+				return;
+			}
+		});
+
+		//удаляю элемент и клонирую на его место изначальный оригинал
+		this.element.remove();
+		this.element = this.Original.clone();
+
+		//заношу в новый элемент аттрибуты старого, все кроме классов
+		attributes.forEach(function(attr){
+			if (attr.name !== 'class'){
+				that.element.attr(attr.name, attr.value);
+			}
+		});
+
+		//помещяю новый элемент на свое прежнее место
+		parent.children().each(function(i){
+			if (i === index){
+				$(this).before(that.element);
+				spawned = true;
+				return;
+			}
+		});
+
+		//если прежний индек получить не удалось то помещаю его в конец
+		if (!spawned){
+			parent.append(this.element);
+		}
+
+		//записываю элементу новый тип, ради которого происходил ребилд
+		this.element.attr('type', this.Type);
+
+		//инициализирую
+		this.element.ready(function(){
+			setTimeout(function(){
+				that._init();
+			}, 0);
+		});
+	}
+
+	get type(){
+		return this.Type;
+	}
+
+	set type(value){
+		if (typeof value === 'string'){
+			if (this.TypesList.includes(value)){
+				this.Type = value;
+				this.rebuild();
+			}
+		}
+	}
 }
 
 class UIKitMath{

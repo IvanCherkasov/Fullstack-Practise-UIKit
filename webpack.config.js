@@ -16,7 +16,8 @@ module.exports = {
         'slider': './pages/slider/index',
         'button': './pages/button/index',
         'radial-progress': './pages/radial-progress/index',
-        'arrow-button': './pages/arrow-button/index'
+        'arrow-button': './pages/arrow-button/index',
+        'stages': './pages/stages/index'
     },
     output:{
         path: PATHS.build,
@@ -79,6 +80,11 @@ module.exports = {
             template: PATHS.source + '/pages/arrow-button/index.pug',
             filename: PATHS.build + '/arrow-button/index.html',
             chunks: ['arrow-button']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/stages/index.pug',
+            filename: PATHS.build + '/stages/index.html',
+            chunks: ['stages']
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

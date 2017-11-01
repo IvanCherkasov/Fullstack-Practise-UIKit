@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 45);
+/******/ 	return __webpack_require__(__webpack_require__.s = 48);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -11665,7 +11665,10 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_js
 
 /***/ }),
 /* 44 */,
-/* 45 */
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11673,23 +11676,61 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(2);
 
 
-var btnKit = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id'));
-var btnKit2 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-2'));
-var btnKit3 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-3'));
+var stages1 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitStages($('#uikit-stages-id-1'));
+var stages2 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitStages($('#uikit-stages-id-2'));
+var stages3 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitStages($('#uikit-stages-id-3'));
+var input1 = $('#uikit-stages-input-id-1');
+var input2 = $('#uikit-stages-input-id-2');
 var select = $('#style-select-id');
+var submit1 = $('#uikit-stages-submit-id-1');
+var invert1 = $('#uikit-stages-submit-id-2');
+
+input1.on('change', function () {
+	if (input1.val()) {
+		var value = parseInt(input1.val(), 10);
+		if (value !== NaN) {
+			stages1.stage = value;
+		}
+	}
+});
+
+input2.on('change', function () {
+	if (input2.val()) {
+		var value = parseInt(input2.val(), 10);
+		if (value !== NaN) {
+			stages2.stage = value;
+		}
+	}
+});
+
+submit1.on('click', function () {
+	if (stages2.type === 'horizontal') {
+		stages2.type = 'vertical';
+	} else if (stages2.type === 'vertical') {
+		stages2.type = 'horizontal';
+	}
+});
+
+invert1.on('click', function () {
+	if (stages2.invert) {
+		stages2.invert = false;
+	} else {
+		stages2.invert = true;
+	}
+});
 
 __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].styles.forEach(function (item) {
-  select.append($('<option>', {
-    value: item,
-    text: item
-  }));
+	select.append($('<option>', {
+		value: item,
+		text: item
+	}));
 });
 
 select.on('change', function () {
-  __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].style = select.val();
+	__WEBPACK_IMPORTED_MODULE_0__index_js__["default"].style = select.val();
 });
 
-btnKit2.style = 'uikit-style-lightred';
+stages3.style = 'uikit-style-lightred';
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })

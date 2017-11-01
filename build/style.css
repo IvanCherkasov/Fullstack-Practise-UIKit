@@ -482,3 +482,81 @@ div.uikit.uikit-style-lightblue,
 .uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::before {
   background-color: #fff;
 }
+.uikit-stages {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.uikit-stages.horizontal {
+  flex-direction: column;
+  width: 100%;
+  height: 31px;
+}
+.uikit-stages.vertical {
+  flex-direction: row;
+  width: 31px;
+  height: 100%;
+}
+.uikit-stages-track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e5e5e5;
+}
+.uikit-stages-track.horizontal {
+  width: inherit;
+  height: 5px;
+  flex-direction: row;
+}
+.uikit-stages-track.vertical {
+  height: inherit;
+  width: 5px;
+  flex-direction: column;
+}
+.uikit-stages-track.vertical.invert {
+  flex-direction: column-reverse;
+}
+.uikit-stages-stage {
+  position: relative;
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  background-color: #e5e5e5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e5e5e5;
+}
+.uikit-stages-stage.staged {
+  background-color: var(--color-1);
+}
+.uikit-stage-caption {
+  position: relative;
+  color: #fff;
+  font-family: Lato;
+  font-size: 13px;
+  color: #8a8a8a;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.staged .uikit-stage-caption {
+  color: #fff;
+}
+.uikit-stages-between {
+  position: absolute;
+}
+.uikit-stages-between.horizontal {
+  height: 100%;
+  display: table-cell;
+}
+.uikit-stages-between.vertical {
+  width: 100%;
+  display: table-row;
+}
+.uikit-stages-between.staged {
+  background-color: var(--color-1);
+}

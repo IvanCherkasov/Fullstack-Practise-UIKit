@@ -1,0 +1,32 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+	head
+		meta(charset="utf-8")
+		meta(viewport="width=device-width")
+		title UIKit - Slider
+	body
+		a(href='../') Back
+		br
+		span styles
+		select(id="style-select-id")
+		br
+		br
+		+addUIKitStage('uikit-stages-id-1', 5, 1, 'horizontal', false)
+		br
+		input(type='submit', value='orientation', id='uikit-stages-submit-id-1', style='width: 100px; height 16px;')
+		input(type='submit', value='invert', id='uikit-stages-submit-id-2', style='width: 100px; height 16px;')
+		br
+		br
+		div(style='height: 300px;')
+			+addUIKitStage('uikit-stages-id-2', 5, 1, 'vertical', false)
+		br
+		span horizontal
+		input(type='text', id='uikit-stages-input-id-1', style='width: 50px; height: 16px;')
+		br
+		span vertical
+		input(type='text', id='uikit-stages-input-id-2', style='width: 50px; height: 16px;')
+		br
+		br
+		+addUIKitStage('uikit-stages-id-3', 5, 3, 'horizontal', false)
