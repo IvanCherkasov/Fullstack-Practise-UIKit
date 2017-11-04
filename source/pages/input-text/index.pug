@@ -1,0 +1,25 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+	head
+		meta(charset="utf-8")
+		meta(viewport="width=device-width")
+		title UIKit - Input-text
+	body
+		div
+			a(href='../') Back
+		br
+		div(style='width: 100px;')
+			input(type='text').uikit-input-text
+		br
+		div(style='width: 400px;')
+			+addUIKitInputText('Email address...', true, 'thanks', 'error')
+		br
+		div(style='width: 400px;')
+			+addUIKitInputText('Email address...', true, 'thanks', 'error')
+		br
+		div(style='width: 400px;')
+			+addUIKitInputText('Email address...', false, 'thanks', 'error')
+		br
+		input(type='checkbox', id='checkbox-id-1')

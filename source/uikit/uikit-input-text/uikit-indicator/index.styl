@@ -1,0 +1,42 @@
+.uikit-indicator
+	position relative
+	height 28px
+	border-radius 3px
+	display flex
+	justify-content center
+	align-items center
+	margin-left 10px
+	min-width 76px
+	
+.uikit-indicator.disabled
+	display none
+	
+.uikit-indicator.disabled:before
+	display none
+	
+.uikit-indicator.disabled:after
+	display none
+	
+.uikit-indicator.indicator-ok
+	background-color var(--ok-color-1)
+	
+.uikit-indicator:not(.indicator-ok)
+	background-color var(--error-color-1)
+	
+.uikit-indicator::before
+	position absolute 
+	content ""
+	width 7px
+	height 7px
+	border-radius 0 0 2px 0
+	transform rotate(135deg)
+	bottom 0
+	top 0
+	left -3px
+	margin auto
+	
+.uikit-indicator:not(.indicator-ok)::before
+	background-color var(--error-color-1)
+
+.uikit-indicator.indicator-ok::before
+	background-color var(--ok-color-1)

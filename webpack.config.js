@@ -17,7 +17,10 @@ module.exports = {
         'button': './pages/button/index',
         'radial-progress': './pages/radial-progress/index',
         'arrow-button': './pages/arrow-button/index',
-        'stages': './pages/stages/index'
+        'stages': './pages/stages/index',
+        'input-text': './pages/input-text/index',
+        'textarea': './pages/textarea/index',
+        'toggle': './pages/toggle/index'
     },
     output:{
         path: PATHS.build,
@@ -85,6 +88,21 @@ module.exports = {
             template: PATHS.source + '/pages/stages/index.pug',
             filename: PATHS.build + '/stages/index.html',
             chunks: ['stages']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/input-text/index.pug',
+            filename: PATHS.build + '/input-text/index.html',
+            chunks: ['input-text']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/textarea/index.pug',
+            filename: PATHS.build + '/textarea/index.html',
+            chunks: ['textarea']
+        }),
+        new HtmlWebpackPlugin({
+            template: PATHS.source + '/pages/toggle/index.pug',
+            filename: PATHS.build + '/toggle/index.html',
+            chunks: ['toggle']
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
