@@ -3,7 +3,7 @@ import UIKit from './uikit/uikit-core/index.ts'
 
 // Slider
 import './uikit/uikit-slider/index.js'
-import './uikit/uikit-button/index.js'
+import './uikit/uikit-button/index.ts'
 import './uikit/uikit-radial-progress/index.js'
 import './uikit/uikit-arrow-button/index.ts'
 import './uikit/uikit-stages/index.js'

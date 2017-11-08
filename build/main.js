@@ -10319,7 +10319,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_js__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_ts__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_js__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_ts__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_js__ = __webpack_require__(34);
@@ -11031,56 +11031,67 @@ class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index_js__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__ = __webpack_require__(26);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
 
+var UIKitButton = /** @class */ (function (_super) {
+    __extends(UIKitButton, _super);
+    function UIKitButton(element) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element) || this;
+        var that = _this;
+        _this._model = new UIKitButton_Model();
+        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this._model);
+        _this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__["a" /* default */](_this.element.find('.uikit-button-caption'), _this.Mediator);
+        _this.Radial = new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__["a" /* default */](_this.element.find('.uikit-button-effect'), _this.Mediator);
+        _this.element.on('click', function (event) {
+            that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
+            event.stopPropagation();
+        });
+        _this.element.on('mouseenter', function () {
+            that.Mediator.publish('button.hover', true); //обработка наведения там, где это невозможно сдлать через стили
+        });
+        _this.element.on('mouseleave', function () {
+            that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
+        });
+        _this.caption = _this.element.attr('caption');
+        return _this;
+    }
+    Object.defineProperty(UIKitButton.prototype, "caption", {
+        set: function (value) {
+            this.Mediator.publish('button.caption', value);
+            console.log('value', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitButton;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitButton_Model = /** @class */ (function (_super) {
+    __extends(UIKitButton_Model, _super);
+    function UIKitButton_Model() {
+        //@ts-ignore
+        return _super.call(this) || this;
+    }
+    return UIKitButton_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitButton = UIKitButton;
 
-class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		var that = this;
-		var style = '';
-
-		this.Model = new UIKitButton_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-
-		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__["a" /* default */](this.element.find('.uikit-button-caption'), this.Mediator);
-
-		this.Radial = new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index_js__["a" /* default */](this.element.find('.uikit-button-effect'), this.Mediator);
-
-		this.element.on('click', function (event) {
-			that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
-			event.stopPropagation();
-		});
-
-		this.element.on('mouseenter', function () {
-			that.Mediator.publish('button.hover', true); //обработка наведения там, где это невозможно сдлать через стили
-		});
-
-		this.element.on('mouseleave', function () {
-			that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
-		});
-
-		this.caption = this.element.attr('caption');
-	}
-
-	set caption(value) {
-		this.Mediator.publish('button.caption', value);
-	}
-}
-
-//Пустая модель
-class UIKitButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super();
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitButton = UIKitButton;
 
 /***/ }),
 /* 23 */
