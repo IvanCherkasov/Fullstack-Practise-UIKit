@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitToggle_Thumb from './thumb/index.js'
 
 class UIKitToggle extends UIKit.Core.UIKitElement{

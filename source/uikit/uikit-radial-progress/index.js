@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitRadialProgress_Caption from './uikit-radial-progress-caption/index.js'
 
 class UIKitRadialProgress extends UIKit.Core.UIKitElement{

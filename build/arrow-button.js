@@ -68,372 +68,416 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery__);
 
 
-class UIKitElement {
-	// AbstractBase
-	constructor(dom, mediator, type) {
-		if (dom !== undefined && dom !== null) {
-			var that = this;
-			this.element = dom;
-			this.Original = dom.clone();
-			this.Enabled = true;
-			this.Type = '';
-			this.TypesList = [];
-
-			if (mediator !== undefined && mediator !== null) {
-				this.Mediator = mediator;
-			}
-
-			if (type !== undefined && type !== null) {
-				this.Type = type;
-			}
-		} else throw ReferenceError('Элемент пустой');
-	}
-
-	stylize(type) {
-		this.element.addClass(type);
-	}
-
-	//смена Типа
-	acceptType(type) {
-		if (!this.element.hasClass(type)) {
-			var baseClasses = this.Original.attr('class');
-			this.element.attr('class', '');
-			this.element.attr('class', baseClasses);
-			this.element.addClass(type);
-		}
-	}
-
-	clearStyle() {
-		var that = this;
-		UIKit.styles.forEach(function (item) {
-			that.element.removeClass(item);
-		});
-	}
-
-	set style(name) {
-		var that = this;
-		if (UIKit.styles.includes(name)) {
-			this.clearStyle();
-			that.element.addClass(name);
-			if (this.Mediator) {
-				this.Mediator.publish('element.style', name);
-			}
-		}
-	}
-
-	get enabled() {
-		return this.Enabled;
-	}
-
-	set enabled(val) {
-		if (typeof val === 'boolean') {
-			this.Enabled = val;
-			if (val) {
-				this.element.removeClass('disabled');
-			} else {
-				this.element.addClass('disabled');
-			}
-			if (this.Mediator) {
-				this.Mediator.publish('element.enabled', val);
-			}
-		}
-	}
-
-	//инициализация
-	_init() {}
-
-	//полное перестроение элемента
-	rebuild() {
-		var that = this;
-		var parent = this.element.parent();
-		var spawned = false;
-
-		//сохраняю все аттрибуты
-		var attributes = [];
-		this.element.each(function () {
-			$.each(this.attributes, function () {
-				if (this.specified) {
-					attributes.push({
-						name: this.name,
-						value: this.value
-					});
-				}
-			});
-		});
-
-		//получаю индекс местоположения элемента внутри родителя
-		var index = -1;
-		parent.children().each(function (i) {
-			if ($(this).is(that.element)) {
-				index = i;
-				return;
-			}
-		});
-
-		//удаляю элемент и клонирую на его место изначальный оригинал
-		this.element.remove();
-		this.element = this.Original.clone();
-
-		//заношу в новый элемент аттрибуты старого, все кроме классов
-		attributes.forEach(function (attr) {
-			if (attr.name !== 'class') {
-				that.element.attr(attr.name, attr.value);
-			}
-		});
-
-		//помещяю новый элемент на свое прежнее место
-		parent.children().each(function (i) {
-			if (i === index) {
-				$(this).before(that.element);
-				spawned = true;
-				return;
-			}
-		});
-
-		//если прежний индек получить не удалось то помещаю его в конец
-		if (!spawned) {
-			parent.append(this.element);
-		}
-
-		//записываю элементу новый тип, ради которого происходил ребилд
-		this.element.attr('type', this.Type);
-
-		//инициализирую
-		this.element.ready(function () {
-			setTimeout(function () {
-				that._init();
-			}, 0);
-		});
-	}
-
-	get type() {
-		return this.Type;
-	}
-
-	set type(value) {
-		if (typeof value === 'string') {
-			if (this.TypesList.includes(value)) {
-				this.Type = value;
-				this.rebuild();
-			}
-		}
-	}
-}
-
-class UIKitMath {
-	constructor() {}
-	static Clamp(value, min, max) {
-		return Math.min(Math.max(min, value), max);
-	}
-}
-
-class UIKitCoordinateSystem {
-	constructor(dom) {
-		this._element = dom;
-		var that = this;
-	}
-
-	get xMin() {
-		if (this._element) {
-			return this._element.offset().left;
-		}
-		return 0;
-	}
-
-	get yMin() {
-		if (this._element) {
-			return this._element.offset().top;
-		}
-		return 0;
-	}
-
-	get xMax() {
-		if (this._element) {
-			return this._element.offset().left + this._element.width();
-		}
-		return 0;
-	}
-
-	get yMax() {
-		if (this._element) {
-			return this._element.offset().top + this._element.height();
-		}
-		return 0;
-	}
-
-	get width() {
-		if (this._element) {
-			return this._element.width();
-		}
-		return 0;
-	}
-
-	get height() {
-		if (this._element) {
-			return this._element.height();
-		}
-		return 0;
-	}
-}
-
-class UIKitMediator {
-	constructor(Model, middleWare) {
-		var that = this;
-		this.channels = {};
-		this._middleWare = [];
-		this._model = Model;
-		if (middleWare) {
-			if (Array.isArray(middleWare)) {
-				this._middleWare = middleWare;
-			}
-		}
-	}
-
-	subscribe(channel, func) {
-		if (!this.channels[channel]) {
-			this.channels[channel] = [];
-		}
-		this.channels[channel].push({
-			callback: func
-		});
-	}
-
-	publish(channel, ...args) {
-		var that = this;
-		if (!this.channels[channel]) {
-			return false;
-		}
-
-		this.channels[channel].forEach(function (subscription) {
-			subscription.callback(...args);
-		});
-
-		return true;
-	}
-
-	setData(property, data) {
-		var props = property.split('.');
-		var done = false;
-
-		if (props[0] === 'model') {
-			if (this._model.setData(props[1], data)) {
-				done = true;
-			}
-		}
-
-		if (done === false) {
-			console.error('no such property named "' + property + '"');
-			return false;
-		}
-
-		this.publish(property, this._model.Data);
-
-		this._middleWare.forEach(function (func) {
-			func('mediator set data', {
-				property: property,
-				data: data
-			});
-		});
-	}
-
-	getData(property) {
-		var props = property.split('.');
-		var done = false;
-		var data = null;
-
-		if (props[0] === 'model') {
-			data = this._model.getData(props[1]);
-			if (data !== undefined) {
-				done = true;
-			}
-		}
-
-		if (done) {
-			return data;
-		} else {
-			console.error('no such property named "' + property + '"');
-			return undefined;
-		}
-	}
-}
-
-//типа абстрактый класс
-class UIKitModel {
-	constructor(data) {
-		this.Data = {};
-		if (data) {
-			if (data !== null) {
-				this.Data = data;
-			}
-		}
-	}
-
-	getData(property) {}
-	setData(property, data) {}
-}
-
+var UIKitElement = /** @class */ (function () {
+    function UIKitElement(_element, _mediator, _type) {
+        this._element = _element;
+        this._mediator = _mediator;
+        this._type = _type;
+        this._enabled = true;
+        if (_element && _element !== null) {
+            if (!(_element instanceof __WEBPACK_IMPORTED_MODULE_1_jquery___default.a)) {
+                if (_element instanceof HTMLCollection) {
+                    _element = __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(_element);
+                }
+                else {
+                    throw ReferenceError('Переданный элемент не является объектом jQuery или HTMLCollection');
+                }
+            }
+            this._original = _element.clone();
+        }
+        else {
+            throw ReferenceError('Передан пустой элемент');
+        }
+    }
+    UIKitElement.prototype._init = function () {
+    };
+    UIKitElement.prototype.rebuild = function () {
+        var that = this;
+        var parent = this._element.parent();
+        var spawned = false;
+        var attributes = [];
+        this._element.each(function () {
+            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a.each(this.attributes, function () {
+                if (this.specified) {
+                    attributes.push({
+                        name: this.name,
+                        value: this.value
+                    });
+                }
+            });
+        });
+        var index = -1;
+        parent.children().each(function (i) {
+            if (__WEBPACK_IMPORTED_MODULE_1_jquery___default.a(this).is(that._element)) {
+                index = i;
+                return;
+            }
+        });
+        this._element.remove();
+        this._element = this.Original.clone();
+        attributes.map(function (attr) {
+            if (attr.name !== 'class') {
+                that._element.attr(attr.name, attr.value);
+            }
+        });
+        parent.children().each(function (i) {
+            UIKitModel;
+            if (i === index) {
+                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(this).before(that._element);
+                spawned = true;
+                return;
+            }
+        });
+        if (!spawned) {
+            parent.append(this._element);
+        }
+        this._element.attr('type', this.Type);
+        this._element.ready(function () {
+            setTimeout(function () {
+                that._init();
+            }, 0);
+        });
+    };
+    UIKitElement.prototype.clearStyle = function () {
+        var that = this;
+        UIKit.styles.forEach(function (item) {
+            that._element.removeClass(item);
+        });
+    };
+    UIKitElement.prototype.acceptType = function () {
+        if (!this._element.hasClass(this.Type)) {
+            var baseClasses = this.Original.attr('class');
+            this._element.attr('class', '');
+            this._element.attr('class', baseClasses);
+            this._element.addClass(this.Type);
+        }
+    };
+    UIKitElement.prototype.stylize = function (type) {
+        this._element.addClass(type);
+    };
+    Object.defineProperty(UIKitElement.prototype, "TypesList", {
+        get: function () {
+            return this._typesList;
+        },
+        set: function (value) {
+            this._typesList = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "Original", {
+        get: function () {
+            return this._original;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "element", {
+        get: function () {
+            return this._element;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "Mediator", {
+        get: function () {
+            return this._mediator;
+        },
+        set: function (value) {
+            this._mediator = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "Type", {
+        get: function () {
+            return this._type;
+        },
+        set: function (value) {
+            this._type = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "type", {
+        get: function () {
+            return this._type;
+        },
+        set: function (value) {
+            if (this.TypesList.indexOf(value) > -1) {
+                this._type = value;
+                this.rebuild();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "enabled", {
+        get: function () {
+            return this._enabled;
+        },
+        set: function (value) {
+            this._enabled = value;
+            if (value) {
+                this._element.removeClass('disabled');
+            }
+            else {
+                this._element.addClass('disabled');
+            }
+            if (this.Mediator) {
+                this.Mediator.publish('element.enabled', value);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitElement.prototype, "style", {
+        set: function (value) {
+            var that = this;
+            if (UIKit.styles.indexOf(value) > -1) {
+                that.clearStyle();
+                that._element.addClass(value);
+                if (this.Mediator) {
+                    this.Mediator.publish('element.style', name);
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitElement;
+}());
+var UIKitMath = /** @class */ (function () {
+    function UIKitMath() {
+    }
+    UIKitMath.Clamp = function (value, min, max) {
+        return Math.min(Math.max(min, value), max);
+    };
+    return UIKitMath;
+}());
+var UIKitMediator = /** @class */ (function () {
+    function UIKitMediator(_model, middleware) {
+        this._model = _model;
+        this._channels = {};
+        this._middleware = [];
+        var that = this;
+        if (middleware) {
+            if (Array.isArray(middleware)) {
+                this._middleware = middleware;
+            }
+        }
+    }
+    UIKitMediator.prototype.subscribe = function (channel, func) {
+        if (!this._channels[channel]) {
+            this._channels[channel] = [];
+        }
+        this._channels[channel].push({
+            callback: func
+        });
+    };
+    UIKitMediator.prototype.publish = function (channel) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var that = this;
+        if (!this._channels[channel]) {
+            return false;
+        }
+        this._channels[channel].forEach(function (subscription) {
+            subscription.callback.apply(subscription, args);
+        });
+        return true;
+    };
+    UIKitMediator.prototype.getData = function (property) {
+        var props = property.split('.');
+        var done = false;
+        var data = null;
+        if (props[0] === 'model') {
+            data = this._model.getData(props[1]);
+            if (data !== undefined) {
+                done = true;
+            }
+        }
+        if (done) {
+            return data;
+        }
+        else {
+            console.error('no such property named "' + property + '"');
+            return undefined;
+        }
+    };
+    UIKitMediator.prototype.setData = function (property, data) {
+        var props = property.split('.');
+        var done = false;
+        if (props[0] === 'model') {
+            if (this._model.setData(props[1], data)) {
+                done = true;
+            }
+        }
+        if (done === false) {
+            console.error('no such property named "' + property + '"');
+            return false;
+        }
+        this.publish(property, this._model.Data);
+        this._middleware.forEach(function (func) {
+            func('mediator set data', {
+                property: property,
+                data: data
+            });
+        });
+    };
+    return UIKitMediator;
+}());
+var UIKitModel = /** @class */ (function () {
+    function UIKitModel(data) {
+        this.Data = {};
+        if (data !== null) {
+            this.Data = data;
+        }
+    }
+    UIKitModel.prototype.getData = function (property) { };
+    UIKitModel.prototype.setData = function (property, data) { };
+    return UIKitModel;
+}());
+var UIKitCoordinateSystem = /** @class */ (function () {
+    function UIKitCoordinateSystem(dom) {
+        this._element = dom;
+        var that = this;
+    }
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "xMin", {
+        get: function () {
+            if (this._element) {
+                return this._element.offset().left;
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "yMin", {
+        get: function () {
+            if (this._element) {
+                return this._element.offset().top;
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "xMax", {
+        get: function () {
+            if (this._element) {
+                return this._element.offset().left + this._element.width();
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "yMax", {
+        get: function () {
+            if (this._element) {
+                return this._element.offset().top + this._element.height();
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "width", {
+        get: function () {
+            if (this._element) {
+                return this._element.width();
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitCoordinateSystem.prototype, "height", {
+        get: function () {
+            if (this._element) {
+                return this._element.height();
+            }
+            return 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitCoordinateSystem;
+}());
 var style = '';
 var styles = [];
 var rawObject = __webpack_require__(5);
 var jsonObject = JSON.parse(rawObject.raw);
 jsonObject.forEach(function (item) {
-	if (Array.isArray(item['selectors'])) {
-		for (var i = 0; i < item['selectors'].length; i++) {
-			var ok = false;
-			var selector = item['selectors'][i];
-			if (selector.search('uikit-style-') > -1) {
-				var strings = selector.split('.');
-				for (var j = 0; j < strings.length; j++) {
-					if (strings[j].search('uikit-style-') > -1) {
-						styles.push(strings[j].trim());
-						ok = true;
-					}
-					if (ok) {
-						break;
-					}
-				}
-			}
-			if (ok) {
-				break;
-			}
-		}
-	}
+    if (Array.isArray(item['selectors'])) {
+        for (var i = 0; i < item['selectors'].length; i++) {
+            var ok = false;
+            var selector = item['selectors'][i];
+            if (selector.search('uikit-style-') > -1) {
+                var strings = selector.split('.');
+                for (var j = 0; j < strings.length; j++) {
+                    if (strings[j].search('uikit-style-') > -1) {
+                        styles.push(strings[j].trim());
+                        ok = true;
+                    }
+                    if (ok) {
+                        break;
+                    }
+                }
+            }
+            if (ok) {
+                break;
+            }
+        }
+    }
 });
-
-console.log(styles);
-
-var UIKit = {
-	Core: {
-		UIKitElement: UIKitElement,
-		UIKitMath: UIKitMath,
-		UIKitCoordinateSystem: UIKitCoordinateSystem,
-		UIKitMediator: UIKitMediator,
-		UIKitModel: UIKitModel
-	},
-	set style(name) {
-		if (styles.includes(name)) {
-			styles.forEach(function (item) {
-				$('body').removeClass(item);
-			});
-			$('body').addClass(name);
-			style = name;
-		}
-	},
-	get style() {
-		return style;
-	},
-	get styles() {
-		return styles;
-	}
-};
-
+var UIKit = /** @class */ (function () {
+    function UIKit() {
+    }
+    Object.defineProperty(UIKit, "style", {
+        get: function () {
+            return style;
+        },
+        set: function (name) {
+            if (styles.indexOf(name) > -1) {
+                styles.forEach(function (item) {
+                    __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').removeClass(item);
+                });
+                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').addClass(name);
+                style = name;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKit, "styles", {
+        get: function () {
+            return styles;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    UIKit.Core = {
+        'UIKitElement': UIKitElement,
+        'UIKitMath': UIKitMath,
+        'UIKitCoordinateSystem': UIKitCoordinateSystem,
+        'UIKitMediator': UIKitMediator,
+        'UIKitModel': UIKitModel
+    };
+    return UIKit;
+}());
 UIKit.style = styles[0]; //default
 /* harmony default export */ __webpack_exports__["a"] = (UIKit);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
 
 /***/ }),
 /* 1 */
@@ -10273,11 +10317,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_js__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_js__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_js__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_ts__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_js__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_uikit_input_text_index_js__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_uikit_textarea_index_js__ = __webpack_require__(52);
@@ -10295,25 +10339,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-//TODO: добавить собственный input для слайдера, который будет вкл/выкл (value сладйра отображается в инпуте и наоборот)
-//		придумать куда его впихнуть
-
-//DONE: restyle => rebuild (запоминание начального состояния элемента(this.element))
-
-//TODO: по возможности: переделать систему координат на слайдер. Но учитывать трэк
-
-
-//DONE: по возможности: EventSystem от модели и EventSystem от сладйре надо объединить в "медиатор". Чтобы он один
-//			отвечал за все события внутри системы. Чтобы логирование велось одной строкой. Одна общая функция для обработки
-//			событий.
-
-//DONE: + подписчики получают ссылку на новую модель, и сами берут из неё то что им надо
-//		+ заменить сеттеры в модели на функции setData, getData
-//		+ middleware
-//		+ подписываемые события лучше сделать так: propertyChanged.* (propertyChanged.value)
-
-
-/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_js__["a" /* default */]);
+/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__["a" /* default */]);
 
 /***/ }),
 /* 3 */
@@ -10340,7 +10366,7 @@ exports.raw = "[\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__ = __webpack_require__(20);
@@ -10350,7 +10376,7 @@ exports.raw = "[\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start
 
 
 
-class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-slider')) {
@@ -10375,7 +10401,7 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 		var middleWare = [];
 
 		this.Model = new UIKitSlider_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model, middleWare);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model, middleWare);
 		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
 		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
 
@@ -10413,7 +10439,7 @@ class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	}
 }
 
-class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_value: 0,
@@ -10454,7 +10480,7 @@ class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 	setData(property, data) {
 		switch (property) {
 			case 'value':
-				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
 				this.Data._value = value;
 				return true;
 			case 'minimum':
@@ -10464,7 +10490,7 @@ class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 				this.Data._maximum = data;
 				return true;
 			case 'coordinateSystem':
-				var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitCoordinateSystem(data);
+				var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitCoordinateSystem(data);
 				this.Data._cs = cs;
 				return true;
 			default:
@@ -10474,7 +10500,7 @@ class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitSlider = UIKitSlider;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitSlider = UIKitSlider;
 
 /***/ }),
 /* 7 */
@@ -10489,7 +10515,7 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__ = __webpack_require__(14);
 
@@ -10497,7 +10523,7 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 
 
 
-class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
@@ -10579,17 +10605,17 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(12);
 
 
 
 
-class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
-		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp;
 		var isDrag = false;
 		var isHover = false;
 
@@ -10701,11 +10727,11 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
@@ -10764,13 +10790,13 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__ = __webpack_require__(16);
 
 
 
 
-class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
@@ -10794,15 +10820,15 @@ class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
-		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp;
+		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp;
 
 		var moveFilled = function (position) {
 			var percent = 0;
@@ -10850,11 +10876,11 @@ class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
@@ -10955,11 +10981,11 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js_
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;
@@ -11005,7 +11031,7 @@ class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index_js__ = __webpack_require__(26);
 
@@ -11013,14 +11039,14 @@ class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 
 
 
-class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		var that = this;
 		var style = '';
 
 		this.Model = new UIKitButton_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 
 		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index_js__["a" /* default */](this.element.find('.uikit-button-caption'), this.Mediator);
 
@@ -11048,13 +11074,13 @@ class UIKitButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 }
 
 //Пустая модель
-class UIKitButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super();
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitButton = UIKitButton;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitButton = UIKitButton;
 
 /***/ }),
 /* 23 */
@@ -11069,11 +11095,11 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11099,11 +11125,11 @@ class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11138,13 +11164,13 @@ class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_j
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index_js__ = __webpack_require__(30);
 
 
 
 
-class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-radial-progress')) {
@@ -11153,7 +11179,7 @@ class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_
 		var that = this;
 
 		this.Model = new UIKitRadialProgress_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
 		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
 
@@ -11205,7 +11231,7 @@ class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_
 	}
 }
 
-class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_value: 0,
@@ -11239,7 +11265,7 @@ class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_
 	setData(property, data) {
 		switch (property) {
 			case 'value':
-				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
 				this.Data._value = value;
 				return true;
 			case 'minimum':
@@ -11254,7 +11280,7 @@ class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
 
 /***/ }),
 /* 29 */
@@ -11269,11 +11295,11 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11303,59 +11329,70 @@ class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_cor
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitArrowButton = /** @class */ (function (_super) {
+    __extends(UIKitArrowButton, _super);
+    function UIKitArrowButton(element) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element) || this;
+        var that = _this;
+        _this.Model = new UIKitArrowButton_Model();
+        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.Model);
+        _this.Type = 'left';
+        _this.TypesList = ['left', 'right'];
+        if (_this.element.attr('type') !== undefined) {
+            if (_this.element.attr('type') !== '') {
+                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
+                    _this.Type = _this.element.attr('type');
+                }
+            }
+        }
+        _this.Mediator.subscribe('arrowbutton.type', function (value) {
+            that.acceptType();
+        });
+        that.acceptType();
+        return _this;
+    }
+    Object.defineProperty(UIKitArrowButton.prototype, "type", {
+        get: function () {
+            return this.Type;
+        },
+        set: function (value) {
+            if (typeof value === 'string') {
+                if (this.TypesList.indexOf(value) > -1) {
+                    this.Type = value;
+                    this.Mediator.publish('arrowbutton.type', value);
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitArrowButton;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitArrowButton_Model = /** @class */ (function (_super) {
+    __extends(UIKitArrowButton_Model, _super);
+    function UIKitArrowButton_Model() {
+        //@ts-ignore
+        return _super.call(this) || this;
+    }
+    return UIKitArrowButton_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitArrowButton = UIKitArrowButton;
 
-class UIKitArrowButton extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		var that = this;
-
-		this.Model = new UIKitArrowButton_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
-
-		this.Type = 'left';
-		this.TypesList = ['left', 'right'];
-		var that = this;
-		if (this.element.attr('type') !== undefined) {
-			if (this.element.attr('type') !== '') {
-				if (this.TypesList.includes(this.element.attr('type'))) {
-					this.Type = this.element.attr('type');
-				}
-			}
-		}
-
-		this.Mediator.subscribe('arrowbutton.type', function (value) {
-			that.acceptType(value);
-		});
-
-		that.acceptType(this.Type);
-	}
-
-	set type(value) {
-		if (typeof value === 'string') {
-			// horizontal / vertical
-			if (this.TypesList.includes(value)) {
-				this.Type = value;
-				this.Mediator.publish('arrowbutton.type', value);
-			}
-		}
-	}
-
-	get type() {
-		return this.Type;
-	}
-}
-
-//пустая модель
-class UIKitArrowButton_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super();
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitArrowButton = UIKitArrowButton;
 
 /***/ }),
 /* 33 */
@@ -11370,13 +11407,13 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_track_index_js__ = __webpack_require__(36);
 
 
 
 
-class UIKitStages extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitStages extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-stages')) {
@@ -11411,7 +11448,7 @@ class UIKitStages extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	_init() {
 		var that = this;
 		this.Model = new UIKitStages_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 		var stages = Number(this.element.attr('stages'));
 		this.Mediator.setData('model.stages', stages);
 		var stage = Number(this.element.attr('stage'));
@@ -11473,7 +11510,7 @@ class UIKitStages extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	}
 }
 
-class UIKitStages_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitStages_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_stages: 0,
@@ -11506,7 +11543,7 @@ class UIKitStages_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 				this.Data._stages = data;
 				return true;
 			case 'stage':
-				data = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMath.Clamp(data, 0, this.Data.stages);
+				data = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, 0, this.Data.stages);
 				this.Data._stage = data;
 				return true;
 			default:
@@ -11515,7 +11552,7 @@ class UIKitStages_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitStages = UIKitStages;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitStages = UIKitStages;
 
 /***/ }),
 /* 35 */
@@ -11532,13 +11569,13 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index_js__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index_js__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
 
 
-class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type, invert) {
 		super(dom, mediator, type);
 		var that = this;
@@ -11676,7 +11713,7 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_js
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index_js__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index_js__ = __webpack_require__(48);
 
@@ -11684,7 +11721,7 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_js
 
 
 
-class UIKitInputText extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitInputText extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-input-text')) {
@@ -11692,7 +11729,7 @@ class UIKitInputText extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__[
 		}
 
 		this.Model = new UIKitInputText_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 
 		this.Input = new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index_js__["a" /* default */](this.element.find('input'), this.Mediator);
 
@@ -11734,7 +11771,7 @@ class UIKitInputText extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__[
 	}
 }
 
-class UIKitInputText_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitInputText_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_text: '',
@@ -11767,7 +11804,7 @@ class UIKitInputText_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitInputText = UIKitInputText;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitInputText = UIKitInputText;
 
 /***/ }),
 /* 45 */
@@ -11782,11 +11819,11 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitInputText_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitInputText_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11835,13 +11872,13 @@ class UIKitInputText_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index_js__ = __webpack_require__(50);
 
 
 
 
-class UIKitInputText_Indicator extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitInputText_Indicator extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11878,11 +11915,11 @@ class UIKitInputText_Indicator extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_i
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitInputText_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitInputText_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator) {
 		super(dom, mediator);
 		var that = this;
@@ -11912,11 +11949,11 @@ class UIKitInputText_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_ind
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-textarea')) {
@@ -11926,7 +11963,7 @@ class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["
 
 		this.Caption = this.element.attr('caption');
 		this.Model = new UIKitTextarea_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 
 		this.element.focusin(function () {
 			var value = that.element.val();
@@ -11963,7 +12000,7 @@ class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["
 	}
 }
 
-class UIKitTextarea_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitTextarea_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_text: '',
@@ -11974,7 +12011,7 @@ class UIKitTextarea_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitTextarea = UIKitTextarea;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitTextarea = UIKitTextarea;
 
 /***/ }),
 /* 53 */
@@ -11989,13 +12026,13 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thumb_index_js__ = __webpack_require__(56);
 
 
 
 
-class UIKitToggle extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitToggle extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom) {
 		super(dom);
 		if (!this.element.hasClass('uikit-toggle')) {
@@ -12020,7 +12057,7 @@ class UIKitToggle extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	_init() {
 		var that = this;
 		this.Model = new UIKitToggle_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitMediator(this.Model);
+		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
 		var isChecked = false;
 		if (this.element.attr('value') === 'true') {
 			isChecked = true;
@@ -12061,7 +12098,7 @@ class UIKitToggle extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a"
 	}
 }
 
-class UIKitToggle_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitModel {
+class UIKitToggle_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
 	constructor() {
 		super({
 			_ckecked: false,
@@ -12094,7 +12131,7 @@ class UIKitToggle_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js
 	}
 }
 
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitToggle = UIKitToggle;
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitToggle = UIKitToggle;
 
 /***/ }),
 /* 55 */
@@ -12109,11 +12146,11 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
 
 
 
-class UIKitToggle_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_js__["a" /* default */].Core.UIKitElement {
+class UIKitToggle_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
 	constructor(dom, mediator, type) {
 		super(dom, mediator, type);
 		var that = this;

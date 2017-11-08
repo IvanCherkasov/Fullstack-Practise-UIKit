@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitSlider_Track from './uikit-slider-track/index.js'
 import UIKitSlider_Rule from './uikit-slider-rule/index.js'
 import UIKitSlider_Input from './uikit-slider-input/index.js'

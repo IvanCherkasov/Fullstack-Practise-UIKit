@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../../uikit-core/index.js'
+import UIKit from '../../uikit-core/index.ts'
 import UIKitInputText_Caption from './uikit-indicator-caption/index.js' 
 
 class UIKitInputText_Indicator extends UIKit.Core.UIKitElement{

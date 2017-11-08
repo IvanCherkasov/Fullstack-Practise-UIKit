@@ -1,7 +1,7 @@
 import './index.styl'
 import './uikit-stages-stage/index.js'
 import './uikit-stages-between/index.js'
-import UIKit from '../../uikit-core/index.js'
+import UIKit from '../../uikit-core/index.ts'
 
 class UIKitStages_Track extends UIKit.Core.UIKitElement{
 	constructor(dom, mediator, type, invert){

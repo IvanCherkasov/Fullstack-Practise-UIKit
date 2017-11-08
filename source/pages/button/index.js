@@ -1,5 +1,7 @@
 import UIKit from '../../index.js'
 
+import '../../uikit/uikit-core/index.ts'
+
 var btnKit = new UIKit.Core.UIKitButton($('#uikit-button-id'));
 var btnKit2 = new UIKit.Core.UIKitButton($('#uikit-button-id-2'));
 var btnKit3 = new UIKit.Core.UIKitButton($('#uikit-button-id-3'));

@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../../uikit-core/index.js'
+import UIKit from '../../uikit-core/index.ts'
 
 class UIKitButton_Effect extends UIKit.Core.UIKitElement{
 	constructor(dom, mediator){

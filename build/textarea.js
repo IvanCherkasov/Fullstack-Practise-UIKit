@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 59);
+/******/ 	return __webpack_require__(__webpack_require__.s = 64);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -12177,34 +12177,22 @@ class UIKitToggle_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts
 
 /***/ }),
 /* 58 */,
-/* 59 */
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__ = __webpack_require__(0);
 
 
-
-
-var btnKit = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id'));
-var btnKit2 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-2'));
-var btnKit3 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitButton($('#uikit-button-id-3'));
-var select = $('#style-select-id');
-
-__WEBPACK_IMPORTED_MODULE_0__index_js__["default"].styles.forEach(function (item) {
-  select.append($('<option>', {
-    value: item,
-    text: item
-  }));
+$('.uikit-textarea').each(function () {
+	var uikitTextarea = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitTextarea($(this));
 });
-
-select.on('change', function () {
-  __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].style = select.val();
-});
-
-btnKit2.style = 'uikit-style-lightred';
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })

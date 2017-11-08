@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitButton_Caption from './uikit-button-caption/index.js'
 import UIKitButton_Effect from './uikit-button-effect/index.js'
 

@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from  '../../../uikit-core/index.js'
+import UIKit from  '../../../uikit-core/index.ts'
 import UIKitSlider_Upper from './uikit-slider-upper/index.js'
 
 class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{

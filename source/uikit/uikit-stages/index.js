@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitStages_Track from './uikit-stages-track/index.js'
 
 class UIKitStages extends UIKit.Core.UIKitElement{

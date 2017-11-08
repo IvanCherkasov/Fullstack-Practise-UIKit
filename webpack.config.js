@@ -26,12 +26,17 @@ module.exports = {
         path: PATHS.build,
         filename: '[name].js'
     },
-
+    resolve:{
+        extensions: ['.js', '.ts', '.tsx']
+    },
     module: {
         loaders:[{
             test: /\.js$/,
             loader: 'babel-loader'
-        }, {
+        },{
+            test: /\.(ts|tsx)$/,
+            loader: 'ts-loader'
+        },{
             test: /\.pug$/,
             loader: 'pug-loader',
             options: {
@@ -110,7 +115,6 @@ module.exports = {
         }),
         new ExtractTextPlugin('style.css')
     ],
-
     resolveLoader:{
         alias:{
             'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js')

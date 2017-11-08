@@ -1,5 +1,5 @@
 import './index.styl'
-import UIKit from '../uikit-core/index.js'
+import UIKit from '../uikit-core/index.ts'
 import UIKitInputText_Input from './uikit-input/index.js'
 import UIKitInputText_Indicator from './uikit-indicator/index.js'
 
