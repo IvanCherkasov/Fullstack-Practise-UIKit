@@ -1,13 +1,13 @@
 import './index.styl'
 import UIKit from '../uikit-core/index.ts'
 
-class UIKitTextarea extends UIKit.Core.UIKitElement{
-	constructor(dom){
-		super(dom);
-		if (!this.element.hasClass('uikit-textarea')){
-			throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
-		}
-		var that = this;
+class UIKitTextarea extends UIKit.Core.UIKitElement {
+    constructor(dom) {
+        super(dom);
+    if (!this.element.hasClass('uikit-textarea')) {
+      throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
+    }
+    let that = this;
 
 		this.Caption = this.element.attr('caption');
 		this.Model = new UIKitTextarea_Model();

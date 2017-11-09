@@ -2,8 +2,6 @@ import './index.styl'
 import UIKit from '../uikit-core/index'
 import UIKitToggle_Thumb from './thumb/index'
 
-
-
 class UIKitToggle extends  UIKit.Core.UIKitElement{
 
     public Thumb: UIKitToggle_Thumb;

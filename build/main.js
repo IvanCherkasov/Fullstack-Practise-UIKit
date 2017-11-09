@@ -11994,7 +11994,7 @@ class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["
 		if (!this.element.hasClass('uikit-textarea')) {
 			throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
 		}
-		var that = this;
+		let that = this;
 
 		this.Caption = this.element.attr('caption');
 		this.Model = new UIKitTextarea_Model();
