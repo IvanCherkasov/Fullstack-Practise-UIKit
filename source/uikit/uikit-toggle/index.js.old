@@ -52,7 +52,7 @@ class UIKitToggle extends UIKit.Core.UIKitElement{
 
 		this.element.on('click', function(){
 			that.checked = !that.checked;
-			
+
 		});
 
 		setTimeout(function(){

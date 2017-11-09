@@ -9,7 +9,7 @@ import './uikit/uikit-arrow-button/index.ts'
 import './uikit/uikit-stages/index.js'
 import './uikit/uikit-input-text/index.js'
 import './uikit/uikit-textarea/index.js'
-import './uikit/uikit-toggle/index.js'
+import './uikit/uikit-toggle/index.ts'
 
 
 export default UIKit;

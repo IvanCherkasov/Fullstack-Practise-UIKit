@@ -46,7 +46,7 @@ class UIKitElement{
 				}
 			});
         });
-        
+
         var index = -1;
 		parent.children().each(function(i){
 			if ($(this).is(that._element)) {
@@ -57,13 +57,13 @@ class UIKitElement{
 
 		this._element.remove();
         this._element = this.Original.clone();
-        
+
         attributes.map(function(attr){
 			if (attr.name !== 'class'){
 				that._element.attr(attr.name, attr.value);
 			}
         });
-        
+
         parent.children().each(function(i){UIKitModel
 			if (i === index){
 				$(this).before(that._element);
@@ -71,11 +71,11 @@ class UIKitElement{
 				return;
 			}
         });
-        
+
         if (!spawned){
 			parent.append(this._element);
         }
-        
+
         this._element.attr('type', this.Type);
 
         this._element.ready(function(){
@@ -174,7 +174,7 @@ class UIKitElement{
 			}
         }
     }
-    
+
 }
 
 class UIKitMath{
@@ -249,7 +249,7 @@ class UIKitMediator{
 				done = true;
 			}
 		}
-		
+
 		if (done === false){
 			console.error('no such property named "' + property + '"');
 			return false;
@@ -370,7 +370,7 @@ class UIKit{
 		'UIKitMediator': UIKitMediator,
 		'UIKitModel': UIKitModel
 	}
-	
+
 	public static set style(name){
 		if (styles.indexOf(name) > -1){
 			styles.forEach(function(item){

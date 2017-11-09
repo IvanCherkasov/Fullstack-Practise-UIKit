@@ -10325,7 +10325,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_js__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_uikit_input_text_index_js__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_uikit_textarea_index_js__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__uikit_uikit_toggle_index_js__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__uikit_uikit_toggle_index_ts__ = __webpack_require__(54);
 
 
 
@@ -11075,7 +11075,6 @@ var UIKitButton = /** @class */ (function (_super) {
     Object.defineProperty(UIKitButton.prototype, "caption", {
         set: function (value) {
             this.Mediator.publish('button.caption', value);
-            console.log('value', value);
         },
         enumerable: true,
         configurable: true
@@ -11106,22 +11105,35 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitBut
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		this.Mediator.subscribe('button.caption', function (caption) {
-			that.element.text(caption);
-		});
-	}
-}
-
+var UIKitButton_Caption = /** @class */ (function (_super) {
+    __extends(UIKitButton_Caption, _super);
+    function UIKitButton_Caption(element, mediator, type) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var that = _this;
+        _this.Mediator.subscribe('button.caption', function (caption) {
+            that.element.text(caption);
+        });
+        return _this;
+    }
+    return UIKitButton_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Caption);
+
 
 /***/ }),
 /* 25 */
@@ -11136,30 +11148,42 @@ class UIKitButton_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitButton_Effect extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		this.Mediator.subscribe('button.click', function (event) {
-			//включение анимации
-			var target = $(event.currentTarget);
-			var offset = target.offset();
-			var x = event.pageX - offset.left;
-			var y = event.pageY - offset.top;
-			that.element.removeClass('animate');
-			var size = Math.max(target.outerWidth(), target.outerHeight());
-			that.element.css("top", y - size / 2).css("left", x - size / 2).css("width", size).css("height", size);
-			that.element.addClass("animate");
-		});
-	}
-}
-
+var UIKitButton_Effect = /** @class */ (function (_super) {
+    __extends(UIKitButton_Effect, _super);
+    function UIKitButton_Effect(element, mediator, type) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var that = _this;
+        _this.Mediator.subscribe('button.click', function (event) {
+            var target = $(event.currentTarget);
+            var offset = target.offset();
+            var x = event.pageX - offset.left;
+            var y = event.pageY - offset.top;
+            that.element.removeClass('animate');
+            var size = Math.max(target.outerWidth(), target.outerHeight());
+            that.element.css("top", y - size / 2).css("left", x - size / 2).css("width", size).css("height", size);
+            that.element.addClass("animate");
+        });
+        return _this;
+    }
+    return UIKitButton_Effect;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Effect);
+
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
@@ -12037,112 +12061,123 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thumb_index_js__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thumb_index__ = __webpack_require__(56);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
+var UIKitToggle = /** @class */ (function (_super) {
+    __extends(UIKitToggle, _super);
+    function UIKitToggle(element) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-toggle')) {
+            throw new ReferenceError('Элемент не является переключателем uikit');
+        }
+        var that = _this;
+        _this.Type = 'horizontal';
+        _this.TypesList = ['horizontal', 'vertical'];
+        if (_this.element.attr('type') !== undefined) {
+            if (_this.element.attr('type') !== '') {
+                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
+                    _this.Type = _this.element.attr('type');
+                }
+            }
+        }
+        _this._init();
+        return _this;
+    }
+    UIKitToggle.prototype._init = function () {
+        var that = this;
+        this.Model = new UIKitToggle_Model();
+        this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.Model);
+        var isChecked = false;
+        if (this.element.attr('value') === 'true') {
+            isChecked = true;
+        }
+        else {
+            isChecked = false;
+        }
+        this.Mediator.subscribe('model.checked', function (modelData) {
+            that.element.attr('value', modelData.checked);
+            if (that.checked) {
+                that.element.addClass('checked');
+            }
+            else {
+                that.element.removeClass('checked');
+            }
+        });
+        this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__thumb_index__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.Mediator, this.Type);
+        this.element.on('click', function () {
+            that.checked = !that.checked;
+        });
+        setTimeout(function () {
+            that.checked = isChecked;
+        }, 0);
+        that.acceptType();
+    };
+    Object.defineProperty(UIKitToggle.prototype, "checked", {
+        get: function () {
+            return this.Mediator.getData('model.checked');
+        },
+        set: function (value) {
+            if (typeof value === 'boolean') {
+                this.Mediator.setData('model.checked', value);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitToggle;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitToggle_Model = /** @class */ (function (_super) {
+    __extends(UIKitToggle_Model, _super);
+    function UIKitToggle_Model() {
+        //@ts-ignore
+        return _super.call(this, {
+            _ckecked: false,
+            get checked() {
+                return this._checked;
+            }
+        }) || this;
+    }
+    UIKitToggle_Model.prototype.getData = function (property) {
+        switch (property) {
+            case "checked":
+                //@ts-ignore
+                return this.Data.checked;
+            default:
+                return undefined;
+        }
+    };
+    UIKitToggle_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case "checked":
+                if (typeof data === 'boolean') {
+                    //@ts-ignore
+                    this.Data._checked = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return UIKitToggle_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitToggle = UIKitToggle;
 
-class UIKitToggle extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-toggle')) {
-			throw new ReferenceError('Элемент не является переключателем uikit');
-		}
-		var that = this;
-
-		this.Type = 'horizontal';
-		this.TypesList = ['horizontal', 'vertical'];
-		var that = this;
-		if (this.element.attr('type') !== undefined) {
-			if (this.element.attr('type') !== '') {
-				if (this.TypesList.includes(this.element.attr('type'))) {
-					this.Type = this.element.attr('type');
-				}
-			}
-		}
-
-		this._init();
-	}
-
-	_init() {
-		var that = this;
-		this.Model = new UIKitToggle_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-		var isChecked = false;
-		if (this.element.attr('value') === 'true') {
-			isChecked = true;
-		} else {
-			isChecked = false;
-		}
-
-		this.Mediator.subscribe('model.checked', function (modelData) {
-			that.element.attr('value', modelData.checked);
-			if (that.checked) {
-				that.element.addClass('checked');
-			} else {
-				that.element.removeClass('checked');
-			}
-		});
-
-		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__thumb_index_js__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.Mediator, this.Type);
-
-		this.element.on('click', function () {
-			that.checked = !that.checked;
-		});
-
-		setTimeout(function () {
-			that.checked = isChecked;
-		}, 0);
-
-		that.acceptType(this.Type);
-	}
-
-	get checked() {
-		return this.Mediator.getData('model.checked');
-	}
-
-	set checked(value) {
-		if (typeof value === 'boolean') {
-			this.Mediator.setData('model.checked', value);
-		}
-	}
-}
-
-class UIKitToggle_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_ckecked: false,
-			get checked() {
-				return this._checked;
-			}
-		});
-	}
-
-	getData(property) {
-		switch (property) {
-			case "checked":
-				return this.Data.checked;
-			default:
-				return undefined;
-		}
-	}
-
-	setData(property, data) {
-		switch (property) {
-			case "checked":
-				if (typeof data === 'boolean') {
-					this.Data._checked = data;
-					return true;
-				}
-				return false;
-			default:
-				return false;
-		}
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitToggle = UIKitToggle;
 
 /***/ }),
 /* 55 */
@@ -12157,28 +12192,41 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitToggle_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-
-		this.Mediator.subscribe('model.checked', function (modelData) {
-			if (modelData.checked) {
-				that.element.addClass('checked');
-			} else {
-				that.element.removeClass('checked');
-			}
-		});
-
-		this.acceptType(this.Type);
-	}
-}
-
+var UIKitToggle_Thumb = /** @class */ (function (_super) {
+    __extends(UIKitToggle_Thumb, _super);
+    function UIKitToggle_Thumb(element, mediator, type) {
+        var _this = 
+        //@ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var that = _this;
+        _this.Mediator.subscribe('model.checked', function (modelData) {
+            if (modelData.checked) {
+                that.element.addClass('checked');
+            }
+            else {
+                that.element.removeClass('checked');
+            }
+        });
+        _this.acceptType();
+        return _this;
+    }
+    return UIKitToggle_Thumb;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitToggle_Thumb);
+
 
 /***/ }),
 /* 57 */
