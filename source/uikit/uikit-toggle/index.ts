@@ -1,3 +1,4 @@
+/* tslint:disable */
 import './index.styl'
 import UIKit from '../uikit-core/index'
 import UIKitToggle_Thumb from './thumb/index'
@@ -9,9 +10,9 @@ class UIKitToggle extends  UIKit.Core.UIKitElement{
     public Mediator;
 
     constructor(element:any){
-        //@ts-ignore
+        // @ts-ignore
         super(element);
-        if (!this.element.hasClass('uikit-toggle')){
+        if (!this.element.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
         }
         let that = this;

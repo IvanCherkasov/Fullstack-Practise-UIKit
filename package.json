@@ -32,6 +32,7 @@
     "ts-loader": "^3.1.1",
     "tslint": "^5.8.0",
     "tslint-config-airbnb": "^5.3.0",
+    "tslint-disable-directory": "^0.0.3",
     "typescript": "^2.6.1",
     "url": "^0.11.0",
     "url-loader": "^0.6.2",

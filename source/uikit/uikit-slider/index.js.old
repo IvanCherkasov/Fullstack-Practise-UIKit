@@ -52,7 +52,7 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 			);
 
 		this.Rule = new UIKitSlider_Rule(
-			this.element.find('.uikit-slider-rule'), 
+			this.element.find('.uikit-slider-rule'),
 			this.Mediator,
 			this.Type
 			);
@@ -70,7 +70,7 @@ class UIKitSlider extends UIKit.Core.UIKitElement {
 		this.element.on('dragstart', function(){
 			return false;
 		});
-		
+
 		this.element.on('selectstart', function(){
 			return false;
 		});

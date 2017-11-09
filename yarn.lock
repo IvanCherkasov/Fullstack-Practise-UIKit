@@ -1512,6 +1512,10 @@ for-own@^1.0.0:
   dependencies:
     for-in "^1.0.1"
 
+foreachasync@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/foreachasync/-/foreachasync-3.0.0.tgz#5502987dc8714be3392097f32e0071c9dee07cf6"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -3803,6 +3807,12 @@ tslint-consistent-codestyle@^1.4.0:
     tslib "^1.7.1"
     tsutils "^2.12.2"
 
+tslint-disable-directory@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tslint-disable-directory/-/tslint-disable-directory-0.0.3.tgz#a2faee2d69bc27c69bfaabc03139fb125af05521"
+  dependencies:
+    walk "^2.3.9"
+
 tslint-eslint-rules@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/tslint-eslint-rules/-/tslint-eslint-rules-4.1.1.tgz#7c30e7882f26bc276bff91d2384975c69daf88ba"
@@ -3992,6 +4002,12 @@ vrsource-tslint-rules@^5.1.0:
   resolved "https://registry.yarnpkg.com/vrsource-tslint-rules/-/vrsource-tslint-rules-5.8.0.tgz#b476f160b93cb0e3403fcea0848d665936a7a08f"
   dependencies:
     tslint "~5.8.0"
+
+walk@^2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/walk/-/walk-2.3.9.tgz#31b4db6678f2ae01c39ea9fb8725a9031e558a7b"
+  dependencies:
+    foreachasync "^3.0.0"
 
 watchpack@^1.3.1:
   version "1.4.0"

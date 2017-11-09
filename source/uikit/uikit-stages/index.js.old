@@ -41,7 +41,7 @@ class UIKitStages extends UIKit.Core.UIKitElement{
 		var stages = Number(this.element.attr('stages'));
 		this.Mediator.setData('model.stages', stages);
 		var stage = Number(this.element.attr('stage'));
-		
+
 		if (stage < 1) {
 			stage = 1;
 		}
@@ -63,7 +63,7 @@ class UIKitStages extends UIKit.Core.UIKitElement{
 			this.Mediator,
 			this.Type,
 			this.Invert
-			);		
+			);
 
 		setTimeout(function(){
 			that.Mediator.setData('model.stage', stage);
@@ -72,7 +72,7 @@ class UIKitStages extends UIKit.Core.UIKitElement{
 		this.element.on('dragstart', function(){
 			return false;
 		});
-		
+
 		this.element.on('selectstart', function(){
 			return false;
 		});

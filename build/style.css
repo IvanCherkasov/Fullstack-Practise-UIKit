@@ -78,6 +78,25 @@ div.uikit.uikit-style-lightblue,
   flex-direction: row;
   height: 100%;
 }
+.uikit-slider-input {
+  position: relative;
+  height: 21px;
+  width: 100px;
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  font-family: Lato;
+  font-size: 11px;
+  color: var(--color-1);
+  padding-left: 5px;
+  padding-right: 5px;
+  transition: box-shadow 0.2s, color 0.2s;
+}
+.uikit-slider-input:focus {
+  outline: none;
+  border-color: var(--color-1);
+  box-shadow: 0 2px 0 0 var(--color-1);
+}
 .uikit-slider-track {
   position: relative;
   height: 21px;
@@ -93,6 +112,29 @@ div.uikit.uikit-style-lightblue,
   width: 21px;
   height: 100%;
   justify-content: center;
+}
+.uikit-slider-fill {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+.uikit-slider-fill.horizontal {
+  height: 5px;
+  width: 100%;
+}
+.uikit-slider-fill.vertical {
+  height: 100%;
+  width: 5px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.uikit-slider-filled {
+  position: relative;
+  height: inherit;
+  background-color: var(--color-1);
 }
 .uikit-slider-thumb {
   position: absolute;
@@ -212,29 +254,6 @@ div.uikit.uikit-style-lightblue,
   right: -3px;
   margin: auto;
 }
-.uikit-slider-fill {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  border-radius: 3px;
-  overflow: hidden;
-  background-color: #e5e5e5;
-}
-.uikit-slider-fill.horizontal {
-  height: 5px;
-  width: 100%;
-}
-.uikit-slider-fill.vertical {
-  height: 100%;
-  width: 5px;
-  display: flex;
-  flex-direction: column-reverse;
-}
-.uikit-slider-filled {
-  position: relative;
-  height: inherit;
-  background-color: var(--color-1);
-}
 .uikit-slider-rule {
   position: relative;
   display: flex;
@@ -272,25 +291,6 @@ div.uikit.uikit-style-lightblue,
 }
 .uikit-slider-rule.vertical div.rule-item:last-child {
   line-height: 7px;
-}
-.uikit-slider-input {
-  position: relative;
-  height: 21px;
-  width: 100px;
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 3px;
-  font-family: Lato;
-  font-size: 11px;
-  color: var(--color-1);
-  padding-left: 5px;
-  padding-right: 5px;
-  transition: box-shadow 0.2s, color 0.2s;
-}
-.uikit-slider-input:focus {
-  outline: none;
-  border-color: var(--color-1);
-  box-shadow: 0 2px 0 0 var(--color-1);
 }
 .uikit-button {
   position: relative;

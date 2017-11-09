@@ -1,7 +1,7 @@
 import './uikit-styles.styl'
 import $ from 'jquery'
 
-interface CoreObjects{
+interface ProtoObjects{
 	[key: string]: any
 }
 
@@ -268,10 +268,10 @@ class UIKitMediator{
 
 class UIKitModel{
 
-    public Data = {}
+    public Data: ProtoObjects = {}
 
-    constructor(data?: any){
-		if (data !== null){
+    constructor(data?: any) {
+		if (data !== null) {
 			this.Data = data;
 		}
 	}
@@ -363,7 +363,7 @@ jsonObject.forEach(function(item){
 
 class UIKit{
 
-	public static Core: CoreObjects = {
+	public static Core: ProtoObjects = {
 		'UIKitElement': UIKitElement,
 		'UIKitMath': UIKitMath,
 		'UIKitCoordinateSystem': UIKitCoordinateSystem,

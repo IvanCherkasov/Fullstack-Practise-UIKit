@@ -49,7 +49,7 @@ class UIKitRadialProgress extends UIKit.Core.UIKitElement{
 		this.element.on('dragstart', function(){
 			return false;
 		});
-		
+
 		this.element.on('selectstart', function(){
 			return false;
 		});

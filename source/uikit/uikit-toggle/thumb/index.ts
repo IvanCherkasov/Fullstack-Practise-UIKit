@@ -3,7 +3,7 @@ import UIKit from '../../uikit-core/index'
 
 class UIKitToggle_Thumb extends UIKit.Core.UIKitElement{
   constructor(element:any, mediator, type){
-    //@ts-ignore
+    // @ts-ignore
     super(element, mediator, type);
     let that = this;
 

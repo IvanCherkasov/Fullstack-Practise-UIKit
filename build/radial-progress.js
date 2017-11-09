@@ -10318,13 +10318,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_ts__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_ts__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_js__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_ts__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_ts__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_js__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_uikit_input_text_index_js__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_uikit_textarea_index_js__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_ts__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_uikit_input_text_index_ts__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_uikit_textarea_index_ts__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__uikit_uikit_toggle_index_ts__ = __webpack_require__(54);
 
 
@@ -10366,141 +10366,139 @@ exports.raw = "[\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__ = __webpack_require__(20);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
 
 
+var UIKitSlider = /** @class */ (function (_super) {
+    __extends(UIKitSlider, _super);
+    function UIKitSlider(element) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-slider')) {
+            throw new ReferenceError('Элемент не является слайдером');
+        }
+        _this.Type = 'horizontal';
+        _this.TypesList = ['horizontal', 'vertical'];
+        if (_this.element.attr('type') !== undefined) {
+            if (_this.element.attr('type') !== '') {
+                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
+                    _this.Type = _this.element.attr('type');
+                }
+            }
+        }
+        _this._init();
+        return _this;
+    }
+    UIKitSlider.prototype._init = function () {
+        var _this = this;
+        var middleWare = [];
+        this.model = new UIKitSlider_Model();
+        this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
+        this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+        this.Mediator.subscribe('model.value', function (modelData) {
+            _this.element.attr('value', modelData.value);
+        });
+        this.Mediator.subscribe('model.minimum', function (modelData) {
+            _this.element.attr('minimum', modelData.minimum);
+        });
+        this.Mediator.subscribe('model.maximum', function (modelData) {
+            _this.element.attr('maximum', modelData.maximum);
+        });
+        this.track = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator, this.Type);
+        this.rule = new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator, this.Type);
+        this.input = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.Mediator, this.Type);
+        setTimeout(function () {
+            _this.Mediator.setData('model.value', Number(_this.element.attr('value')));
+        }, 0);
+        this.element.on('dragstart', function () {
+            return false;
+        });
+        this.element.on('selectstart', function () {
+            return false;
+        });
+        this.stylize(this.Type);
+    };
+    return UIKitSlider;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitSlider_Model = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Model, _super);
+    function UIKitSlider_Model() {
+        // @ts-ignore
+        return _super.call(this, {
+            _value: 0,
+            _minimum: 0,
+            _maximum: 0,
+            _cs: null,
+            get value() {
+                return this._value;
+            },
+            get minimum() {
+                return this._minimum;
+            },
+            get maximum() {
+                return this._maximum;
+            },
+            get coordinateSystem() {
+                return this._cs;
+            },
+        }) || this;
+    }
+    UIKitSlider_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'value':
+                return this.Data.value;
+            case 'minimum':
+                return this.Data.minimum;
+            case 'maximum':
+                return this.Data.maximum;
+            case 'coordinateSystem':
+                return this.Data.coordinateSystem;
+            default:
+                return undefined;
+        }
+    };
+    UIKitSlider_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'value':
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+                this.Data._value = value;
+                return true;
+            case 'minimum':
+                this.Data._minimum = data;
+                return true;
+            case 'maximum':
+                this.Data._maximum = data;
+                return true;
+            case 'coordinateSystem':
+                var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitCoordinateSystem(data);
+                this.Data._cs = cs;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return UIKitSlider_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitSlider = UIKitSlider;
 
-class UIKitSlider extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-slider')) {
-			throw new ReferenceError('Элемент не является слайдером');
-		}
-		this.Type = 'horizontal';
-		this.TypesList = ['horizontal', 'vertical'];
-		var that = this;
-		if (this.element.attr('type') !== undefined) {
-			if (this.element.attr('type') !== '') {
-				if (this.TypesList.includes(this.element.attr('type'))) {
-					this.Type = this.element.attr('type');
-				}
-			}
-		}
-
-		this._init();
-	}
-
-	_init() {
-		var that = this;
-		var middleWare = [];
-
-		this.Model = new UIKitSlider_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model, middleWare);
-		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
-		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			that.element.attr('value', modelData.value);
-		});
-
-		this.Mediator.subscribe('model.minimum', function (modelData) {
-			that.element.attr('minimum', modelData.minimum);
-		});
-
-		this.Mediator.subscribe('model.maximum', function (modelData) {
-			that.element.attr('maximum', modelData.maximum);
-		});
-
-		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_track_index_js__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator, this.Type);
-
-		this.Rule = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_rule_index_js__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator, this.Type);
-
-		this.Input = new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_input_index_js__["a" /* default */](this.element.find('.uikit-slider-input'), this.Mediator, this.Type);
-
-		setTimeout(function () {
-			that.Mediator.setData('model.value', Number(that.element.attr('value')));
-		}, 0);
-
-		this.element.on('dragstart', function () {
-			return false;
-		});
-
-		this.element.on('selectstart', function () {
-			return false;
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-class UIKitSlider_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_value: 0,
-			_minimum: 0,
-			_maximum: 0,
-			_cs: null,
-			get value() {
-				return this._value;
-			},
-			get minimum() {
-				return this._minimum;
-			},
-			get maximum() {
-				return this._maximum;
-			},
-			get coordinateSystem() {
-				return this._cs;
-			}
-		});
-		var that = this;
-	}
-
-	getData(property) {
-		switch (property) {
-			case 'value':
-				return this.Data.value;
-			case 'minimum':
-				return this.Data.minimum;
-			case 'maximum':
-				return this.Data.maximum;
-			case 'coordinateSystem':
-				return this.Data.coordinateSystem;
-			default:
-				return undefined;
-		}
-	}
-
-	setData(property, data) {
-		switch (property) {
-			case 'value':
-				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
-				this.Data._value = value;
-				return true;
-			case 'minimum':
-				this.Data._minimum = data;
-				return true;
-			case 'maximum':
-				this.Data._maximum = data;
-				return true;
-			case 'coordinateSystem':
-				var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitCoordinateSystem(data);
-				this.Data._cs = cs;
-				return true;
-			default:
-				return false;
-		}
-	}
-
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitSlider = UIKitSlider;
 
 /***/ }),
 /* 7 */
@@ -10513,84 +10511,57 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitSlider_Input = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Input, _super);
+    function UIKitSlider_Input(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var mediatorSubscribeModelValue = function (modelData) {
+            var val = parseInt(_this.element.val(), 10);
+            if (val !== NaN) {
+                _this.element.val(modelData.value);
+            }
+            else {
+                if (modelData.value !== val) {
+                    _this.element.val(modelData.value);
+                }
+            }
+        };
+        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        var changeUikitSliderInputCallback = function () {
+            if (_this.element.val()) {
+                var val = parseInt(_this.element.val(), 10);
+                if (val !== NaN) {
+                    if (val !== _this.Mediator.getData('model.value')) {
+                        _this.Mediator.setData('model.value', val);
+                    }
+                }
+            }
+        };
+        _this.element.on('change.uikit.slider.input', changeUikitSliderInputCallback);
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Input;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
 
-
-
-class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		var isDrag = false;
-		this.Mediator.setData('model.coordinateSystem', this.element);
-
-		this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_thumb_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.Mediator, this.Type);
-
-		this.Fill = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_fill_index_js__["a" /* default */](this.element.find('.uikit-slider-fill'), this.Mediator, this.Type);
-
-		var startDrag = function () {
-			isDrag = true;
-			$(document).on('mousemove.uikit.slider.track', function (event) {
-				var position = 0;
-				var percent = 0;
-				var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-				var minimum = that.Mediator.getData('model.minimum');
-				var maximum = that.Mediator.getData('model.maximum');
-				if (that.Type === 'horizontal') {
-					position = event.pageX - coordinateSystem.xMin;
-					percent = 100 / coordinateSystem.width * position;
-				} else if (that.Type === 'vertical') {
-					position = event.pageY - coordinateSystem.yMin;
-					percent = 100 / coordinateSystem.height * position;
-					percent = 100 - percent;
-				}
-				var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
-				if (value !== that.Mediator.getData('model.value')) {
-					that.Mediator.setData('model.value', value);
-				}
-			});
-			$(document).on('mouseup.uikit.slider.track', function () {
-				$(document).off('mousemove.uikit.slider.track');
-				$(document).off('mouseup.uikit.slider.track');
-				isDrag = false;
-			});
-		};
-
-		this.element.on('mousedown', function (event) {
-			var position = 0;
-			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			var minimum = that.Mediator.getData('model.minimum');
-			var maximum = that.Mediator.getData('model.maximum');
-			if (that.Type === 'horizontal') {
-				position = event.pageX - coordinateSystem.xMin;
-				percent = 100 / coordinateSystem.width * position;
-			} else if (that.Type === 'vertical') {
-				position = event.pageY - coordinateSystem.yMin;
-				percent = 100 / coordinateSystem.height * position;
-				percent = 100 - percent;
-			}
-			var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
-			that.Mediator.setData('model.value', value);
-			startDrag();
-		});
-
-		this.element.on('mouseenter', function () {
-			that.Mediator.publish('track.hover', true);
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Track);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 9 */
@@ -10605,113 +10576,93 @@ class UIKitSlider_Track extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__ = __webpack_require__(16);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
 
-class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp;
-		var isDrag = false;
-		var isHover = false;
+var UIKitSlider_Track = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Track, _super);
+    function UIKitSlider_Track(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.isDrag = false;
+        _this.Mediator.setData('model.coordinateSystem', _this.element);
+        _this.fill = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__["a" /* default */](_this.element.find('.uikit-slider-fill'), _this.Mediator, _this.Type);
+        _this.thumb = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__["a" /* default */](_this.element.find('.uikit-slider-thumb'), _this.Mediator, _this.Type);
+        var startDrag = function () {
+            _this.isDrag = true;
+            var documentOnMousemove = function (event) {
+                var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+                var minimum = _this.Mediator.getData('model.minimum');
+                var maximum = _this.Mediator.getData('model.maximum');
+                var position = 0;
+                var percent = 0;
+                if (_this.Type === 'horizontal') {
+                    position = event.pageX - coordinateSystem.xMin;
+                    percent = (100 / (coordinateSystem.width)) * position;
+                }
+                else if (_this.Type === 'vertical') {
+                    position = event.pageY - coordinateSystem.yMin;
+                    percent = (100 / (coordinateSystem.height)) * position;
+                    percent = 100 - percent;
+                }
+                var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
+                if (value !== _this.Mediator.getData('model.value')) {
+                    _this.Mediator.setData('model.value', value);
+                }
+            };
+            $(document).on('mousemove.uikit.slider.track', documentOnMousemove);
+            var documentMouseup = function () {
+                $(document).off('mousemove.uikit.slider.track');
+                $(document).off('mouseup.uikit.slider.track');
+                _this.isDrag = false;
+            };
+            $(document).on('mouseup.uikit.slider.track', documentMouseup);
+        };
+        var elementMousedown = function (event) {
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            var minimum = _this.Mediator.getData('model.minimum');
+            var maximum = _this.Mediator.getData('model.maximum');
+            var position = 0;
+            var percent = 0;
+            if (_this.Type === 'horizontal') {
+                position = event.pageX - coordinateSystem.xMin;
+                percent = (100 / (coordinateSystem.width)) * position;
+            }
+            else if (_this.Type === 'vertical') {
+                position = event.pageY - coordinateSystem.yMin;
+                percent = (100 / (coordinateSystem.height)) * position;
+                percent = 100 - percent;
+            }
+            var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
+            _this.Mediator.setData('model.value', value);
+            startDrag();
+        };
+        _this.element.on('mousedown.uikit.slider.track', elementMousedown);
+        _this.element.on('mouseenter.uikit.slider.track', function () {
+            _this.Mediator.publish('track.hover', true);
+        });
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Track;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Track);
 
-		var calculateValue = function (position) {
-			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			var minimum = that.Mediator.getData('model.minimum');
-			var maximum = that.Mediator.getData('model.maximum');
-			if (that.Type === 'horizontal') {
-				percent = 100 / coordinateSystem.width * position;
-			} else if (that.Type === 'vertical') {
-				percent = 100 / coordinateSystem.height * position;
-				percent = 100 - percent;
-			}
-			var value = Math.round(percent * (maximum - minimum) / 100 + minimum);
-			return value;
-		};
-
-		var moveThumb = function (position) {
-			if (position >= 0) {
-				var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-				if (that.Type === "horizontal") {
-					var percent = 100 / coordinateSystem.width * position;
-					var maximum = 100 / coordinateSystem.xMax * (coordinateSystem.xMax - that.element.width() / 2);
-					var minimum = 100 / coordinateSystem.width * that.element.width();
-					that.element.css('left', Clamp(percent, -minimum, maximum) + '%');
-				} else if (that.Type === 'vertical') {
-					var percent = 100 / coordinateSystem.height * position;
-					var maximum = 100 / coordinateSystem.yMax * (coordinateSystem.yMax + that.element.width());
-					var minimum = 100 / coordinateSystem.height * that.element.width() / 2;
-					that.element.css('top', 100 - Clamp(percent, -minimum, maximum) + '%');
-				}
-			}
-		};
-
-		var startDrag = function () {
-			isDrag = true;
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			$(document).on('mousemove.uikit.slider.thumb', function (event) {
-				if (that.Type === "horizontal") {
-					var position = event.pageX - coordinateSystem.xMin;
-					var value = calculateValue(position);
-					if (value !== that.Mediator.getData('model.value')) {
-						that.Mediator.setData('model.value', value);
-					}
-				} else if (that.Type === 'vertical') {
-					var position = event.pageY - coordinateSystem.yMin;
-					var value = calculateValue(position);
-					if (value !== that.Mediator.getData('model.value')) {
-						that.Mediator.setData('model.value', value);
-					}
-				}
-			});
-			$(document).on('mouseup.uikit.slider.thumb', function () {
-				$(document).off('mousemove.uikit.slider.thumb');
-				$(document).off('mouseup.uikit.slider.thumb');
-				isDrag = false;
-			});
-		};
-
-		this.Upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index_js__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.Mediator, this.Type);
-
-		this.element.on('mouseenter', function () {
-			isHover = true;
-			that.Mediator.publish('thumb.hover', true);
-		});
-
-		this.element.on('mouseleave', function () {
-			isHover = false;
-			that.Mediator.publish('thumb.hover', false);
-		});
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			var minimum = that.Mediator.getData('model.minimum');
-			var maximum = that.Mediator.getData('model.maximum');
-			var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
-			if (that.Type === 'horizontal') {
-				var position = Math.round(percent * coordinateSystem.width / 100);
-				moveThumb(position);
-			} else if (that.Type === 'vertical') {
-				var position = Math.round(percent * coordinateSystem.height / 100);
-				moveThumb(position);
-			}
-		});
-
-		this.element.on('mousedown', function (event) {
-			startDrag();
-			event.stopPropagation();
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
@@ -10727,55 +10678,35 @@ class UIKitSlider_Thumb extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__ = __webpack_require__(14);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
-class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		var div = that.element.find('div.no-select');
-		var timerId = 0;
-		var disable = function () {
-			that.element.removeClass('show');
-		};
+var UIKitSlider_Fill = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Fill, _super);
+    function UIKitSlider_Fill(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__["a" /* default */](_this.element.find('.uikit-slider-filled'), _this.Mediator, _this.Type);
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Fill;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
 
-		var print = function (value) {
-			div.text(value);
-		};
-
-		var show = function () {
-			clearTimeout(timerId);
-			that.element.addClass('show');
-			timerId = setTimeout(disable, 1000);
-		};
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			print(modelData.value);
-		});
-
-		this.Mediator.subscribe('thumb.hover', function (value) {
-			if (value) {
-				show();
-			}
-		});
-
-		this.Mediator.subscribe('track.hover', function (value) {
-			if (value) {
-				show();
-			}
-		});
-
-		this.Mediator.subscribe('model.value', function () {
-			show();
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
 
 /***/ }),
 /* 13 */
@@ -10790,22 +10721,61 @@ class UIKitSlider_Upper extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitSlider_Filled = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Filled, _super);
+    function UIKitSlider_Filled(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp;
+        var moveFilled = function (position) {
+            var percent = 0;
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            if (_this.Type === 'horizontal') {
+                percent = (100 / coordinateSystem.width) * position;
+                _this.element.css('width', clamp(percent, 0, 100) + '%');
+            }
+            else if (_this.Type === 'vertical') {
+                percent = (100 / coordinateSystem.height) * position;
+                _this.element.css('height', (clamp(percent, 0, 100)) + '%');
+            }
+        };
+        var mediatorSubscribeModelValue = function (modelData) {
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            var minimum = _this.Mediator.getData('model.minimum');
+            var maximum = _this.Mediator.getData('model.maximum');
+            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
+            percent *= 100;
+            var position = 0;
+            if (_this.Type === 'horizontal') {
+                position = Math.round(((percent * (coordinateSystem.width)) / 100));
+            }
+            else if (_this.Type === 'vertical') {
+                position = Math.round(((percent * (coordinateSystem.height)) / 100));
+            }
+            moveFilled(position);
+        };
+        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Filled;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
 
-
-class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		this.Filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index_js__["a" /* default */](this.element.find('.uikit-slider-filled'), this.Mediator, this.Type);
-
-		this.stylize(this.Type);
-	}
-}
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
 
 /***/ }),
 /* 15 */
@@ -10818,50 +10788,129 @@ class UIKitSlider_Fill extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts_
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__ = __webpack_require__(18);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
-class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		var Clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp;
+var UIKitSlider_Thumb = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Thumb, _super);
+    function UIKitSlider_Thumb(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.isDrag = false;
+        _this.isHover = false;
+        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp;
+        var calculateValue = function (position) {
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            var minimum = _this.Mediator.getData('model.minimum');
+            var maximum = _this.Mediator.getData('model.maximum');
+            var percent = 0;
+            if (_this.Type === 'horizontal') {
+                percent = (100 / coordinateSystem.width) * position;
+            }
+            else if (_this.Type === 'vertical') {
+                percent = (100 / coordinateSystem.height) * position;
+                percent = 100 - percent;
+            }
+            var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
+            return value;
+        };
+        var moveThumb = function (position) {
+            if (position >= 0) {
+                var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+                if (_this.Type === 'horizontal') {
+                    var percent = (100 / coordinateSystem.width) * (position);
+                    var maximum = (100 / coordinateSystem.xMax) *
+                        (coordinateSystem.xMax - (_this.element.width() / 2));
+                    var minimum = (100 / coordinateSystem.width) * _this.element.width();
+                    _this.element.css('left', clamp(percent, -minimum, maximum) + '%');
+                }
+                else if (_this.Type === 'vertical') {
+                    var percent = (100 / coordinateSystem.height) * (position);
+                    var maximum = (100 / coordinateSystem.yMax) *
+                        (coordinateSystem.yMax + (_this.element.width()));
+                    var minimum = (100 / coordinateSystem.height) * _this.element.width() / 2;
+                    _this.element.css('top', (100 - clamp(percent, -minimum, maximum)) + '%');
+                }
+            }
+        };
+        var startDrag = function () {
+            _this.isDrag = true;
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            var documentMousemove = function (event) {
+                if (_this.Type === 'horizontal') {
+                    var position = event.pageX - coordinateSystem.xMin;
+                    var value = calculateValue(position);
+                    if (value !== _this.Mediator.getData('model.value')) {
+                        _this.Mediator.setData('model.value', value);
+                    }
+                }
+                else if (_this.Type === 'vertical') {
+                    var position = event.pageY - coordinateSystem.yMin;
+                    var value = calculateValue(position);
+                    if (value !== _this.Mediator.getData('model.value')) {
+                        _this.Mediator.setData('model.value', value);
+                    }
+                }
+            };
+            $(document).on('mousemove.uikit.slider.thumb', documentMousemove);
+            var documentMouseup = function () {
+                $(document).off('mousemove.uikit.slider.thumb');
+                $(document).off('mouseup.uikit.slider.thumb');
+                _this.isDrag = false;
+            };
+            $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
+        };
+        _this.upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__["a" /* default */](_this.element.find('.uikit-slider-thumb-upper'), _this.Mediator, _this.Type);
+        _this.element.on('mouseenter.uikit.slider.thumb', function () {
+            _this.isHover = true;
+            _this.Mediator.publish('thumb.hover', true);
+        });
+        _this.element.on('mouseleave.uikit.slider.thumb', function () {
+            _this.isHover = false;
+            _this.Mediator.publish('thumb.hover', false);
+        });
+        var mediatorSubscribeModelValue = function (modelData) {
+            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
+            var minimum = _this.Mediator.getData('model.minimum');
+            var maximum = _this.Mediator.getData('model.maximum');
+            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
+            if (_this.Type === 'horizontal') {
+                var position = Math.round(((percent * (coordinateSystem.width)) / 100));
+                moveThumb(position);
+            }
+            else if (_this.Type === 'vertical') {
+                var position = Math.round(((percent * (coordinateSystem.height)) / 100));
+                moveThumb(position);
+            }
+        };
+        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        _this.element.on('mousedown.uikit.slider.thumb', function (event) {
+            startDrag();
+            event.stopPropagation();
+        });
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Thumb;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
 
-		var moveFilled = function (position) {
-			var percent = 0;
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			if (that.Type === 'horizontal') {
-				percent = 100 / coordinateSystem.width * position;
-				that.element.css('width', Clamp(percent, 0, 100) + '%');
-			} else if (that.Type === 'vertical') {
-				percent = 100 / coordinateSystem.height * position;
-				that.element.css('height', Clamp(percent, 0, 100) + '%');
-			}
-		};
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			var coordinateSystem = that.Mediator.getData('model.coordinateSystem');
-			var minimum = that.Mediator.getData('model.minimum');
-			var maximum = that.Mediator.getData('model.maximum');
-			var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
-			percent *= 100;
-			var position = 0;
-			if (that.Type === 'horizontal') {
-				position = Math.round(percent * coordinateSystem.width / 100);
-			} else if (that.Type === 'vertical') {
-				position = Math.round(percent * coordinateSystem.height / 100);
-			}
-			moveFilled(position);
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 17 */
@@ -10874,99 +10923,58 @@ class UIKitSlider_Filled extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_t
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitSlider_Upper = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Upper, _super);
+    function UIKitSlider_Upper(dom, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, dom, mediator, type) || this;
+        var div = _this.element.find('div.no-select');
+        var timerId;
+        var disable = function () {
+            _this.element.removeClass('show');
+        };
+        var print = function (value) {
+            div.text(value);
+        };
+        var show = function () {
+            clearTimeout(timerId);
+            _this.element.addClass('show');
+            timerId = setTimeout(disable, 1000);
+        };
+        _this.Mediator.subscribe('model.value', function (modelData) {
+            print(modelData.value);
+        });
+        _this.Mediator.subscribe('thumb.hover', function (value) {
+            if (value) {
+                show();
+            }
+        });
+        _this.Mediator.subscribe('model.value', function () {
+            show();
+        });
+        _this.stylize(_this.Type);
+        return _this;
+    }
+    return UIKitSlider_Upper;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
 
-class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-		var segments = this.element.attr('segments');
-
-		var getValues = function () {
-			if (segments > 0) {
-				var minimum = that.Mediator.getData('model.minimum');
-				var maximum = that.Mediator.getData('model.maximum');
-				var values = [];
-				var crat = (Math.abs(minimum) + Math.abs(maximum)) / (segments - 1);
-				var buf = minimum;
-				for (var i = 0; i < segments; i++) {
-					values.push(Math.round(buf));
-					buf += crat;
-				}
-				return values;
-			}
-			return undefined;
-		};
-
-		this.stylize(this.Type);
-
-		if (segments !== 0) {
-			var values = getValues();
-			if (values) {
-				if (this.Type === 'horizontal') {
-					that._build(values, true);
-				} else if (this.Type === 'vertical') {
-					that._build(values, false);
-				}
-			}
-		}
-	}
-
-	_build(values, isHorizontal) {
-		var that = this;
-		var divs = [];
-		var size = 100 / (values.length + 1);
-		var shiftType = '';
-		var minimum = that.Mediator.getData('model.minimum');
-		var maximum = that.Mediator.getData('model.maximum');
-
-		if (isHorizontal) {
-			shiftType = 'left';
-			that.element.css('width', '100%');
-		} else {
-			shiftType = 'top';
-			that.element.css('height', '100%');
-		}
-
-		this.element.find('div.rule-item').each(function () {
-			$(this).remove();
-		});
-
-		for (var i = 0; i < values.length; i++) {
-			var div = $('<div>').addClass('rule-item').html('<div>' + values[i] + '</div>').attr('value', values[i]);
-			divs.push(div);
-		}
-
-		if (!isHorizontal) {
-			divs.reverse();
-		}
-
-		for (var i = 1; i < values.length - 1; i++) {
-			var percent = Math.abs(values[i] - minimum) / (maximum - minimum) * 100;
-			divs[i].css(shiftType, percent + '%');
-			if (isHorizontal) {
-				divs[i].css('transform', 'translateX(1px) translateX(-50%)');
-			} else {
-				divs[i].css('transform', 'translateY(-50%)');
-			}
-		}
-
-		divs.forEach(function (item) {
-			that.element.append(item);
-			item.on('click', function () {
-				var value = Number($(this).attr('value'));
-				that.Mediator.setData('model.value', value);
-			});
-		});
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Rule);
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 19 */
@@ -10979,44 +10987,109 @@ class UIKitSlider_Rule extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts_
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitSlider_Rule = /** @class */ (function (_super) {
+    __extends(UIKitSlider_Rule, _super);
+    function UIKitSlider_Rule(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.segments = _this.element.attr('segments');
+        var getValues = function () {
+            if (_this.segments > 0) {
+                var minimum = _this.Mediator.getData('model.minimum');
+                var maximum = _this.Mediator.getData('model.maximum');
+                var crat = ((Math.abs(minimum) + Math.abs(maximum)) / (_this.segments - 1));
+                var values = [];
+                var buf = minimum;
+                for (var i = 0; i < _this.segments; i += 1) {
+                    values.push(Math.round(buf));
+                    buf += crat;
+                }
+                return values;
+            }
+            return undefined;
+        };
+        _this.stylize(_this.Type);
+        if (_this.segments !== 0) {
+            var values = getValues();
+            if (values) {
+                if (_this.Type === 'horizontal') {
+                    _this.build(values, true);
+                }
+                else if (_this.Type === 'vertical') {
+                    _this.build(values, false);
+                }
+            }
+        }
+        return _this;
+    }
+    UIKitSlider_Rule.prototype.build = function (values, isHorizontal) {
+        var _this = this;
+        var size = (100 / (values.length + 1));
+        var minimum = this.Mediator.getData('model.minimum');
+        var maximum = this.Mediator.getData('model.maximum');
+        var divs = [];
+        var shiftType = '';
+        if (isHorizontal) {
+            shiftType = 'left';
+            this.element.css('width', '100%');
+        }
+        else {
+            shiftType = 'top';
+            this.element.css('height', '100%');
+        }
+        var elementRuleItemEach = function (item) {
+            $(item).remove();
+        };
+        this.element.find('div.rule-item').toArray().map(elementRuleItemEach);
+        for (var i = 0; i < values.length; i += 1) {
+            var div = $('<div>')
+                .addClass('rule-item')
+                .html('<div>' + values[i] + '</div>')
+                .attr('value', values[i]);
+            divs.push(div);
+        }
+        if (!isHorizontal) {
+            divs.reverse();
+        }
+        for (var i = 1; i < values.length - 1; i += 1) {
+            var percent = Math.abs(values[i] - minimum) / (maximum - minimum) * 100;
+            divs[i].css(shiftType, percent + '%');
+            if (isHorizontal) {
+                divs[i].css('transform', 'translateX(1px) translateX(-50%)');
+            }
+            else {
+                divs[i].css('transform', 'translateY(-50%)');
+            }
+        }
+        var divEach = function (item) {
+            _this.element.append(item);
+            item.on('click', function () {
+                var value = Number(item.attr('value'));
+                _this.Mediator.setData('model.value', value);
+            });
+        };
+    };
+    return UIKitSlider_Rule;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Rule);
 
-class UIKitSlider_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type) {
-		super(dom, mediator, type);
-		var that = this;
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			var val = parseInt(that.element.val(), 10);
-			if (val !== NaN) {
-				that.element.val(modelData.value);
-			} else {
-				if (modelData.value !== val) {
-					that.element.val(modelData.value);
-				}
-			}
-		});
-
-		this.element.on('change.uikit.slider.input', function () {
-			if (that.element.val()) {
-				var val = parseInt(that.element.val(), 10);
-				if (val !== NaN) {
-					if (val !== that.Mediator.getData('model.value')) {
-						that.Mediator.setData('model.value', val);
-					}
-				}
-			}
-		});
-
-		this.stylize(this.Type);
-	}
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 21 */
@@ -11199,123 +11272,132 @@ var UIKitButton_Effect = /** @class */ (function (_super) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index_js__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__ = __webpack_require__(30);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
+var UIKitRadialProgress = /** @class */ (function (_super) {
+    __extends(UIKitRadialProgress, _super);
+    function UIKitRadialProgress(element) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-radial-progress')) {
+            throw new ReferenceError('Элемент не является радиальным прогресс баром');
+        }
+        _this.model = new UIKitRadialProgress_Model();
+        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
+        _this.Mediator.setData('model.minimum', Number(_this.element.attr('minimum')));
+        _this.Mediator.setData('model.maximum', Number(_this.element.attr('maximum')));
+        _this.Mediator.subscribe('model.value', function (modelData) {
+            _this.element.attr('value', modelData.value);
+        });
+        _this.Mediator.subscribe('model.minimum', function (modelData) {
+            _this.element.attr('minimum', modelData.minimum);
+        });
+        _this.Mediator.subscribe('model.maximum', function (modelData) {
+            _this.element.attr('maximum', modelData.maximum);
+        });
+        _this.caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__["a" /* default */](_this.element.find('.uikit-radial-progress-caption'), _this.Mediator);
+        var mediatorSubscribeModelValue = function (modelData) {
+            var itemRight = _this.element.find('.progress-right');
+            var itemLeft = _this.element.find('.progress-left');
+            var percent = Math.abs(modelData.value - modelData.minimum) /
+                (modelData.maximum - modelData.minimum) * 100;
+            var value = Math.round(((percent * (360)) / 100));
+            if (value <= 180 && value >= 0) {
+                itemRight.css('transform', 'rotate(' + value + 'deg)');
+                itemLeft.css('transform', 'rotate(180deg)');
+            }
+            else if (value <= 360 && value > 180) {
+                itemRight.css('transform', 'rotate(180deg)');
+                itemLeft.css('transform', 'rotate(' + value + 'deg)');
+            }
+        };
+        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        _this.element.on('dragstart', function () {
+            return false;
+        });
+        _this.element.on('selectstart', function () {
+            return false;
+        });
+        _this.value = Number(_this.element.attr('value'));
+        return _this;
+    }
+    Object.defineProperty(UIKitRadialProgress.prototype, "value", {
+        get: function () {
+            return this.Mediator.getData('model.value');
+        },
+        set: function (value) {
+            this.Mediator.setData('model.value', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitRadialProgress;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitRadialProgress_Model = /** @class */ (function (_super) {
+    __extends(UIKitRadialProgress_Model, _super);
+    function UIKitRadialProgress_Model() {
+        // @ts-ignore
+        return _super.call(this, {
+            _value: 0,
+            _minimum: 0,
+            _maximum: 0,
+            get value() {
+                return this._value;
+            },
+            get minimum() {
+                return this._minimum;
+            },
+            get maximum() {
+                return this._maximum;
+            },
+        }) || this;
+    }
+    UIKitRadialProgress_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'value':
+                return this.Data.value;
+            case 'minimum':
+                return this.Data.minimum;
+            case 'maximum':
+                return this.Data.maximum;
+            default:
+                return undefined;
+        }
+    };
+    UIKitRadialProgress_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'value':
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
+                this.Data._value = value;
+                return true;
+            case 'minimum':
+                this.Data._minimum = data;
+                return true;
+            case 'maximum':
+                this.Data._maximum = data;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return UIKitRadialProgress_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
 
-class UIKitRadialProgress extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-radial-progress')) {
-			throw new ReferenceError('Элемент не является радиальным прогресс баром');
-		}
-		var that = this;
-
-		this.Model = new UIKitRadialProgress_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-		this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
-		this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			that.element.attr('value', modelData.value);
-		});
-
-		this.Mediator.subscribe('model.minimum', function (modelData) {
-			that.element.attr('minimum', modelData.minimum);
-		});
-
-		this.Mediator.subscribe('model.maximum', function (modelData) {
-			that.element.attr('maximum', modelData.maximum);
-		});
-
-		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index_js__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.Mediator);
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			var item_right = that.element.find('.progress-right');
-			var item_left = that.element.find('.progress-left');
-			var percent = Math.abs(modelData.value - modelData.minimum) / (modelData.maximum - modelData.minimum) * 100;
-			var value = Math.round(percent * 360 / 100);
-			if (value <= 180 && value >= 0) {
-				item_right.css('transform', 'rotate(' + value + 'deg)');
-				item_left.css('transform', 'rotate(180deg)');
-			} else if (value <= 360 && value > 180) {
-				item_right.css('transform', 'rotate(180deg)');
-				item_left.css('transform', 'rotate(' + value + 'deg)');
-			}
-		});
-
-		this.element.on('dragstart', function () {
-			return false;
-		});
-
-		this.element.on('selectstart', function () {
-			return false;
-		});
-
-		this.value = Number(this.element.attr('value'));
-	}
-
-	get value() {
-		return this.Mediator.getData('model.value');
-	}
-
-	set value(val) {
-		this.Mediator.setData('model.value', val);
-	}
-}
-
-class UIKitRadialProgress_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_value: 0,
-			_minimum: 0,
-			_maximum: 0,
-			get value() {
-				return this._value;
-			},
-			get minimum() {
-				return this._minimum;
-			},
-			get maximum() {
-				return this._maximum;
-			}
-		});
-	}
-
-	getData(property) {
-		switch (property) {
-			case 'value':
-				return this.Data.value;
-			case 'minimum':
-				return this.Data.minimum;
-			case 'maximum':
-				return this.Data.maximum;
-			default:
-				return undefined;
-		}
-	}
-
-	setData(property, data) {
-		switch (property) {
-			case 'value':
-				var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
-				this.Data._value = value;
-				return true;
-			case 'minimum':
-				this.Data._minimum = data;
-				return true;
-			case 'maximum':
-				this.Data._maximum = data;
-				return true;
-			default:
-				return false;
-		}
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
 
 /***/ }),
 /* 29 */
@@ -11330,26 +11412,37 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitRadialProgress_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		var print = function (value) {
-			that.element.text(value);
-		};
-
-		this.Mediator.subscribe('model.value', function (modelData) {
-			print(modelData.value);
-		});
-	}
-}
-
+var UIKitRadialProgress_Caption = /** @class */ (function (_super) {
+    __extends(UIKitRadialProgress_Caption, _super);
+    function UIKitRadialProgress_Caption(dom, mediator) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, dom, mediator) || this;
+        var print = function (value) {
+            _this.element.text(value);
+        };
+        _this.Mediator.subscribe('model.value', function (modelData) {
+            print(modelData.value);
+        });
+        return _this;
+    }
+    return UIKitRadialProgress_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress_Caption);
+
 
 /***/ }),
 /* 31 */
@@ -11442,152 +11535,155 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitArr
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_track_index_js__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
+var UIKitStages = /** @class */ (function (_super) {
+    __extends(UIKitStages, _super);
+    function UIKitStages(element) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-stages')) {
+            throw new ReferenceError('Элемент не является stages');
+        }
+        if (_this.element.attr('invert') !== undefined) {
+            if (_this.element.attr('invert') !== '') {
+                var isTrueSet = (_this.element.attr('invert') === 'true');
+                if (isTrueSet) {
+                    _this.INVERT = true;
+                }
+            }
+        }
+        _this.Type = 'horizontal';
+        _this.TypesList = ['horizontal', 'vertical'];
+        if (_this.element.attr('type') !== undefined) {
+            if (_this.element.attr('type') !== '') {
+                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
+                    _this.Type = _this.element.attr('type');
+                }
+            }
+        }
+        _this._init();
+        return _this;
+    }
+    UIKitStages.prototype._init = function () {
+        var _this = this;
+        this.model = new UIKitStages_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        var stages = Number(this.element.attr('stages'));
+        var stage = Number(this.element.attr('stage'));
+        this.mediator.setData('model.stages', stages);
+        if (stage < 1) {
+            stage = 1;
+        }
+        if (stage >= stages) {
+            stage = stages;
+        }
+        var mediatorSubscribeModelStage = function (modelData) {
+            _this.element.attr('stage', modelData.stage);
+        };
+        var mediatorSubscribeModelStages = function (modelData) {
+            _this.element.attr('stage', modelData.stage);
+        };
+        this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
+        this.mediator.subscribe('model.stages', mediatorSubscribeModelStages);
+        this.track = new __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.Type, this.INVERT);
+        setTimeout(function () {
+            _this.mediator.setData('model.stage', stage);
+        }, 0);
+        this.element.on('dragstart', function () {
+            return false;
+        });
+        this.element.on('selectstart', function () {
+            return false;
+        });
+        this.acceptType();
+    };
+    Object.defineProperty(UIKitStages.prototype, "stage", {
+        get: function () {
+            return this.mediator.getData('model.stage');
+        },
+        set: function (value) {
+            this.mediator.setData('model.stage', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitStages.prototype, "invert", {
+        get: function () {
+            return this.INVERT;
+        },
+        set: function (value) {
+            if (this.Type === 'vertical') {
+                if (typeof value === 'boolean') {
+                    this.INVERT = value;
+                    this.rebuild();
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitStages;
+}(__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitStages_Model = /** @class */ (function (_super) {
+    __extends(UIKitStages_Model, _super);
+    function UIKitStages_Model() {
+        // @ts-ignore
+        return _super.call(this, {
+            _stages: 0,
+            _stage: 0,
+            get stages() {
+                return this._stages;
+            },
+            get stage() {
+                return this._stage;
+            },
+        }) || this;
+    }
+    UIKitStages_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'stages':
+                return this.Data.stages;
+            case 'stage':
+                return this.Data.stage;
+            default:
+                return undefined;
+        }
+    };
+    UIKitStages_Model.prototype.setData = function (property, data) {
+        var localData = data;
+        switch (property) {
+            case 'stages':
+                if (localData < 1)
+                    localData = 1;
+                this.Data._stages = localData;
+                return true;
+            case 'stage':
+                localData = __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(localData, 0, this.Data.stages);
+                this.Data._stage = localData;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return UIKitStages_Model;
+}(__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitStages = UIKitStages;
 
-class UIKitStages extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-stages')) {
-			throw new ReferenceError('Элемент не является stages');
-		}
-		var that = this;
-
-		this.Invert = false;
-		if (this.element.attr('invert') !== undefined) {
-			if (this.element.attr('invert') !== '') {
-				var isTrueSet = this.element.attr('invert') === 'true';
-				if (isTrueSet) {
-					this.Invert = true;
-				}
-			}
-		}
-
-		this.Type = 'horizontal';
-		this.TypesList = ['horizontal', 'vertical'];
-		var that = this;
-		if (this.element.attr('type') !== undefined) {
-			if (this.element.attr('type') !== '') {
-				if (this.TypesList.includes(this.element.attr('type'))) {
-					this.Type = this.element.attr('type');
-				}
-			}
-		}
-
-		this._init();
-	}
-
-	_init() {
-		var that = this;
-		this.Model = new UIKitStages_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-		var stages = Number(this.element.attr('stages'));
-		this.Mediator.setData('model.stages', stages);
-		var stage = Number(this.element.attr('stage'));
-
-		if (stage < 1) {
-			stage = 1;
-		}
-
-		if (stage >= stages) {
-			stage = stages;
-		}
-
-		this.Mediator.subscribe('model.stage', function (modelData) {
-			that.element.attr('stage', modelData.stage);
-		});
-
-		this.Mediator.subscribe('model.stages', function (modelData) {
-			that.element.attr('stages', modelData.stages);
-		});
-
-		this.Track = new __WEBPACK_IMPORTED_MODULE_2__uikit_stages_track_index_js__["a" /* default */](this.element.find('.uikit-stages-track'), this.Mediator, this.Type, this.Invert);
-
-		setTimeout(function () {
-			that.Mediator.setData('model.stage', stage);
-		}, 0);
-
-		this.element.on('dragstart', function () {
-			return false;
-		});
-
-		this.element.on('selectstart', function () {
-			return false;
-		});
-
-		that.acceptType(this.Type);
-	}
-
-	get stage() {
-		return this.Mediator.getData('model.stage');
-	}
-
-	set stage(value) {
-		if (typeof value === 'number') {
-			this.Mediator.setData('model.stage', value);
-		}
-	}
-
-	get invert() {
-		return this.Invert;
-	}
-
-	set invert(value) {
-		if (this.Type === 'vertical') {
-			if (typeof value === 'boolean') {
-				this.Invert = value;
-				this.rebuild();
-			}
-		}
-	}
-}
-
-class UIKitStages_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_stages: 0,
-			_stage: 0,
-			get stages() {
-				return this._stages;
-			},
-			get stage() {
-				return this._stage;
-			}
-		});
-		var that = this;
-	}
-
-	getData(property) {
-		switch (property) {
-			case 'stages':
-				return this.Data.stages;
-			case 'stage':
-				return this.Data.stage;
-			default:
-				return undefined;
-		}
-	}
-
-	setData(property, data) {
-		switch (property) {
-			case 'stages':
-				if (data < 1) data = 1;
-				this.Data._stages = data;
-				return true;
-			case 'stage':
-				data = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMath.Clamp(data, 0, this.Data.stages);
-				this.Data._stage = data;
-				return true;
-			default:
-				return false;
-		}
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitStages = UIKitStages;
 
 /***/ }),
 /* 35 */
@@ -11602,90 +11698,97 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index_js__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index_js__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
 
-
-class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator, type, invert) {
-		super(dom, mediator, type);
-		var that = this;
-
-		this.Invert = false;
-		if (typeof invert === 'boolean') {
-			if (invert === true && this.Type === 'vertical') {
-				this.Invert = true;
-				setTimeout(function () {
-					that.element.addClass('invert');
-				}, 0);
-			}
-		}
-
-		var sizeType = '';
-		var shiftType = '';
-		if (this.Type === 'horizontal') {
-			sizeType = 'width';
-			shiftType = 'left';
-		} else if (this.Type === 'vertical') {
-			sizeType = 'height';
-			shiftType = 'top';
-		}
-
-		var stages = this.Mediator.getData('model.stages');
-		var stage = this.Mediator.getData('model.stage');
-
-		var stageDom = $('<div>').addClass('uikit-stages-stage');
-
-		var captionDom = $('<div>').addClass('uikit-stage-caption');
-
-		var percent = 100 / (stages - 1);
-		var shift = 0;
-		var betweenDom = $('<div>').addClass('uikit-stages-between').addClass(this.Type).css(sizeType, percent + '%');
-
-		for (var i = 1; i <= stages - 1; i++) {
-			betweenDom.css(shiftType, shift + '%');
-			shift += percent;
-			this.element.append(betweenDom.clone());
-		}
-
-		for (var i = 1; i <= stages; i++) {
-			var clone = stageDom.clone().append(captionDom.clone().html('<span>' + i + '</span>'));
-			this.element.append(clone);
-		}
-
-		this.Mediator.subscribe('model.stage', function (modelData) {
-			var betweens = that.element.find('.uikit-stages-between');
-			if (that.Invert) {
-				betweens = $(betweens.get().reverse());
-				console.log(betweens);
-			}
-
-			betweens.each(function (i) {
-				if (i < modelData.stage - 1) {
-					$(this).addClass('staged');
-				} else {
-					$(this).removeClass('staged');
-				}
-			});
-
-			that.element.find('.uikit-stages-stage').each(function (i) {
-				if (i <= modelData.stage - 1) {
-					$(this).addClass('staged');
-				} else {
-					$(this).removeClass('staged');
-				}
-			});
-		});
-
-		this.acceptType(this.Type);
-	}
-}
-
+var UIKitStages_Track = /** @class */ (function (_super) {
+    __extends(UIKitStages_Track, _super);
+    function UIKitStages_Track(element, mediator, type, invert) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.invert = false;
+        _this.invert = invert;
+        if (_this.invert === true && _this.Type === 'vertical') {
+            var addClassInvert = function () {
+                _this.element.addClass('invert');
+            };
+            setTimeout(addClassInvert, 0);
+        }
+        var orientation = ['', ''];
+        if (_this.Type === 'horizontal') {
+            orientation = ['width', 'left'];
+        }
+        else if (_this.Type === 'vertical') {
+            orientation = ['height', 'top'];
+        }
+        var stages = _this.Mediator.getData('model.stages');
+        var percent = 100 / (stages - 1);
+        var stageDom = $('<div>').addClass('uikit-stages-stage');
+        var captionDom = $('<div>').addClass('uikit-stage-caption');
+        var betweenDom = $('<div>')
+            .addClass('uikit-stages-between')
+            .addClass(_this.Type)
+            .css(orientation[0], percent + '%');
+        var shift = 0;
+        for (var i = 1; i <= stages - 1; i += 1) {
+            betweenDom.css(orientation[1], shift + '%');
+            shift += percent;
+            _this.element.append(betweenDom.clone());
+        }
+        for (var i = 1; i <= stages; i += 1) {
+            var clone = stageDom.clone()
+                .append(captionDom.clone()
+                .html('<span>' + i + '</span>'));
+            _this.element.append(clone);
+        }
+        var mediatorSubscribeModelStageCallback = function (modelData) {
+            var betweens = _this.element.find('.uikit-stages-between');
+            if (_this.invert) {
+                betweens = $(betweens.get().reverse());
+                console.log(betweens);
+            }
+            var betweensEachMap = function (item, i) {
+                if (i < (modelData.stage - 1)) {
+                    $(item).addClass('staged');
+                }
+                else {
+                    $(item).removeClass('staged');
+                }
+            };
+            betweens.toArray().map(betweensEachMap);
+            var stagesEachMap = function (item, i) {
+                if (i <= (modelData.stage - 1)) {
+                    $(item).addClass('staged');
+                }
+                else {
+                    $(item).removeClass('staged');
+                }
+            };
+            _this.element.find('.uikit-stages-stage').toArray().map(stagesEachMap);
+        };
+        _this.Mediator.subscribe('model.stage', mediatorSubscribeModelStageCallback);
+        _this.acceptType();
+        return _this;
+    }
+    return UIKitStages_Track;
+}(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitStages_Track);
+
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
@@ -11701,7 +11804,8 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stage_caption_index_js__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stage_caption_index__ = __webpack_require__(40);
+
 
 
 
@@ -11720,6 +11824,7 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
+
 /***/ }),
 /* 41 */
 /***/ (function(module, exports) {
@@ -11735,6 +11840,7 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
+
 /***/ }),
 /* 43 */
 /***/ (function(module, exports) {
@@ -11748,98 +11854,107 @@ class UIKitStages_Track extends __WEBPACK_IMPORTED_MODULE_3__uikit_core_index_ts
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index_js__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index_js__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__ = __webpack_require__(48);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
 
+var UIKitInputText = /** @class */ (function (_super) {
+    __extends(UIKitInputText, _super);
+    function UIKitInputText(element) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-input-text')) {
+            throw new ReferenceError('Элемент не является полем ввода UIKit');
+        }
+        _this.model = new UIKitInputText_Model();
+        _this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
+        _this.input = new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__["a" /* default */](_this.element.find('input'), _this.mediator);
+        _this.Indicator = new __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__["a" /* default */](_this.element.find('.uikit-indicator'), _this.mediator);
+        if (_this.element.attr('indicator') === 'true') {
+            _this.indicator.enabled = true;
+        }
+        else {
+            _this.indicator.enabled = false;
+        }
+        _this.indicator.status = true;
+        return _this;
+    }
+    Object.defineProperty(UIKitInputText.prototype, "text", {
+        get: function () {
+            return this.mediator.getData('model.text');
+        },
+        set: function (value) {
+            this.mediator.setData('model.text', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitInputText.prototype, "indicator", {
+        get: function () {
+            var mediator = this.mediator;
+            return {
+                set enabled(value) {
+                    mediator.publish('indicator.enabled', value);
+                },
+                set status(value) {
+                    mediator.publish('indicator.status', value);
+                },
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitInputText;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitInputText_Model = /** @class */ (function (_super) {
+    __extends(UIKitInputText_Model, _super);
+    function UIKitInputText_Model() {
+        // @ts-ignore
+        return _super.call(this, {
+            _text: '',
+            get text() {
+                return this._text;
+            },
+        }) || this;
+    }
+    UIKitInputText_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'text':
+                return this.Data.text;
+            default:
+                return undefined;
+        }
+    };
+    UIKitInputText_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'text':
+                if (typeof data === 'string') {
+                    this.Data._text = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return UIKitInputText_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitInputText = UIKitInputText;
 
-class UIKitInputText extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-input-text')) {
-			throw new ReferenceError('Элемент не является полем ввода UIKit');
-		}
-
-		this.Model = new UIKitInputText_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-
-		this.Input = new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index_js__["a" /* default */](this.element.find('input'), this.Mediator);
-
-		this.Indicator = new __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index_js__["a" /* default */](this.element.find('.uikit-indicator'), this.Mediator);
-
-		if (this.element.attr('indicator') === 'true') {
-			this.indicator.enabled = true;
-		} else {
-			this.indicator.enabled = false;
-		}
-
-		this.indicator.status = true;
-	}
-
-	get text() {
-		return this.Mediator.getData('model.text');
-	}
-
-	set text(value) {
-		if (typeof value === 'string') {
-			this.Mediator.setData('model.text', value);
-		}
-	}
-
-	get indicator() {
-		var that = this;
-		return {
-			set enabled(value) {
-				if (typeof value === 'boolean') {
-					that.Mediator.publish('indicator.enabled', value);
-				}
-			},
-			set status(value) {
-				if (typeof value === 'boolean') {
-					that.Mediator.publish('indicator.status', value);
-				}
-			}
-		};
-	}
-}
-
-class UIKitInputText_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_text: '',
-			get text() {
-				return this._text;
-			}
-		});
-	}
-
-	getData(property) {
-		switch (property) {
-			case 'text':
-				return this.Data.text;
-			default:
-				return undefined;
-		}
-	}
-
-	setData(property, data) {
-		switch (property) {
-			case 'text':
-				if (typeof data === string) {
-					this.Data._text = data;
-					return true;
-				}
-				return false;
-			default:
-				return false;
-		}
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitInputText = UIKitInputText;
 
 /***/ }),
 /* 45 */
@@ -11854,45 +11969,57 @@ __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKit
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitInputText_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		this.Caption = this.element.attr('caption');
-
-		this.element.focusin(function () {
-			var value = that.element.val();
-			if (typeof value === 'string') {
-				if (value === that.Caption) {
-					that.element.val('');
-				}
-			}
-		});
-
-		this.element.focusout(function () {
-			var value = that.element.val();
-			if (typeof value === 'string') {
-				value = value.trim();
-				if (value === '') {
-					that.element.val(that.Caption);
-				}
-			}
-		});
-
-		this.Mediator.subscribe('model.text', function (modelData) {
-			if (modelData.text !== that.element.val()) {
-				that.element.val(modelData.text);
-			}
-		});
-	}
-}
-
+var UIKitInputText_Input = /** @class */ (function (_super) {
+    __extends(UIKitInputText_Input, _super);
+    function UIKitInputText_Input(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.caption = _this.element.attr('caption');
+        var focusInCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                if (value === _this.caption) {
+                    _this.element.val('');
+                }
+            }
+        };
+        var focusOutCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                value = value.trim();
+                if (value === '') {
+                    _this.element.val(_this.caption);
+                }
+            }
+        };
+        _this.element.focusin(focusInCallback);
+        _this.element.focusout(focusOutCallback);
+        var mediatorSubscribeModelText = function (modelData) {
+            if (modelData.text !== _this.element.val()) {
+                _this.element.val(modelData.text);
+            }
+        };
+        _this.Mediator.subscribe('model.text', mediatorSubscribeModelText);
+        return _this;
+    }
+    return UIKitInputText_Input;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Input);
+
 
 /***/ }),
 /* 47 */
@@ -11907,35 +12034,47 @@ class UIKitInputText_Input extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index_js__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__ = __webpack_require__(50);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
 
-
-class UIKitInputText_Indicator extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index_js__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.Mediator, this.element.attr('ok'), this.element.attr('error'));
-
-		this.Mediator.subscribe('indicator.status', function (value) {
-			if (value) {
-				that.element.addClass('indicator-ok');
-			} else {
-				that.element.removeClass('indicator-ok');
-			}
-		});
-
-		this.Mediator.subscribe('indicator.enabled', function (value) {
-			//переключение индикатора из корня релизует стандартный способ переключения для элемента
-			that.enabled = value;
-		});
-	}
-}
-
+var UIKitInputText_Indicator = /** @class */ (function (_super) {
+    __extends(UIKitInputText_Indicator, _super);
+    function UIKitInputText_Indicator(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        _this.caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__["a" /* default */](_this.element.find('.uikit-indicator-caption'), _this.Mediator);
+        var meditorSubscribeIndicatorStatus = function (value) {
+            if (value) {
+                _this.element.addClass('indicator-ok');
+            }
+            else {
+                _this.element.removeClass('indicator-ok');
+            }
+        };
+        var meditorSubscribeIndicatorEnabled = function (value) {
+            _this.enabled = value;
+        };
+        mediator.subscribe('indicator.status', meditorSubscribeIndicatorStatus);
+        mediator.subscribe('indicator.enabled', meditorSubscribeIndicatorEnabled);
+        return _this;
+    }
+    return UIKitInputText_Indicator;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Indicator);
+
 
 /***/ }),
 /* 49 */
@@ -11950,26 +12089,40 @@ class UIKitInputText_Indicator extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_i
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
-
-class UIKitInputText_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom, mediator) {
-		super(dom, mediator);
-		var that = this;
-
-		this.Mediator.subscribe('indicator.status', function (value) {
-			if (value) {
-				that.element.text(that.element.attr('ok'));
-			} else {
-				that.element.text(that.element.attr('error'));
-			}
-		});
-	}
-}
-
+var UIKitInputText_Caption = /** @class */ (function (_super) {
+    __extends(UIKitInputText_Caption, _super);
+    function UIKitInputText_Caption(element, mediator, type) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element, mediator, type) || this;
+        var mediatorSubscribeIndicatorStatus = function (value) {
+            if (value) {
+                _this.element.text(_this.element.attr('ok'));
+            }
+            else {
+                _this.element.text(_this.element.attr('error'));
+            }
+        };
+        _this.Mediator.subscribe('indicator.status', mediatorSubscribeIndicatorStatus);
+        return _this;
+    }
+    return UIKitInputText_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Caption);
+
 
 /***/ }),
 /* 51 */
@@ -11984,69 +12137,97 @@ class UIKitInputText_Caption extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_ind
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
 
+var UIKitTextarea = /** @class */ (function (_super) {
+    __extends(UIKitTextarea, _super);
+    function UIKitTextarea(element) {
+        var _this = 
+        // @ts-ignore
+        _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-textarea')) {
+            throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
+        }
+        _this.caption = _this.element.attr('caption');
+        _this.model = new UIKitTextarea_Model();
+        _this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
+        var focusInCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                if (value === _this.caption) {
+                    _this.element.val('');
+                }
+            }
+        };
+        var focusOutCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                value = value.trim();
+                if (value === '') {
+                    _this.element.val(_this.caption);
+                }
+            }
+        };
+        _this.element.focusin(focusInCallback);
+        _this.element.focusout(focusOutCallback);
+        var mediatorSubscribeModelText = function (modelData) {
+            _this.element.val(modelData.text);
+        };
+        _this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+        return _this;
+    }
+    Object.defineProperty(UIKitTextarea.prototype, "text", {
+        get: function () {
+            return this.Mediator.getData('model.text');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return UIKitTextarea;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
+var UIKitTextarea_Model = /** @class */ (function (_super) {
+    __extends(UIKitTextarea_Model, _super);
+    function UIKitTextarea_Model() {
+        // @ts-ignore
+        return _super.call(this, {
+            _text: '',
+            get text() {
+                return this._text;
+            },
+        }) || this;
+    }
+    UIKitTextarea_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'text':
+                return this.Data.text;
+            default:
+                return undefined;
+        }
+    };
+    UIKitTextarea_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'text':
+                this.Data._text = data;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return UIKitTextarea_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
+__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitTextarea = UIKitTextarea;
 
-class UIKitTextarea extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitElement {
-	constructor(dom) {
-		super(dom);
-		if (!this.element.hasClass('uikit-textarea')) {
-			throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
-		}
-		let that = this;
-
-		this.Caption = this.element.attr('caption');
-		this.Model = new UIKitTextarea_Model();
-		this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitMediator(this.Model);
-
-		this.element.focusin(function () {
-			var value = that.element.val();
-			if (typeof value === 'string') {
-				if (value === that.Caption) {
-					that.element.val('');
-				}
-			}
-		});
-
-		this.element.focusout(function () {
-			var value = that.element.val();
-			if (typeof value === 'string') {
-				value = value.trim();
-				if (value === '') {
-					that.element.val(that.Caption);
-				}
-			}
-		});
-
-		this.Mediator.subscribe('model.text', function (modelData) {
-			that.element.val(modelData.text);
-		});
-	}
-
-	get text() {
-		return this.Mediator.getData('model.text');
-	}
-
-	set text(value) {
-		if (typeof value === 'string') {
-			this.Mediator.setData('model.text', value);
-		}
-	}
-}
-
-class UIKitTextarea_Model extends __WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitModel {
-	constructor() {
-		super({
-			_text: '',
-			get text() {
-				return this._text;
-			}
-		});
-	}
-}
-
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index_ts__["a" /* default */].Core.UIKitTextarea = UIKitTextarea;
 
 /***/ }),
 /* 53 */
@@ -12073,6 +12254,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+/* tslint:disable */
 
 
 
@@ -12080,7 +12262,7 @@ var UIKitToggle = /** @class */ (function (_super) {
     __extends(UIKitToggle, _super);
     function UIKitToggle(element) {
         var _this = 
-        //@ts-ignore
+        // @ts-ignore
         _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
@@ -12209,7 +12391,7 @@ var UIKitToggle_Thumb = /** @class */ (function (_super) {
     __extends(UIKitToggle_Thumb, _super);
     function UIKitToggle_Thumb(element, mediator, type) {
         var _this = 
-        //@ts-ignore
+        // @ts-ignore
         _super.call(this, element, mediator, type) || this;
         var that = _this;
         _this.Mediator.subscribe('model.checked', function (modelData) {

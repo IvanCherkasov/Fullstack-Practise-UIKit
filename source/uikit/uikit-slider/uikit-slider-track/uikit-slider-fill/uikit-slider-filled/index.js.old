@@ -33,7 +33,7 @@ class UIKitSlider_Filled extends UIKit.Core.UIKitElement{
 			}
 			moveFilled(position);
 		});
-		
+
 		this.stylize(this.Type);
 	}
 }

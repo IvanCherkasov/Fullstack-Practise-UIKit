@@ -95,7 +95,7 @@ class UIKitSlider_Thumb extends UIKit.Core.UIKitElement{
 				var position = Math.round(((percent * (coordinateSystem.height))/100));
 				moveThumb(position);
 			}
-		});	
+		});
 
 		this.element.on('mousedown', function(event){
 			startDrag();
