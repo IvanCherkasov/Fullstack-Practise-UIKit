@@ -3,20 +3,20 @@ import UIKit from '../uikit-core/index';
 
 class UIKitTextarea extends UIKit.Core.UIKitElement {
 
-    public mediator;
-    public model;
-
     private caption: string;
 
     constructor(element: any) {
-        // @ts-ignore
         super(element);
         if (!this.element.hasClass('uikit-textarea')) {
             throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
         }
+        this.init();
+    }
+
+    protected init() {
         this.caption = this.element.attr('caption');
-        this.model = new UIKitTextarea_Model();
-        this.mediator = new UIKit.Core.UIKitMediator(this.model);
+        const model = new UIKitTextarea_Model();
+        this.mediator = new UIKit.Core.UIKitMediator(model);
 
         const focusInCallback = () => {
             const value = this.element.val();
@@ -48,25 +48,21 @@ class UIKitTextarea extends UIKit.Core.UIKitElement {
     }
 
     public get text(): string {
-        return this.Mediator.getData('model.text');
+        return this.mediator.getData('model.text');
     }
 }
 
 class UIKitTextarea_Model extends UIKit.Core.UIKitModel {
     constructor() {
-        // @ts-ignore
         super({
-            _text: '',
-            get text() {
-                return this._text;
-            },
+            text: '',
         });
     }
 
     public getData(property: string) {
         switch (property){
             case 'text':
-                return this.Data.text;
+                return this.data.text;
             default:
                 return undefined;
         }
@@ -75,7 +71,7 @@ class UIKitTextarea_Model extends UIKit.Core.UIKitModel {
     public setData(property: string, data: any) {
         switch (property) {
             case 'text':
-                this.Data._text = data;
+                this.data.text = data;
                 return true;
             default:
                 return false;
@@ -83,4 +79,4 @@ class UIKitTextarea_Model extends UIKit.Core.UIKitModel {
     }
 }
 
-UIKit.Core.UIKitTextarea = UIKitTextarea;
+export default UIKitTextarea;

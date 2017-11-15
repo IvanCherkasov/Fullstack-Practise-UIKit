@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 60);
+/******/ 	return __webpack_require__(__webpack_require__.s = 65);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,151 +68,113 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(4);
+/* WEBPACK VAR INJECTION */(function(jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__themes_load_all__ = __webpack_require__(4);
+
 
 
 var UIKitElement = /** @class */ (function () {
-    function UIKitElement(_element, _mediator, _type) {
-        this._element = _element;
-        this._mediator = _mediator;
-        this._type = _type;
-        this._enabled = true;
-        if (_element && _element !== null) {
-            if (!(_element instanceof __WEBPACK_IMPORTED_MODULE_1_jquery___default.a)) {
-                if (_element instanceof HTMLCollection) {
-                    _element = __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(_element);
-                }
-                else {
-                    throw ReferenceError('Переданный элемент не является объектом jQuery или HTMLCollection');
-                }
-            }
-            this._original = _element.clone();
-        }
-        else {
+    function UIKitElement(element, mediator, type) {
+        this.noRebuild = false;
+        this.storage = {
+            type: '',
+            enabled: true,
+        };
+        if (!element || element === null) {
             throw ReferenceError('Передан пустой элемент');
         }
+        if (!element.hasClass('uikit')) {
+            throw ReferenceError('Переданный элемент не является объектом uikit');
+        }
+        this.element = element;
+        this.original = element.clone();
+        if (mediator) {
+            this.mediator = mediator;
+        }
+        if (type) {
+            this.type = type;
+        }
     }
-    UIKitElement.prototype._init = function () {
+    UIKitElement.prototype.init = function () {
+        this.acceptType();
     };
     UIKitElement.prototype.rebuild = function () {
-        var that = this;
-        var parent = this._element.parent();
+        var _this = this;
+        var parent = this.element.parent();
         var spawned = false;
         var attributes = [];
-        this._element.each(function () {
-            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a.each(this.attributes, function () {
+        var elementEachCallback = function (item) {
+            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a.each(item.attributes, function () {
                 if (this.specified) {
                     attributes.push({
                         name: this.name,
-                        value: this.value
+                        value: this.value,
                     });
                 }
             });
-        });
+        };
+        this.element.toArray().map(elementEachCallback);
         var index = -1;
-        parent.children().each(function (i) {
-            if (__WEBPACK_IMPORTED_MODULE_1_jquery___default.a(this).is(that._element)) {
+        var parentChildrenFindEachCallback = function (item, i) {
+            if (__WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).is(_this.element)) {
                 index = i;
                 return;
             }
-        });
-        this._element.remove();
-        this._element = this.Original.clone();
+        };
+        parent.children().toArray().map(parentChildrenFindEachCallback);
+        this.element.remove();
+        this.element = this.original.clone();
         attributes.map(function (attr) {
             if (attr.name !== 'class') {
-                that._element.attr(attr.name, attr.value);
+                _this.element.attr(attr.name, attr.value);
             }
         });
-        parent.children().each(function (i) {
-            UIKitModel;
+        var parentChildrenPlaceEachCallback = function (item, i) {
             if (i === index) {
-                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(this).before(that._element);
+                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).before(_this.element);
                 spawned = true;
                 return;
             }
-        });
+        };
+        parent.children().toArray().map(parentChildrenPlaceEachCallback);
         if (!spawned) {
-            parent.append(this._element);
+            parent.append(this.element);
         }
-        this._element.attr('type', this.Type);
-        this._element.ready(function () {
+        this.element.ready(function () {
             setTimeout(function () {
-                that._init();
+                _this.init();
             }, 0);
         });
     };
-    UIKitElement.prototype.clearStyle = function () {
-        var that = this;
-        UIKit.styles.forEach(function (item) {
-            that._element.removeClass(item);
-        });
-    };
+    // если элементу была присвоена вариация по ходу работы, то
+    // смена типа сотрет её
     UIKitElement.prototype.acceptType = function () {
-        if (!this._element.hasClass(this.Type)) {
-            var baseClasses = this.Original.attr('class');
-            this._element.attr('class', '');
-            this._element.attr('class', baseClasses);
-            this._element.addClass(this.Type);
+        if (this.element.hasClass(this.type) === false) {
+            var baseClasses = this.original.attr('class');
+            this.element.attr('class', '')
+                .attr('class', baseClasses)
+                .addClass(this.type);
         }
     };
-    UIKitElement.prototype.stylize = function (type) {
-        this._element.addClass(type);
-    };
-    Object.defineProperty(UIKitElement.prototype, "TypesList", {
-        get: function () {
-            return this._typesList;
-        },
-        set: function (value) {
-            this._typesList = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "Original", {
-        get: function () {
-            return this._original;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "element", {
-        get: function () {
-            return this._element;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "Mediator", {
-        get: function () {
-            return this._mediator;
-        },
-        set: function (value) {
-            this._mediator = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "Type", {
-        get: function () {
-            return this._type;
-        },
-        set: function (value) {
-            this._type = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(UIKitElement.prototype, "type", {
         get: function () {
-            return this._type;
+            return this.storage.type;
         },
         set: function (value) {
-            if (this.TypesList.indexOf(value) > -1) {
-                this._type = value;
-                this.rebuild();
+            this.storage.type = value;
+            if (this.typesList.indexOf(value) > -1) {
+                if (this.noRebuild) {
+                    this.acceptType();
+                }
+                else {
+                    this.rebuild();
+                }
+                if (this.mediator) {
+                    this.mediator.publish('element.rebuild');
+                }
             }
         },
         enumerable: true,
@@ -220,32 +182,18 @@ var UIKitElement = /** @class */ (function () {
     });
     Object.defineProperty(UIKitElement.prototype, "enabled", {
         get: function () {
-            return this._enabled;
+            return this.storage.enabled;
         },
         set: function (value) {
-            this._enabled = value;
+            this.storage.enabled = value;
             if (value) {
-                this._element.removeClass('disabled');
+                this.element.addClass('disabled');
             }
             else {
-                this._element.addClass('disabled');
+                this.element.removeClass('disabled');
             }
-            if (this.Mediator) {
-                this.Mediator.publish('element.enabled', value);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "style", {
-        set: function (value) {
-            var that = this;
-            if (UIKit.styles.indexOf(value) > -1) {
-                that.clearStyle();
-                that._element.addClass(value);
-                if (this.Mediator) {
-                    this.Mediator.publish('element.style', name);
-                }
+            if (this.mediator) {
+                this.mediator.publish('element.enabled', value);
             }
         },
         enumerable: true,
@@ -253,231 +201,191 @@ var UIKitElement = /** @class */ (function () {
     });
     return UIKitElement;
 }());
-var UIKitMath = /** @class */ (function () {
-    function UIKitMath() {
-    }
-    UIKitMath.Clamp = function (value, min, max) {
-        return Math.min(Math.max(min, value), max);
-    };
-    return UIKitMath;
-}());
 var UIKitMediator = /** @class */ (function () {
-    function UIKitMediator(_model, middleware) {
-        this._model = _model;
-        this._channels = {};
-        this._middleware = [];
-        var that = this;
-        if (middleware) {
-            if (Array.isArray(middleware)) {
-                this._middleware = middleware;
-            }
+    function UIKitMediator(model, middleWare) {
+        this.channels = {};
+        this.model = model;
+        if (middleWare) {
+            this.middleware = middleWare;
         }
     }
-    UIKitMediator.prototype.subscribe = function (channel, func) {
-        if (!this._channels[channel]) {
-            this._channels[channel] = [];
+    UIKitMediator.prototype.subscribe = function (channel, callback) {
+        if (!this.channels[channel]) {
+            this.channels[channel] = [];
         }
-        this._channels[channel].push({
-            callback: func
-        });
+        this.channels[channel].push(callback);
     };
     UIKitMediator.prototype.publish = function (channel) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        var that = this;
-        if (!this._channels[channel]) {
+        if (!this.channels[channel]) {
             return false;
         }
-        this._channels[channel].forEach(function (subscription) {
-            subscription.callback.apply(subscription, args);
-        });
+        var mapEmitCallback = function (callback) {
+            callback(args);
+        };
+        this.channels[channel].map(mapEmitCallback);
         return true;
     };
     UIKitMediator.prototype.getData = function (property) {
         var props = property.split('.');
-        var done = false;
-        var data = null;
         if (props[0] === 'model') {
-            data = this._model.getData(props[1]);
+            var newProps = property.replace('model.', '');
+            var data = this.model.getData(newProps);
             if (data !== undefined) {
-                done = true;
+                return true;
             }
         }
-        if (done) {
-            return data;
-        }
-        else {
-            console.error('no such property named "' + property + '"');
-            return undefined;
-        }
+        return undefined;
     };
     UIKitMediator.prototype.setData = function (property, data) {
         var props = property.split('.');
-        var done = false;
+        var emitMiddlewares = function (funcs) {
+            funcs.map(function (func) {
+                func('mediator set data', { property: property, data: data });
+            });
+        };
         if (props[0] === 'model') {
-            if (this._model.setData(props[1], data)) {
-                done = true;
+            var newProps = property.replace('model.', '');
+            if (this.model.setData(newProps, data)) {
+                this.publish(property, this.model.getAllData());
+                emitMiddlewares(this.middleware);
+                return true;
             }
         }
-        if (done === false) {
-            console.error('no such property named "' + property + '"');
-            return false;
-        }
-        this.publish(property, this._model.Data);
-        this._middleware.forEach(function (func) {
-            func('mediator set data', {
-                property: property,
-                data: data
-            });
-        });
+        return false;
     };
     return UIKitMediator;
 }());
 var UIKitModel = /** @class */ (function () {
     function UIKitModel(data) {
-        this.Data = {};
-        if (data !== null) {
-            this.Data = data;
+        this.data = {};
+        if (data) {
+            this.data = data;
         }
     }
-    UIKitModel.prototype.getData = function (property) { };
-    UIKitModel.prototype.setData = function (property, data) { };
+    UIKitModel.prototype.getAllData = function () {
+        return jQuery.extend(true, {}, this.data);
+    };
+    UIKitModel.prototype.getData = function (property) {
+    };
+    UIKitModel.prototype.setData = function (property, data) {
+        return false;
+    };
     return UIKitModel;
 }());
+var UIKitMath = /** @class */ (function () {
+    function UIKitMath() {
+    }
+    UIKitMath.clamp = function (value, minimum, maximum) {
+        return Math.min(Math.max(minimum, value), maximum);
+    };
+    return UIKitMath;
+}());
 var UIKitCoordinateSystem = /** @class */ (function () {
-    function UIKitCoordinateSystem(dom) {
-        this._element = dom;
-        var that = this;
+    function UIKitCoordinateSystem(element) {
+        if (!element) {
+            return undefined;
+        }
+        this.element = element;
     }
     Object.defineProperty(UIKitCoordinateSystem.prototype, "xMin", {
         get: function () {
-            if (this._element) {
-                return this._element.offset().left;
-            }
-            return 0;
+            return this.element.offset().left;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(UIKitCoordinateSystem.prototype, "yMin", {
         get: function () {
-            if (this._element) {
-                return this._element.offset().top;
-            }
-            return 0;
+            return this.element.offset().top;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(UIKitCoordinateSystem.prototype, "xMax", {
         get: function () {
-            if (this._element) {
-                return this._element.offset().left + this._element.width();
-            }
-            return 0;
+            return this.element.offset().left + this.element.width();
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(UIKitCoordinateSystem.prototype, "yMax", {
         get: function () {
-            if (this._element) {
-                return this._element.offset().top + this._element.height();
-            }
-            return 0;
+            return this.element.offset().top + this.element.height();
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(UIKitCoordinateSystem.prototype, "width", {
         get: function () {
-            if (this._element) {
-                return this._element.width();
-            }
-            return 0;
+            return this.element.width();
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(UIKitCoordinateSystem.prototype, "height", {
         get: function () {
-            if (this._element) {
-                return this._element.height();
-            }
-            return 0;
+            return this.element.height();
         },
         enumerable: true,
         configurable: true
     });
     return UIKitCoordinateSystem;
 }());
-var style = '';
-var styles = [];
-var rawObject = __webpack_require__(5);
-var jsonObject = JSON.parse(rawObject.raw);
-jsonObject.forEach(function (item) {
-    if (Array.isArray(item['selectors'])) {
-        for (var i = 0; i < item['selectors'].length; i++) {
-            var ok = false;
-            var selector = item['selectors'][i];
-            if (selector.search('uikit-style-') > -1) {
-                var strings = selector.split('.');
-                for (var j = 0; j < strings.length; j++) {
-                    if (strings[j].search('uikit-style-') > -1) {
-                        styles.push(strings[j].trim());
-                        ok = true;
-                    }
-                    if (ok) {
-                        break;
-                    }
-                }
-            }
-            if (ok) {
-                break;
-            }
+var UIKitThemeController = /** @class */ (function () {
+    function UIKitThemeController(theme) {
+        this.storage = {
+            themesList: [],
+            currentTheme: '',
+        };
+        this.storage.themesList = __WEBPACK_IMPORTED_MODULE_2__themes_load_all__["a" /* default */].list;
+        if (theme) {
+            this.theme = theme;
         }
     }
-});
-var UIKit = /** @class */ (function () {
-    function UIKit() {
-    }
-    Object.defineProperty(UIKit, "style", {
+    UIKitThemeController.prototype.changeTheme = function (value) {
+        this.themesList.map(function (item) {
+            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').removeClass(item);
+        });
+        __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').addClass(value);
+        this.storage.currentTheme = value;
+    };
+    Object.defineProperty(UIKitThemeController.prototype, "themesList", {
         get: function () {
-            return style;
+            return this.storage.themesList;
         },
-        set: function (name) {
-            if (styles.indexOf(name) > -1) {
-                styles.forEach(function (item) {
-                    __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').removeClass(item);
-                });
-                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').addClass(name);
-                style = name;
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(UIKitThemeController.prototype, "theme", {
+        get: function () {
+            return this.storage.currentTheme;
+        },
+        set: function (value) {
+            if (this.themesList.indexOf(value) > -1) {
+                this.changeTheme(value);
             }
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(UIKit, "styles", {
-        get: function () {
-            return styles;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    UIKit.Core = {
-        'UIKitElement': UIKitElement,
-        'UIKitMath': UIKitMath,
-        'UIKitCoordinateSystem': UIKitCoordinateSystem,
-        'UIKitMediator': UIKitMediator,
-        'UIKitModel': UIKitModel
-    };
-    return UIKit;
+    return UIKitThemeController;
 }());
-UIKit.style = styles[0]; //default
-/* harmony default export */ __webpack_exports__["a"] = (UIKit);
+/* harmony default export */ __webpack_exports__["a"] = ({
+    Core: {
+        UIKitElement: UIKitElement,
+        UIKitMediator: UIKitMediator,
+        UIKitModel: UIKitModel,
+        UIKitMath: UIKitMath,
+        UIKitThemeController: UIKitThemeController,
+        UIKitCoordinateSystem: UIKitCoordinateSystem,
+    }
+});
 
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 1 */
@@ -10314,22 +10222,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_uikit_slider_index_ts__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_uikit_button_index_ts__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_uikit_radial_progress_index_ts__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_uikit_arrow_button_index_ts__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_uikit_stages_index_ts__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_uikit_input_text_index_ts__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_uikit_textarea_index_ts__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__uikit_uikit_toggle_index_ts__ = __webpack_require__(54);
-
-
-
-// Slider
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_index__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_radial_progress_index__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_arrow_button_index__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_stages_index__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_input_text_index__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_textarea_index__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_toggle_index__ = __webpack_require__(57);
 
 
 
@@ -10339,7 +10240,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_uikit_core_index_ts__["a" /* default */]);
+var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* default */].Core;
+var types = {
+    VERTICAL: 0,
+    HORIZONTAL: 1,
+};
+console.log('types', types);
+console.log('length', Object.keys(types).length);
+for (var prop in types) {
+    console.log(prop, types[prop]);
+}
+/* harmony default export */ __webpack_exports__["a"] = ({
+    Core: Core,
+    UIKitSlider: __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index__["a" /* default */],
+    UIKitButton: __WEBPACK_IMPORTED_MODULE_2__uikit_button_index__["a" /* default */],
+    UIKitRadialProgress: __WEBPACK_IMPORTED_MODULE_3__uikit_radial_progress_index__["a" /* default */],
+    UIKitArrowButton: __WEBPACK_IMPORTED_MODULE_4__uikit_arrow_button_index__["a" /* default */],
+    UIKitStages: __WEBPACK_IMPORTED_MODULE_5__uikit_stages_index__["a" /* default */],
+    UIKitInputText: __WEBPACK_IMPORTED_MODULE_6__uikit_input_text_index__["a" /* default */],
+    UIKitTextarea: __WEBPACK_IMPORTED_MODULE_7__uikit_textarea_index__["a" /* default */],
+    UIKitToggle: __WEBPACK_IMPORTED_MODULE_8__uikit_toggle_index__["a" /* default */],
+});
+
 
 /***/ }),
 /* 3 */
@@ -10349,27 +10271,72 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// removed by extract-text-webpack-plugin
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
+
+
+__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__["list"].map(item => {
+    __webpack_require__(6)(`./${item}/style.styl`);
+});
+
+/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-exports.raw = "[\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#28a290\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--ok-color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--error-color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-aqua\",\n\t\t\t\".uikit-style-aqua .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#bf3e1f\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--ok-color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--error-color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightred\",\n\t\t\t\".uikit-style-lightred .uikit\"\n\t\t]\n\t},\n\t{\n\t\t\"type\": \"rule\",\n\t\t\"origin\": {\n\t\t\t\"start\": {},\n\t\t\t\"end\": {}\n\t\t},\n\t\t\"nodes\": [\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-1\",\n\t\t\t\t\"value\": \"#5b63ff\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--color-2\",\n\t\t\t\t\"value\": \"#343891\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--ok-color-1\",\n\t\t\t\t\"value\": \"#4eb7a8\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"type\": \"decl\",\n\t\t\t\t\"origin\": {\n\t\t\t\t\t\"start\": {},\n\t\t\t\t\t\"end\": {}\n\t\t\t\t},\n\t\t\t\t\"prop\": \"--error-color-1\",\n\t\t\t\t\"value\": \"#e75735\"\n\t\t\t}\n\t\t],\n\t\t\"selectors\": [\n\t\t\t\"div.uikit.uikit-style-lightblue\",\n\t\t\t\".uikit-style-lightblue .uikit\"\n\t\t]\n\t}\n]"
+module.exports = {"list":["uikit-theme-aqua","uikit-theme-lightred"]}
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./uikit-theme-aqua/style.styl": 7,
+	"./uikit-theme-lightred/style.styl": 8
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 6;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__ = __webpack_require__(23);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10388,45 +10355,43 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider = /** @class */ (function (_super) {
     __extends(UIKitSlider, _super);
     function UIKitSlider(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-slider')) {
             throw new ReferenceError('Элемент не является слайдером');
         }
-        _this.Type = 'horizontal';
-        _this.TypesList = ['horizontal', 'vertical'];
-        if (_this.element.attr('type') !== undefined) {
-            if (_this.element.attr('type') !== '') {
-                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
-                    _this.Type = _this.element.attr('type');
+        _this.init();
+        return _this;
+    }
+    UIKitSlider.prototype.init = function () {
+        var _this = this;
+        this.type = 'horizontal';
+        this.typesList = ['horizontal', 'vertical'];
+        if (this.element.attr('type') !== undefined) {
+            if (this.element.attr('type') !== '') {
+                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
+                    this.type = this.element.attr('type');
                 }
             }
         }
-        _this._init();
-        return _this;
-    }
-    UIKitSlider.prototype._init = function () {
-        var _this = this;
         var middleWare = [];
-        this.model = new UIKitSlider_Model();
-        this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
-        this.Mediator.setData('model.minimum', Number(this.element.attr('minimum')));
-        this.Mediator.setData('model.maximum', Number(this.element.attr('maximum')));
-        this.Mediator.subscribe('model.value', function (modelData) {
+        var model = new UIKitSlider_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
+        this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
+        this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+        this.mediator.subscribe('model.value', function (modelData) {
             _this.element.attr('value', modelData.value);
         });
-        this.Mediator.subscribe('model.minimum', function (modelData) {
+        this.mediator.subscribe('model.minimum', function (modelData) {
             _this.element.attr('minimum', modelData.minimum);
         });
-        this.Mediator.subscribe('model.maximum', function (modelData) {
+        this.mediator.subscribe('model.maximum', function (modelData) {
             _this.element.attr('maximum', modelData.maximum);
         });
-        this.track = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.Mediator, this.Type);
-        this.rule = new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__["a" /* default */](this.element.find('.uikit-slider-rule'), this.Mediator, this.Type);
-        this.input = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.Mediator, this.Type);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.mediator, this.type));
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__["a" /* default */](this.element.find('.uikit-slider-rule'), this.mediator, this.type));
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.mediator, this.type));
         setTimeout(function () {
-            _this.Mediator.setData('model.value', Number(_this.element.attr('value')));
+            _this.mediator.setData('model.value', Number(_this.element.attr('value')));
         }, 0);
         this.element.on('dragstart', function () {
             return false;
@@ -10434,43 +10399,30 @@ var UIKitSlider = /** @class */ (function (_super) {
         this.element.on('selectstart', function () {
             return false;
         });
-        this.stylize(this.Type);
+        _super.prototype.init.call(this);
     };
     return UIKitSlider;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 var UIKitSlider_Model = /** @class */ (function (_super) {
     __extends(UIKitSlider_Model, _super);
     function UIKitSlider_Model() {
-        // @ts-ignore
         return _super.call(this, {
-            _value: 0,
-            _minimum: 0,
-            _maximum: 0,
-            _cs: null,
-            get value() {
-                return this._value;
-            },
-            get minimum() {
-                return this._minimum;
-            },
-            get maximum() {
-                return this._maximum;
-            },
-            get coordinateSystem() {
-                return this._cs;
-            },
+            value: 0,
+            minimum: 0,
+            maximum: 0,
+            cs: null,
         }) || this;
     }
     UIKitSlider_Model.prototype.getData = function (property) {
         switch (property) {
             case 'value':
-                return this.Data.value;
+                return this.data.value;
             case 'minimum':
-                return this.Data.minimum;
+                return this.data.minimum;
             case 'maximum':
-                return this.Data.maximum;
+                return this.data.maximum;
             case 'coordinateSystem':
-                return this.Data.coordinateSystem;
+                return this.data.coordinateSystem;
             default:
                 return undefined;
         }
@@ -10478,18 +10430,18 @@ var UIKitSlider_Model = /** @class */ (function (_super) {
     UIKitSlider_Model.prototype.setData = function (property, data) {
         switch (property) {
             case 'value':
-                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
-                this.Data._value = value;
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(data, this.data.minimum, this.data.maximum);
+                this.data.value = value;
                 return true;
             case 'minimum':
-                this.Data._minimum = data;
+                this.data.minimum = data;
                 return true;
             case 'maximum':
-                this.Data._maximum = data;
+                this.data.maximum = data;
                 return true;
             case 'coordinateSystem':
                 var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitCoordinateSystem(data);
-                this.Data._cs = cs;
+                this.data.cs = cs;
                 return true;
             default:
                 return false;
@@ -10497,21 +10449,21 @@ var UIKitSlider_Model = /** @class */ (function (_super) {
     };
     return UIKitSlider_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitSlider = UIKitSlider;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider);
 
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10529,11 +10481,14 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Input = /** @class */ (function (_super) {
     __extends(UIKitSlider_Input, _super);
     function UIKitSlider_Input(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitSlider_Input.prototype.init = function () {
+        var _this = this;
         var mediatorSubscribeModelValue = function (modelData) {
-            var val = parseInt(_this.element.val(), 10);
+            var val = parseInt((_this.element.val()), 10);
             if (val !== NaN) {
                 _this.element.val(modelData.value);
             }
@@ -10543,42 +10498,41 @@ var UIKitSlider_Input = /** @class */ (function (_super) {
                 }
             }
         };
-        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
         var changeUikitSliderInputCallback = function () {
             if (_this.element.val()) {
-                var val = parseInt(_this.element.val(), 10);
+                var val = parseInt((_this.element.val()), 10);
                 if (val !== NaN) {
-                    if (val !== _this.Mediator.getData('model.value')) {
-                        _this.Mediator.setData('model.value', val);
+                    if (val !== _this.mediator.getData('model.value')) {
+                        _this.mediator.setData('model.value', val);
                     }
                 }
             }
         };
-        _this.element.on('change.uikit.slider.input', changeUikitSliderInputCallback);
-        _this.stylize(_this.Type);
-        return _this;
-    }
+        this.element.on('change.uikit.slider.input', changeUikitSliderInputCallback);
+        _super.prototype.init.call(this);
+    };
     return UIKitSlider_Input;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
 
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(11);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__ = __webpack_require__(19);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10596,69 +10550,71 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Track = /** @class */ (function (_super) {
     __extends(UIKitSlider_Track, _super);
     function UIKitSlider_Track(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.isDrag = false;
-        _this.Mediator.setData('model.coordinateSystem', _this.element);
-        _this.fill = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__["a" /* default */](_this.element.find('.uikit-slider-fill'), _this.Mediator, _this.Type);
-        _this.thumb = new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__["a" /* default */](_this.element.find('.uikit-slider-thumb'), _this.Mediator, _this.Type);
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.storage['isDrag'] = false;
+        _this.init();
+        return _this;
+    }
+    UIKitSlider_Track.prototype.init = function () {
+        var _this = this;
+        this.mediator.setData('model.coordinateSystem', this.element);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__["a" /* default */](this.element.find('.uikit-slider-fill'), this.mediator, this.type));
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.mediator, this.type));
         var startDrag = function () {
-            _this.isDrag = true;
+            _this.storage.isDrag = true;
             var documentOnMousemove = function (event) {
-                var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-                var minimum = _this.Mediator.getData('model.minimum');
-                var maximum = _this.Mediator.getData('model.maximum');
+                var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+                var minimum = _this.mediator.getData('model.minimum');
+                var maximum = _this.mediator.getData('model.maximum');
                 var position = 0;
                 var percent = 0;
-                if (_this.Type === 'horizontal') {
+                if (_this.type === 'horizontal') {
                     position = event.pageX - coordinateSystem.xMin;
                     percent = (100 / (coordinateSystem.width)) * position;
                 }
-                else if (_this.Type === 'vertical') {
+                else if (_this.type === 'vertical') {
                     position = event.pageY - coordinateSystem.yMin;
                     percent = (100 / (coordinateSystem.height)) * position;
                     percent = 100 - percent;
                 }
                 var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
-                if (value !== _this.Mediator.getData('model.value')) {
-                    _this.Mediator.setData('model.value', value);
+                if (value !== _this.mediator.getData('model.value')) {
+                    _this.mediator.setData('model.value', value);
                 }
             };
             $(document).on('mousemove.uikit.slider.track', documentOnMousemove);
             var documentMouseup = function () {
                 $(document).off('mousemove.uikit.slider.track');
                 $(document).off('mouseup.uikit.slider.track');
-                _this.isDrag = false;
+                _this.storage.isDrag = false;
             };
             $(document).on('mouseup.uikit.slider.track', documentMouseup);
         };
         var elementMousedown = function (event) {
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            var minimum = _this.Mediator.getData('model.minimum');
-            var maximum = _this.Mediator.getData('model.maximum');
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            var minimum = _this.mediator.getData('model.minimum');
+            var maximum = _this.mediator.getData('model.maximum');
             var position = 0;
             var percent = 0;
-            if (_this.Type === 'horizontal') {
+            if (_this.type === 'horizontal') {
                 position = event.pageX - coordinateSystem.xMin;
                 percent = (100 / (coordinateSystem.width)) * position;
             }
-            else if (_this.Type === 'vertical') {
+            else if (_this.type === 'vertical') {
                 position = event.pageY - coordinateSystem.yMin;
                 percent = (100 / (coordinateSystem.height)) * position;
                 percent = 100 - percent;
             }
             var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
-            _this.Mediator.setData('model.value', value);
+            _this.mediator.setData('model.value', value);
             startDrag();
         };
-        _this.element.on('mousedown.uikit.slider.track', elementMousedown);
-        _this.element.on('mouseenter.uikit.slider.track', function () {
-            _this.Mediator.publish('track.hover', true);
+        this.element.on('mousedown.uikit.slider.track', elementMousedown);
+        this.element.on('mouseenter.uikit.slider.track', function () {
+            _this.mediator.publish('track.hover', true);
         });
-        _this.stylize(_this.Type);
-        return _this;
-    }
+        _super.prototype.init.call(this);
+    };
     return UIKitSlider_Track;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Track);
@@ -10666,20 +10622,20 @@ var UIKitSlider_Track = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__ = __webpack_require__(17);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10696,30 +10652,31 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Fill = /** @class */ (function (_super) {
     __extends(UIKitSlider_Fill, _super);
     function UIKitSlider_Fill(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.filled = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__["a" /* default */](_this.element.find('.uikit-slider-filled'), _this.Mediator, _this.Type);
-        _this.stylize(_this.Type);
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
         return _this;
     }
+    UIKitSlider_Fill.prototype.init = function () {
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__["a" /* default */](this.element.find('.uikit-slider-filled'), this.mediator, this.type));
+        _super.prototype.init.call(this);
+    };
     return UIKitSlider_Fill;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
 
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10737,61 +10694,63 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Filled = /** @class */ (function (_super) {
     __extends(UIKitSlider_Filled, _super);
     function UIKitSlider_Filled(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp;
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitSlider_Filled.prototype.init = function () {
+        var _this = this;
+        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp;
         var moveFilled = function (position) {
             var percent = 0;
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            if (_this.Type === 'horizontal') {
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            if (_this.type === 'horizontal') {
                 percent = (100 / coordinateSystem.width) * position;
                 _this.element.css('width', clamp(percent, 0, 100) + '%');
             }
-            else if (_this.Type === 'vertical') {
+            else if (_this.type === 'vertical') {
                 percent = (100 / coordinateSystem.height) * position;
                 _this.element.css('height', (clamp(percent, 0, 100)) + '%');
             }
         };
         var mediatorSubscribeModelValue = function (modelData) {
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            var minimum = _this.Mediator.getData('model.minimum');
-            var maximum = _this.Mediator.getData('model.maximum');
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            var minimum = _this.mediator.getData('model.minimum');
+            var maximum = _this.mediator.getData('model.maximum');
             var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
             percent *= 100;
             var position = 0;
-            if (_this.Type === 'horizontal') {
+            if (_this.type === 'horizontal') {
                 position = Math.round(((percent * (coordinateSystem.width)) / 100));
             }
-            else if (_this.Type === 'vertical') {
+            else if (_this.type === 'vertical') {
                 position = Math.round(((percent * (coordinateSystem.height)) / 100));
             }
             moveFilled(position);
         };
-        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
-        _this.stylize(_this.Type);
-        return _this;
-    }
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        _super.prototype.init.call(this);
+    };
     return UIKitSlider_Filled;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
 
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(17);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__ = __webpack_require__(21);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10808,104 +10767,107 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Thumb = /** @class */ (function (_super) {
     __extends(UIKitSlider_Thumb, _super);
     function UIKitSlider_Thumb(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.isDrag = false;
-        _this.isHover = false;
-        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp;
-        var calculateValue = function (position) {
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            var minimum = _this.Mediator.getData('model.minimum');
-            var maximum = _this.Mediator.getData('model.maximum');
-            var percent = 0;
-            if (_this.Type === 'horizontal') {
-                percent = (100 / coordinateSystem.width) * position;
-            }
-            else if (_this.Type === 'vertical') {
-                percent = (100 / coordinateSystem.height) * position;
-                percent = 100 - percent;
-            }
-            var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
-            return value;
-        };
-        var moveThumb = function (position) {
-            if (position >= 0) {
-                var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-                if (_this.Type === 'horizontal') {
-                    var percent = (100 / coordinateSystem.width) * (position);
-                    var maximum = (100 / coordinateSystem.xMax) *
-                        (coordinateSystem.xMax - (_this.element.width() / 2));
-                    var minimum = (100 / coordinateSystem.width) * _this.element.width();
-                    _this.element.css('left', clamp(percent, -minimum, maximum) + '%');
-                }
-                else if (_this.Type === 'vertical') {
-                    var percent = (100 / coordinateSystem.height) * (position);
-                    var maximum = (100 / coordinateSystem.yMax) *
-                        (coordinateSystem.yMax + (_this.element.width()));
-                    var minimum = (100 / coordinateSystem.height) * _this.element.width() / 2;
-                    _this.element.css('top', (100 - clamp(percent, -minimum, maximum)) + '%');
-                }
-            }
-        };
-        var startDrag = function () {
-            _this.isDrag = true;
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            var documentMousemove = function (event) {
-                if (_this.Type === 'horizontal') {
-                    var position = event.pageX - coordinateSystem.xMin;
-                    var value = calculateValue(position);
-                    if (value !== _this.Mediator.getData('model.value')) {
-                        _this.Mediator.setData('model.value', value);
-                    }
-                }
-                else if (_this.Type === 'vertical') {
-                    var position = event.pageY - coordinateSystem.yMin;
-                    var value = calculateValue(position);
-                    if (value !== _this.Mediator.getData('model.value')) {
-                        _this.Mediator.setData('model.value', value);
-                    }
-                }
-            };
-            $(document).on('mousemove.uikit.slider.thumb', documentMousemove);
-            var documentMouseup = function () {
-                $(document).off('mousemove.uikit.slider.thumb');
-                $(document).off('mouseup.uikit.slider.thumb');
-                _this.isDrag = false;
-            };
-            $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
-        };
-        _this.upper = new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__["a" /* default */](_this.element.find('.uikit-slider-thumb-upper'), _this.Mediator, _this.Type);
-        _this.element.on('mouseenter.uikit.slider.thumb', function () {
-            _this.isHover = true;
-            _this.Mediator.publish('thumb.hover', true);
-        });
-        _this.element.on('mouseleave.uikit.slider.thumb', function () {
-            _this.isHover = false;
-            _this.Mediator.publish('thumb.hover', false);
-        });
-        var mediatorSubscribeModelValue = function (modelData) {
-            var coordinateSystem = _this.Mediator.getData('model.coordinateSystem');
-            var minimum = _this.Mediator.getData('model.minimum');
-            var maximum = _this.Mediator.getData('model.maximum');
-            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
-            if (_this.Type === 'horizontal') {
-                var position = Math.round(((percent * (coordinateSystem.width)) / 100));
-                moveThumb(position);
-            }
-            else if (_this.Type === 'vertical') {
-                var position = Math.round(((percent * (coordinateSystem.height)) / 100));
-                moveThumb(position);
-            }
-        };
-        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
-        _this.element.on('mousedown.uikit.slider.thumb', function (event) {
-            startDrag();
-            event.stopPropagation();
-        });
-        _this.stylize(_this.Type);
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp;
+        _this.storage['isDrag'] = false;
+        _this.storage['isHover'] = false;
+        _this.init();
         return _this;
     }
+    UIKitSlider_Thumb.prototype.init = function () {
+        var _this = this;
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.mediator, this.type));
+        this.element.on('mouseenter.uikit.slider.thumb', function () {
+            _this.storage.isHover = true;
+            _this.mediator.publish('thumb.hover', true);
+        });
+        this.element.on('mouseleave.uikit.slider.thumb', function () {
+            _this.storage.isHover = false;
+            _this.mediator.publish('thumb.hover', false);
+        });
+        var mediatorSubscribeModelValue = function (modelData) {
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            var minimum = _this.mediator.getData('model.minimum');
+            var maximum = _this.mediator.getData('model.maximum');
+            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
+            if (_this.type === 'horizontal') {
+                var position = Math.round(((percent * (coordinateSystem.width)) / 100));
+                _this.moveThumb(position);
+            }
+            else if (_this.type === 'vertical') {
+                var position = Math.round(((percent * (coordinateSystem.height)) / 100));
+                _this.moveThumb(position);
+            }
+        };
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        this.element.on('mousedown.uikit.slider.thumb', function (event) {
+            _this.startDrag();
+            event.stopPropagation();
+        });
+        _super.prototype.init.call(this);
+    };
+    UIKitSlider_Thumb.prototype.calculateValue = function (position) {
+        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+        var minimum = this.mediator.getData('model.minimum');
+        var maximum = this.mediator.getData('model.maximum');
+        var percent = 0;
+        if (this.type === 'horizontal') {
+            percent = (100 / coordinateSystem.width) * position;
+        }
+        else if (this.type === 'vertical') {
+            percent = (100 / coordinateSystem.height) * position;
+            percent = 100 - percent;
+        }
+        var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
+        return value;
+    };
+    UIKitSlider_Thumb.prototype.moveThumb = function (position) {
+        if (position >= 0) {
+            var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+            if (this.type === 'horizontal') {
+                var percent = (100 / coordinateSystem.width) * (position);
+                var maximum = (100 / coordinateSystem.xMax) *
+                    (coordinateSystem.xMax - (this.element.width() / 2));
+                var minimum = (100 / coordinateSystem.width) * this.element.width();
+                this.element.css('left', this.clamp(percent, -minimum, maximum) + '%');
+            }
+            else if (this.type === 'vertical') {
+                var percent = (100 / coordinateSystem.height) * (position);
+                var maximum = (100 / coordinateSystem.yMax) *
+                    (coordinateSystem.yMax + (this.element.width()));
+                var minimum = (100 / coordinateSystem.height) * this.element.width() / 2;
+                this.element.css('top', (100 - this.clamp(percent, -minimum, maximum)) + '%');
+            }
+        }
+    };
+    UIKitSlider_Thumb.prototype.startDrag = function () {
+        var _this = this;
+        this.storage.isDrag = true;
+        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+        var documentMousemove = function (event) {
+            if (_this.type === 'horizontal') {
+                var position = event.pageX - coordinateSystem.xMin;
+                var value = _this.calculateValue(position);
+                if (value !== _this.mediator.getData('model.value')) {
+                    _this.mediator.setData('model.value', value);
+                }
+            }
+            else if (_this.type === 'vertical') {
+                var position = event.pageY - coordinateSystem.yMin;
+                var value = _this.calculateValue(position);
+                if (value !== _this.mediator.getData('model.value')) {
+                    _this.mediator.setData('model.value', value);
+                }
+            }
+        };
+        $(document).on('mousemove.uikit.slider.thumb', documentMousemove);
+        var documentMouseup = function () {
+            $(document).off('mousemove.uikit.slider.thumb');
+            $(document).off('mouseup.uikit.slider.thumb');
+            _this.storage.isDrag = false;
+        };
+        $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
+    };
     return UIKitSlider_Thumb;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
@@ -10913,17 +10875,17 @@ var UIKitSlider_Thumb = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10941,10 +10903,13 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Upper = /** @class */ (function (_super) {
     __extends(UIKitSlider_Upper, _super);
     function UIKitSlider_Upper(dom, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, dom, mediator, type) || this;
-        var div = _this.element.find('div.no-select');
+        var _this = _super.call(this, dom, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitSlider_Upper.prototype.init = function () {
+        var _this = this;
+        var div = this.element.find('div.no-select');
         var timerId;
         var disable = function () {
             _this.element.removeClass('show');
@@ -10957,37 +10922,36 @@ var UIKitSlider_Upper = /** @class */ (function (_super) {
             _this.element.addClass('show');
             timerId = setTimeout(disable, 1000);
         };
-        _this.Mediator.subscribe('model.value', function (modelData) {
+        this.mediator.subscribe('model.value', function (modelData) {
             print(modelData.value);
         });
-        _this.Mediator.subscribe('thumb.hover', function (value) {
+        this.mediator.subscribe('thumb.hover', function (value) {
             if (value) {
                 show();
             }
         });
-        _this.Mediator.subscribe('model.value', function () {
+        this.mediator.subscribe('model.value', function () {
             show();
         });
-        _this.stylize(_this.Type);
-        return _this;
-    }
+        _super.prototype.init.call(this);
+    };
     return UIKitSlider_Upper;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
 
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11005,44 +10969,45 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitSlider_Rule = /** @class */ (function (_super) {
     __extends(UIKitSlider_Rule, _super);
     function UIKitSlider_Rule(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.segments = _this.element.attr('segments');
-        var getValues = function () {
-            if (_this.segments > 0) {
-                var minimum = _this.Mediator.getData('model.minimum');
-                var maximum = _this.Mediator.getData('model.maximum');
-                var crat = ((Math.abs(minimum) + Math.abs(maximum)) / (_this.segments - 1));
-                var values = [];
-                var buf = minimum;
-                for (var i = 0; i < _this.segments; i += 1) {
-                    values.push(Math.round(buf));
-                    buf += crat;
-                }
-                return values;
-            }
-            return undefined;
-        };
-        _this.stylize(_this.Type);
-        if (_this.segments !== 0) {
-            var values = getValues();
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.storage['segments'] = _this.element.attr('segments');
+        _this.init();
+        if (_this.storage.segments !== 0) {
+            var values = _this.getValues();
             if (values) {
-                if (_this.Type === 'horizontal') {
+                if (_this.type === 'horizontal') {
                     _this.build(values, true);
                 }
-                else if (_this.Type === 'vertical') {
+                else if (_this.type === 'vertical') {
                     _this.build(values, false);
                 }
             }
         }
         return _this;
     }
+    UIKitSlider_Rule.prototype.init = function () {
+        _super.prototype.init.call(this);
+    };
+    UIKitSlider_Rule.prototype.getValues = function () {
+        if (this.storage.segments > 0) {
+            var minimum = this.mediator.getData('model.minimum');
+            var maximum = this.mediator.getData('model.maximum');
+            var crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storage.segments - 1));
+            var values = [];
+            var buf = minimum;
+            for (var i = 0; i < this.storage.segments; i += 1) {
+                values.push(Math.round(buf));
+                buf += crat;
+            }
+            return values;
+        }
+        return undefined;
+    };
     UIKitSlider_Rule.prototype.build = function (values, isHorizontal) {
         var _this = this;
         var size = (100 / (values.length + 1));
-        var minimum = this.Mediator.getData('model.minimum');
-        var maximum = this.Mediator.getData('model.maximum');
+        var minimum = this.mediator.getData('model.minimum');
+        var maximum = this.mediator.getData('model.maximum');
         var divs = [];
         var shiftType = '';
         if (isHorizontal) {
@@ -11081,7 +11046,7 @@ var UIKitSlider_Rule = /** @class */ (function (_super) {
             _this.element.append(item);
             item.on('click', function () {
                 var value = Number(item.attr('value'));
-                _this.Mediator.setData('model.value', value);
+                _this.mediator.setData('model.value', value);
             });
         };
     };
@@ -11092,21 +11057,21 @@ var UIKitSlider_Rule = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__ = __webpack_require__(29);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11124,30 +11089,32 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitButton = /** @class */ (function (_super) {
     __extends(UIKitButton, _super);
     function UIKitButton(element) {
-        var _this = 
-        //@ts-ignore
-        _super.call(this, element) || this;
-        var that = _this;
-        _this._model = new UIKitButton_Model();
-        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this._model);
-        _this.Caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__["a" /* default */](_this.element.find('.uikit-button-caption'), _this.Mediator);
-        _this.Radial = new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__["a" /* default */](_this.element.find('.uikit-button-effect'), _this.Mediator);
-        _this.element.on('click', function (event) {
-            that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
-            event.stopPropagation();
-        });
-        _this.element.on('mouseenter', function () {
-            that.Mediator.publish('button.hover', true); //обработка наведения там, где это невозможно сдлать через стили
-        });
-        _this.element.on('mouseleave', function () {
-            that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
-        });
-        _this.caption = _this.element.attr('caption');
+        var _this = _super.call(this, element) || this;
+        _this.init();
         return _this;
     }
+    UIKitButton.prototype.init = function () {
+        var _this = this;
+        this.model = new UIKitButton_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__["a" /* default */](this.element.find('.uikit-button-caption'), this.mediator));
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__["a" /* default */](this.element.find('.uikit-button-effect'), this.mediator));
+        this.element.on('click', function (event) {
+            _this.mediator.publish('button.click', event);
+            event.stopPropagation();
+        });
+        this.element.on('mouseenter', function () {
+            _this.mediator.publish('button.hover', true);
+        });
+        this.element.on('mouseleave', function () {
+            _this.mediator.publish('button.hover', false);
+        });
+        this.caption = this.element.attr('caption');
+        _super.prototype.init.call(this);
+    };
     Object.defineProperty(UIKitButton.prototype, "caption", {
         set: function (value) {
-            this.Mediator.publish('button.caption', value);
+            this.mediator.publish('button.caption', value);
         },
         enumerable: true,
         configurable: true
@@ -11157,26 +11124,25 @@ var UIKitButton = /** @class */ (function (_super) {
 var UIKitButton_Model = /** @class */ (function (_super) {
     __extends(UIKitButton_Model, _super);
     function UIKitButton_Model() {
-        //@ts-ignore
         return _super.call(this) || this;
     }
     return UIKitButton_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitButton = UIKitButton;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitButton);
 
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11194,32 +11160,34 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitButton_Caption = /** @class */ (function (_super) {
     __extends(UIKitButton_Caption, _super);
     function UIKitButton_Caption(element, mediator, type) {
-        var _this = 
-        //@ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        var that = _this;
-        _this.Mediator.subscribe('button.caption', function (caption) {
-            that.element.text(caption);
-        });
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
         return _this;
     }
+    UIKitButton_Caption.prototype.init = function () {
+        var _this = this;
+        this.mediator.subscribe('button.caption', function (caption) {
+            _this.element.text(caption);
+        });
+        _super.prototype.init.call(this);
+    };
     return UIKitButton_Caption;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Caption);
 
 
 /***/ }),
-/* 25 */
+/* 28 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(27);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11237,22 +11205,28 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitButton_Effect = /** @class */ (function (_super) {
     __extends(UIKitButton_Effect, _super);
     function UIKitButton_Effect(element, mediator, type) {
-        var _this = 
-        //@ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        var that = _this;
-        _this.Mediator.subscribe('button.click', function (event) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitButton_Effect.prototype.init = function () {
+        var _this = this;
+        this.mediator.subscribe('button.click', function (event) {
             var target = $(event.currentTarget);
             var offset = target.offset();
             var x = event.pageX - offset.left;
             var y = event.pageY - offset.top;
-            that.element.removeClass('animate');
+            _this.element.removeClass('animate');
             var size = Math.max(target.outerWidth(), target.outerHeight());
-            that.element.css("top", y - size / 2).css("left", x - size / 2).css("width", size).css("height", size);
-            that.element.addClass("animate");
+            _this.element
+                .css('top', y - size / 2)
+                .css('left', x - size / 2)
+                .css('width', size)
+                .css('height', size);
+            _this.element.addClass('animate');
         });
-        return _this;
-    }
+        _super.prototype.init.call(this);
+    };
     return UIKitButton_Effect;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Effect);
@@ -11260,20 +11234,20 @@ var UIKitButton_Effect = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__ = __webpack_require__(33);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11290,26 +11264,29 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitRadialProgress = /** @class */ (function (_super) {
     __extends(UIKitRadialProgress, _super);
     function UIKitRadialProgress(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-radial-progress')) {
             throw new ReferenceError('Элемент не является радиальным прогресс баром');
         }
-        _this.model = new UIKitRadialProgress_Model();
-        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
-        _this.Mediator.setData('model.minimum', Number(_this.element.attr('minimum')));
-        _this.Mediator.setData('model.maximum', Number(_this.element.attr('maximum')));
-        _this.Mediator.subscribe('model.value', function (modelData) {
+        _this.init();
+        return _this;
+    }
+    UIKitRadialProgress.prototype.init = function () {
+        var _this = this;
+        this.model = new UIKitRadialProgress_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
+        this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+        this.mediator.subscribe('model.value', function (modelData) {
             _this.element.attr('value', modelData.value);
         });
-        _this.Mediator.subscribe('model.minimum', function (modelData) {
+        this.mediator.subscribe('model.minimum', function (modelData) {
             _this.element.attr('minimum', modelData.minimum);
         });
-        _this.Mediator.subscribe('model.maximum', function (modelData) {
+        this.mediator.subscribe('model.maximum', function (modelData) {
             _this.element.attr('maximum', modelData.maximum);
         });
-        _this.caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__["a" /* default */](_this.element.find('.uikit-radial-progress-caption'), _this.Mediator);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.mediator));
         var mediatorSubscribeModelValue = function (modelData) {
             var itemRight = _this.element.find('.progress-right');
             var itemLeft = _this.element.find('.progress-left');
@@ -11325,22 +11302,22 @@ var UIKitRadialProgress = /** @class */ (function (_super) {
                 itemLeft.css('transform', 'rotate(' + value + 'deg)');
             }
         };
-        _this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
-        _this.element.on('dragstart', function () {
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        this.element.on('dragstart', function () {
             return false;
         });
-        _this.element.on('selectstart', function () {
+        this.element.on('selectstart', function () {
             return false;
         });
-        _this.value = Number(_this.element.attr('value'));
-        return _this;
-    }
+        this.value = Number(this.element.attr('value'));
+        _super.prototype.init.call(this);
+    };
     Object.defineProperty(UIKitRadialProgress.prototype, "value", {
         get: function () {
-            return this.Mediator.getData('model.value');
+            return this.mediator.getData('model.value');
         },
         set: function (value) {
-            this.Mediator.setData('model.value', value);
+            this.mediator.setData('model.value', value);
         },
         enumerable: true,
         configurable: true
@@ -11350,30 +11327,20 @@ var UIKitRadialProgress = /** @class */ (function (_super) {
 var UIKitRadialProgress_Model = /** @class */ (function (_super) {
     __extends(UIKitRadialProgress_Model, _super);
     function UIKitRadialProgress_Model() {
-        // @ts-ignore
         return _super.call(this, {
-            _value: 0,
-            _minimum: 0,
-            _maximum: 0,
-            get value() {
-                return this._value;
-            },
-            get minimum() {
-                return this._minimum;
-            },
-            get maximum() {
-                return this._maximum;
-            },
+            value: 0,
+            minimum: 0,
+            maximum: 0,
         }) || this;
     }
     UIKitRadialProgress_Model.prototype.getData = function (property) {
         switch (property) {
             case 'value':
-                return this.Data.value;
+                return this.data.value;
             case 'minimum':
-                return this.Data.minimum;
+                return this.data.minimum;
             case 'maximum':
-                return this.Data.maximum;
+                return this.data.maximum;
             default:
                 return undefined;
         }
@@ -11381,14 +11348,14 @@ var UIKitRadialProgress_Model = /** @class */ (function (_super) {
     UIKitRadialProgress_Model.prototype.setData = function (property, data) {
         switch (property) {
             case 'value':
-                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(data, this.Data.minimum, this.Data.maximum);
-                this.Data._value = value;
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(data, this.data.minimum, this.data.maximum);
+                this.data.value = value;
                 return true;
             case 'minimum':
-                this.Data._minimum = data;
+                this.data.minimum = data;
                 return true;
             case 'maximum':
-                this.Data._maximum = data;
+                this.data.maximum = data;
                 return true;
             default:
                 return false;
@@ -11396,21 +11363,21 @@ var UIKitRadialProgress_Model = /** @class */ (function (_super) {
     };
     return UIKitRadialProgress_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitRadialProgress = UIKitRadialProgress;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress);
 
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11428,34 +11395,37 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitRadialProgress_Caption = /** @class */ (function (_super) {
     __extends(UIKitRadialProgress_Caption, _super);
     function UIKitRadialProgress_Caption(dom, mediator) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, dom, mediator) || this;
+        var _this = _super.call(this, dom, mediator) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitRadialProgress_Caption.prototype.init = function () {
+        var _this = this;
         var print = function (value) {
             _this.element.text(value);
         };
-        _this.Mediator.subscribe('model.value', function (modelData) {
+        this.mediator.subscribe('model.value', function (modelData) {
             print(modelData.value);
         });
-        return _this;
-    }
+        this.init();
+    };
     return UIKitRadialProgress_Caption;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress_Caption);
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11473,69 +11443,54 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitArrowButton = /** @class */ (function (_super) {
     __extends(UIKitArrowButton, _super);
     function UIKitArrowButton(element) {
-        var _this = 
-        //@ts-ignore
-        _super.call(this, element) || this;
-        var that = _this;
-        _this.Model = new UIKitArrowButton_Model();
-        _this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.Model);
-        _this.Type = 'left';
-        _this.TypesList = ['left', 'right'];
-        if (_this.element.attr('type') !== undefined) {
-            if (_this.element.attr('type') !== '') {
-                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
-                    _this.Type = _this.element.attr('type');
+        var _this = _super.call(this, element) || this;
+        _this.TYPE_LEFT = 'left';
+        _this.TYPE_RIGHT = 'right';
+        _this.init();
+        return _this;
+    }
+    UIKitArrowButton.prototype.init = function () {
+        this.model = new UIKitArrowButton_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        this.typesList = [this.TYPE_LEFT, this.TYPE_RIGHT];
+        this.type = this.TYPE_LEFT;
+        if (this.element.attr('type') !== undefined) {
+            if (this.element.attr('type') !== '') {
+                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
+                    this.type = this.element.attr('type');
                 }
             }
         }
-        _this.Mediator.subscribe('arrowbutton.type', function (value) {
-            that.acceptType();
-        });
-        that.acceptType();
-        return _this;
-    }
-    Object.defineProperty(UIKitArrowButton.prototype, "type", {
-        get: function () {
-            return this.Type;
-        },
-        set: function (value) {
-            if (typeof value === 'string') {
-                if (this.TypesList.indexOf(value) > -1) {
-                    this.Type = value;
-                    this.Mediator.publish('arrowbutton.type', value);
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
+        // смена типа не приводит к перестроению элемента
+        this.noRebuild = true;
+        _super.prototype.init.call(this);
+    };
     return UIKitArrowButton;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 var UIKitArrowButton_Model = /** @class */ (function (_super) {
     __extends(UIKitArrowButton_Model, _super);
     function UIKitArrowButton_Model() {
-        //@ts-ignore
         return _super.call(this) || this;
     }
     return UIKitArrowButton_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitArrowButton = UIKitArrowButton;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitArrowButton);
 
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11553,36 +11508,35 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitStages = /** @class */ (function (_super) {
     __extends(UIKitStages, _super);
     function UIKitStages(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-stages')) {
             throw new ReferenceError('Элемент не является stages');
         }
-        if (_this.element.attr('invert') !== undefined) {
-            if (_this.element.attr('invert') !== '') {
-                var isTrueSet = (_this.element.attr('invert') === 'true');
-                if (isTrueSet) {
-                    _this.INVERT = true;
-                }
-            }
-        }
-        _this.Type = 'horizontal';
-        _this.TypesList = ['horizontal', 'vertical'];
-        if (_this.element.attr('type') !== undefined) {
-            if (_this.element.attr('type') !== '') {
-                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
-                    _this.Type = _this.element.attr('type');
-                }
-            }
-        }
-        _this._init();
+        _this.storage['invert'] = false;
+        _this.init();
         return _this;
     }
-    UIKitStages.prototype._init = function () {
+    UIKitStages.prototype.init = function () {
         var _this = this;
-        this.model = new UIKitStages_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        if (this.element.attr('invert') !== undefined) {
+            if (this.element.attr('invert') !== '') {
+                var isTrueSet = (this.element.attr('invert') === 'true');
+                if (isTrueSet) {
+                    this.storage.invert = true;
+                }
+            }
+        }
+        this.type = 'horizontal';
+        this.typesList = ['horizontal', 'vertical'];
+        if (this.element.attr('type') !== undefined) {
+            if (this.element.attr('type') !== '') {
+                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
+                    this.type = this.element.attr('type');
+                }
+            }
+        }
+        var model = new UIKitStages_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
         var stages = Number(this.element.attr('stages'));
         var stage = Number(this.element.attr('stage'));
         this.mediator.setData('model.stages', stages);
@@ -11600,7 +11554,7 @@ var UIKitStages = /** @class */ (function (_super) {
         };
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
         this.mediator.subscribe('model.stages', mediatorSubscribeModelStages);
-        this.track = new __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.Type, this.INVERT);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.type, this.storage.invert));
         setTimeout(function () {
             _this.mediator.setData('model.stage', stage);
         }, 0);
@@ -11610,7 +11564,7 @@ var UIKitStages = /** @class */ (function (_super) {
         this.element.on('selectstart', function () {
             return false;
         });
-        this.acceptType();
+        _super.prototype.init.call(this);
     };
     Object.defineProperty(UIKitStages.prototype, "stage", {
         get: function () {
@@ -11624,12 +11578,12 @@ var UIKitStages = /** @class */ (function (_super) {
     });
     Object.defineProperty(UIKitStages.prototype, "invert", {
         get: function () {
-            return this.INVERT;
+            return this.storage.invert;
         },
         set: function (value) {
-            if (this.Type === 'vertical') {
+            if (this.type === 'vertical') {
                 if (typeof value === 'boolean') {
-                    this.INVERT = value;
+                    this.storage.invert = value;
                     this.rebuild();
                 }
             }
@@ -11642,24 +11596,17 @@ var UIKitStages = /** @class */ (function (_super) {
 var UIKitStages_Model = /** @class */ (function (_super) {
     __extends(UIKitStages_Model, _super);
     function UIKitStages_Model() {
-        // @ts-ignore
         return _super.call(this, {
-            _stages: 0,
-            _stage: 0,
-            get stages() {
-                return this._stages;
-            },
-            get stage() {
-                return this._stage;
-            },
+            stages: 0,
+            stage: 0,
         }) || this;
     }
     UIKitStages_Model.prototype.getData = function (property) {
         switch (property) {
             case 'stages':
-                return this.Data.stages;
+                return this.data.stages;
             case 'stage':
-                return this.Data.stage;
+                return this.data.stage;
             default:
                 return undefined;
         }
@@ -11670,11 +11617,11 @@ var UIKitStages_Model = /** @class */ (function (_super) {
             case 'stages':
                 if (localData < 1)
                     localData = 1;
-                this.Data._stages = localData;
+                this.data.stages = localData;
                 return true;
             case 'stage':
-                localData = __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMath.Clamp(localData, 0, this.Data.stages);
-                this.Data._stage = localData;
+                localData = __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(localData, 0, this.data.stages);
+                this.data.stage = localData;
                 return true;
             default:
                 return false;
@@ -11682,24 +11629,24 @@ var UIKitStages_Model = /** @class */ (function (_super) {
     };
     return UIKitStages_Model;
 }(__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitStages = UIKitStages;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitStages);
 
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(37);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11718,47 +11665,49 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitStages_Track = /** @class */ (function (_super) {
     __extends(UIKitStages_Track, _super);
     function UIKitStages_Track(element, mediator, type, invert) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.invert = false;
-        _this.invert = invert;
-        if (_this.invert === true && _this.Type === 'vertical') {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.storage['invert'] = invert;
+        _this.init();
+        return _this;
+    }
+    UIKitStages_Track.prototype.init = function () {
+        var _this = this;
+        if (this.storage.invert === true && this.type === 'vertical') {
             var addClassInvert = function () {
                 _this.element.addClass('invert');
             };
             setTimeout(addClassInvert, 0);
         }
         var orientation = ['', ''];
-        if (_this.Type === 'horizontal') {
+        if (this.type === 'horizontal') {
             orientation = ['width', 'left'];
         }
-        else if (_this.Type === 'vertical') {
+        else if (this.type === 'vertical') {
             orientation = ['height', 'top'];
         }
-        var stages = _this.Mediator.getData('model.stages');
+        var stages = this.mediator.getData('model.stages');
         var percent = 100 / (stages - 1);
         var stageDom = $('<div>').addClass('uikit-stages-stage');
         var captionDom = $('<div>').addClass('uikit-stage-caption');
         var betweenDom = $('<div>')
             .addClass('uikit-stages-between')
-            .addClass(_this.Type)
+            .addClass(this.type)
             .css(orientation[0], percent + '%');
         var shift = 0;
         for (var i = 1; i <= stages - 1; i += 1) {
             betweenDom.css(orientation[1], shift + '%');
             shift += percent;
-            _this.element.append(betweenDom.clone());
+            this.element.append(betweenDom.clone());
         }
         for (var i = 1; i <= stages; i += 1) {
             var clone = stageDom.clone()
                 .append(captionDom.clone()
                 .html('<span>' + i + '</span>'));
-            _this.element.append(clone);
+            this.element.append(clone);
         }
         var mediatorSubscribeModelStageCallback = function (modelData) {
             var betweens = _this.element.find('.uikit-stages-between');
-            if (_this.invert) {
+            if (_this.storage.invert) {
                 betweens = $(betweens.get().reverse());
                 console.log(betweens);
             }
@@ -11781,10 +11730,9 @@ var UIKitStages_Track = /** @class */ (function (_super) {
             };
             _this.element.find('.uikit-stages-stage').toArray().map(stagesEachMap);
         };
-        _this.Mediator.subscribe('model.stage', mediatorSubscribeModelStageCallback);
-        _this.acceptType();
-        return _this;
-    }
+        this.mediator.subscribe('model.stage', mediatorSubscribeModelStageCallback);
+        _super.prototype.init.call(this);
+    };
     return UIKitStages_Track;
 }(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitStages_Track);
@@ -11792,71 +11740,71 @@ var UIKitStages_Track = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 37 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 38 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stage_caption_index__ = __webpack_require__(40);
-
-
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 40 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 41 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// removed by extract-text-webpack-plugin
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stage_caption_index__ = __webpack_require__(43);
+
+
+
 
 /***/ }),
 /* 42 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(43);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
-
-/***/ }),
-/* 43 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 47 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__ = __webpack_require__(46);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__ = __webpack_require__(51);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11874,25 +11822,27 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitInputText = /** @class */ (function (_super) {
     __extends(UIKitInputText, _super);
     function UIKitInputText(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-input-text')) {
             throw new ReferenceError('Элемент не является полем ввода UIKit');
         }
-        _this.model = new UIKitInputText_Model();
-        _this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
-        _this.input = new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__["a" /* default */](_this.element.find('input'), _this.mediator);
-        _this.Indicator = new __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__["a" /* default */](_this.element.find('.uikit-indicator'), _this.mediator);
-        if (_this.element.attr('indicator') === 'true') {
-            _this.indicator.enabled = true;
-        }
-        else {
-            _this.indicator.enabled = false;
-        }
-        _this.indicator.status = true;
+        _this.init();
         return _this;
     }
+    UIKitInputText.prototype.init = function () {
+        var model = new UIKitInputText_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__["a" /* default */](this.element.find('input'), this.mediator));
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__["a" /* default */](this.element.find('.uikit-indicator'), this.mediator));
+        if (this.element.attr('indicator') === 'true') {
+            this.innerObjects[1].enabled = true;
+        }
+        else {
+            this.innerObjects[1].enabled = false;
+        }
+        this.innerObjects[1].status = true;
+        _super.prototype.init.call(this);
+    };
     Object.defineProperty(UIKitInputText.prototype, "text", {
         get: function () {
             return this.mediator.getData('model.text');
@@ -11923,18 +11873,14 @@ var UIKitInputText = /** @class */ (function (_super) {
 var UIKitInputText_Model = /** @class */ (function (_super) {
     __extends(UIKitInputText_Model, _super);
     function UIKitInputText_Model() {
-        // @ts-ignore
         return _super.call(this, {
-            _text: '',
-            get text() {
-                return this._text;
-            },
+            text: '',
         }) || this;
     }
     UIKitInputText_Model.prototype.getData = function (property) {
         switch (property) {
             case 'text':
-                return this.Data.text;
+                return this.data.text;
             default:
                 return undefined;
         }
@@ -11943,7 +11889,7 @@ var UIKitInputText_Model = /** @class */ (function (_super) {
         switch (property) {
             case 'text':
                 if (typeof data === 'string') {
-                    this.Data._text = data;
+                    this.data.text = data;
                     return true;
                 }
                 return false;
@@ -11953,21 +11899,21 @@ var UIKitInputText_Model = /** @class */ (function (_super) {
     };
     return UIKitInputText_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitInputText = UIKitInputText;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitInputText);
 
 
 /***/ }),
-/* 45 */
+/* 48 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 46 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11985,10 +11931,13 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitInputText_Input = /** @class */ (function (_super) {
     __extends(UIKitInputText_Input, _super);
     function UIKitInputText_Input(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.caption = _this.element.attr('caption');
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitInputText_Input.prototype.init = function () {
+        var _this = this;
+        this.caption = this.element.attr('caption');
         var focusInCallback = function () {
             var value = _this.element.val();
             if (typeof value === 'string') {
@@ -12006,36 +11955,36 @@ var UIKitInputText_Input = /** @class */ (function (_super) {
                 }
             }
         };
-        _this.element.focusin(focusInCallback);
-        _this.element.focusout(focusOutCallback);
+        this.element.focusin(focusInCallback);
+        this.element.focusout(focusOutCallback);
         var mediatorSubscribeModelText = function (modelData) {
             if (modelData.text !== _this.element.val()) {
                 _this.element.val(modelData.text);
             }
         };
-        _this.Mediator.subscribe('model.text', mediatorSubscribeModelText);
-        return _this;
-    }
+        this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+        _super.prototype.init.call(this);
+    };
     return UIKitInputText_Input;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Input);
 
 
 /***/ }),
-/* 47 */
+/* 50 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 48 */
+/* 51 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__ = __webpack_require__(53);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12052,10 +12001,13 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitInputText_Indicator = /** @class */ (function (_super) {
     __extends(UIKitInputText_Indicator, _super);
     function UIKitInputText_Indicator(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        _this.caption = new __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__["a" /* default */](_this.element.find('.uikit-indicator-caption'), _this.Mediator);
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitInputText_Indicator.prototype.init = function () {
+        var _this = this;
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.mediator));
         var meditorSubscribeIndicatorStatus = function (value) {
             if (value) {
                 _this.element.addClass('indicator-ok');
@@ -12067,27 +12019,27 @@ var UIKitInputText_Indicator = /** @class */ (function (_super) {
         var meditorSubscribeIndicatorEnabled = function (value) {
             _this.enabled = value;
         };
-        mediator.subscribe('indicator.status', meditorSubscribeIndicatorStatus);
-        mediator.subscribe('indicator.enabled', meditorSubscribeIndicatorEnabled);
-        return _this;
-    }
+        this.mediator.subscribe('indicator.status', meditorSubscribeIndicatorStatus);
+        this.mediator.subscribe('indicator.enabled', meditorSubscribeIndicatorEnabled);
+        _super.prototype.init.call(this);
+    };
     return UIKitInputText_Indicator;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Indicator);
 
 
 /***/ }),
-/* 49 */
+/* 52 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 50 */
+/* 53 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12105,9 +12057,12 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitInputText_Caption = /** @class */ (function (_super) {
     __extends(UIKitInputText_Caption, _super);
     function UIKitInputText_Caption(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
+        return _this;
+    }
+    UIKitInputText_Caption.prototype.init = function () {
+        var _this = this;
         var mediatorSubscribeIndicatorStatus = function (value) {
             if (value) {
                 _this.element.text(_this.element.attr('ok'));
@@ -12116,26 +12071,26 @@ var UIKitInputText_Caption = /** @class */ (function (_super) {
                 _this.element.text(_this.element.attr('error'));
             }
         };
-        _this.Mediator.subscribe('indicator.status', mediatorSubscribeIndicatorStatus);
-        return _this;
-    }
+        this.mediator.subscribe('indicator.status', mediatorSubscribeIndicatorStatus);
+        _super.prototype.init.call(this);
+    };
     return UIKitInputText_Caption;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Caption);
 
 
 /***/ }),
-/* 51 */
+/* 54 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 52 */
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(56);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12153,15 +12108,18 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitTextarea = /** @class */ (function (_super) {
     __extends(UIKitTextarea, _super);
     function UIKitTextarea(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-textarea')) {
             throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
         }
-        _this.caption = _this.element.attr('caption');
-        _this.model = new UIKitTextarea_Model();
-        _this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(_this.model);
+        _this.init();
+        return _this;
+    }
+    UIKitTextarea.prototype.init = function () {
+        var _this = this;
+        this.caption = this.element.attr('caption');
+        var model = new UIKitTextarea_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
         var focusInCallback = function () {
             var value = _this.element.val();
             if (typeof value === 'string') {
@@ -12179,17 +12137,16 @@ var UIKitTextarea = /** @class */ (function (_super) {
                 }
             }
         };
-        _this.element.focusin(focusInCallback);
-        _this.element.focusout(focusOutCallback);
+        this.element.focusin(focusInCallback);
+        this.element.focusout(focusOutCallback);
         var mediatorSubscribeModelText = function (modelData) {
             _this.element.val(modelData.text);
         };
-        _this.mediator.subscribe('model.text', mediatorSubscribeModelText);
-        return _this;
-    }
+        this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+    };
     Object.defineProperty(UIKitTextarea.prototype, "text", {
         get: function () {
-            return this.Mediator.getData('model.text');
+            return this.mediator.getData('model.text');
         },
         enumerable: true,
         configurable: true
@@ -12199,18 +12156,14 @@ var UIKitTextarea = /** @class */ (function (_super) {
 var UIKitTextarea_Model = /** @class */ (function (_super) {
     __extends(UIKitTextarea_Model, _super);
     function UIKitTextarea_Model() {
-        // @ts-ignore
         return _super.call(this, {
-            _text: '',
-            get text() {
-                return this._text;
-            },
+            text: '',
         }) || this;
     }
     UIKitTextarea_Model.prototype.getData = function (property) {
         switch (property) {
             case 'text':
-                return this.Data.text;
+                return this.data.text;
             default:
                 return undefined;
         }
@@ -12218,7 +12171,7 @@ var UIKitTextarea_Model = /** @class */ (function (_super) {
     UIKitTextarea_Model.prototype.setData = function (property, data) {
         switch (property) {
             case 'text':
-                this.Data._text = data;
+                this.data.text = data;
                 return true;
             default:
                 return false;
@@ -12226,24 +12179,24 @@ var UIKitTextarea_Model = /** @class */ (function (_super) {
     };
     return UIKitTextarea_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitTextarea = UIKitTextarea;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitTextarea);
 
 
 /***/ }),
-/* 53 */
+/* 56 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 54 */
+/* 57 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__thumb_index__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_toggle_thumb_index__ = __webpack_require__(59);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12261,29 +12214,26 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitToggle = /** @class */ (function (_super) {
     __extends(UIKitToggle, _super);
     function UIKitToggle(element) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element) || this;
+        var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
         }
-        var that = _this;
-        _this.Type = 'horizontal';
-        _this.TypesList = ['horizontal', 'vertical'];
-        if (_this.element.attr('type') !== undefined) {
-            if (_this.element.attr('type') !== '') {
-                if (_this.TypesList.indexOf(_this.element.attr('type')) > -1) {
-                    _this.Type = _this.element.attr('type');
+        _this.init();
+        return _this;
+    }
+    UIKitToggle.prototype.init = function () {
+        var _this = this;
+        this.type = 'horizontal';
+        this.typesList = ['horizontal', 'vertical'];
+        if (this.element.attr('type') !== undefined) {
+            if (this.element.attr('type') !== '') {
+                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
+                    this.type = this.element.attr('type');
                 }
             }
         }
-        _this._init();
-        return _this;
-    }
-    UIKitToggle.prototype._init = function () {
-        var that = this;
-        this.Model = new UIKitToggle_Model();
-        this.Mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.Model);
+        var model = new UIKitToggle_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
         var isChecked = false;
         if (this.element.attr('value') === 'true') {
             isChecked = true;
@@ -12291,31 +12241,31 @@ var UIKitToggle = /** @class */ (function (_super) {
         else {
             isChecked = false;
         }
-        this.Mediator.subscribe('model.checked', function (modelData) {
-            that.element.attr('value', modelData.checked);
-            if (that.checked) {
-                that.element.addClass('checked');
+        this.mediator.subscribe('model.checked', function (modelData) {
+            _this.element.attr('value', modelData.checked);
+            if (_this.checked) {
+                _this.element.addClass('checked');
             }
             else {
-                that.element.removeClass('checked');
+                _this.element.removeClass('checked');
             }
         });
-        this.Thumb = new __WEBPACK_IMPORTED_MODULE_2__thumb_index__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.Mediator, this.Type);
+        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_toggle_thumb_index__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.mediator, this.type));
         this.element.on('click', function () {
-            that.checked = !that.checked;
+            _this.checked = !_this.checked;
         });
         setTimeout(function () {
-            that.checked = isChecked;
+            this.checked = isChecked;
         }, 0);
-        that.acceptType();
+        _super.prototype.init.call(this);
     };
     Object.defineProperty(UIKitToggle.prototype, "checked", {
         get: function () {
-            return this.Mediator.getData('model.checked');
+            return this.mediator.getData('model.checked');
         },
         set: function (value) {
             if (typeof value === 'boolean') {
-                this.Mediator.setData('model.checked', value);
+                this.mediator.setData('model.checked', value);
             }
         },
         enumerable: true,
@@ -12326,19 +12276,14 @@ var UIKitToggle = /** @class */ (function (_super) {
 var UIKitToggle_Model = /** @class */ (function (_super) {
     __extends(UIKitToggle_Model, _super);
     function UIKitToggle_Model() {
-        //@ts-ignore
         return _super.call(this, {
-            _ckecked: false,
-            get checked() {
-                return this._checked;
-            }
+            ckecked: false,
         }) || this;
     }
     UIKitToggle_Model.prototype.getData = function (property) {
         switch (property) {
             case "checked":
-                //@ts-ignore
-                return this.Data.checked;
+                return this.data.checked;
             default:
                 return undefined;
         }
@@ -12347,8 +12292,7 @@ var UIKitToggle_Model = /** @class */ (function (_super) {
         switch (property) {
             case "checked":
                 if (typeof data === 'boolean') {
-                    //@ts-ignore
-                    this.Data._checked = data;
+                    this.data.checked = data;
                     return true;
                 }
                 return false;
@@ -12358,21 +12302,21 @@ var UIKitToggle_Model = /** @class */ (function (_super) {
     };
     return UIKitToggle_Model;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitToggle = UIKitToggle;
+/* harmony default export */ __webpack_exports__["a"] = (UIKitToggle);
 
 
 /***/ }),
-/* 55 */
+/* 58 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 56 */
+/* 59 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(57);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(60);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12390,41 +12334,59 @@ var __extends = (this && this.__extends) || (function () {
 var UIKitToggle_Thumb = /** @class */ (function (_super) {
     __extends(UIKitToggle_Thumb, _super);
     function UIKitToggle_Thumb(element, mediator, type) {
-        var _this = 
-        // @ts-ignore
-        _super.call(this, element, mediator, type) || this;
-        var that = _this;
-        _this.Mediator.subscribe('model.checked', function (modelData) {
-            if (modelData.checked) {
-                that.element.addClass('checked');
-            }
-            else {
-                that.element.removeClass('checked');
-            }
-        });
-        _this.acceptType();
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.init();
         return _this;
     }
+    UIKitToggle_Thumb.prototype.init = function () {
+        var _this = this;
+        this.mediator.subscribe('model.checked', function (modelData) {
+            if (modelData.checked) {
+                _this.element.addClass('checked');
+            }
+            else {
+                _this.element.removeClass('checked');
+            }
+        });
+    };
     return UIKitToggle_Thumb;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
 /* harmony default export */ __webpack_exports__["a"] = (UIKitToggle_Thumb);
 
 
 /***/ }),
-/* 57 */
+/* 60 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 58 */,
-/* 59 */,
-/* 60 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__ = __webpack_require__(2);
+
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 63 */,
+/* 64 */,
+/* 65 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(61);
 
 
 var progressBar1 = new __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitRadialProgress($('#uikit-radial-progress-id-1'));

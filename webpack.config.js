@@ -8,7 +8,7 @@ const PATHS = {
     build: path.join(__dirname, 'build'),
 };
 
-module.exports = {
+const mainModule = {
     context: PATHS.source,
     entry: {
         main: './index',
@@ -26,7 +26,7 @@ module.exports = {
         filename: '[name].js',
     },
     resolve: {
-        extensions: ['.js', '.ts', '.tsx'],
+        extensions: ['.js', '.ts', '.tsx', '.json'],
     },
     module: {
         loaders: [{
@@ -119,4 +119,94 @@ module.exports = {
             'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js'),
         },
     },
+    node: {
+        fs: 'empty',
+    },
 };
+
+const UIKIT_PATHS = {
+    source: path.join(__dirname, './source/uikit'),
+    build: path.join(__dirname, './source/uikit'),
+};
+
+const uikitModule = {
+    context: UIKIT_PATHS.source,
+    entry: {
+        index: './bundle',
+    },
+    output: {
+        path: UIKIT_PATHS.build,
+        filename: '[name].js',
+    },
+    resolve: {
+        extensions: ['.js', '.ts', '.tsx', '.json'],
+    },
+    module: {
+        loaders: [{
+            test: /\.(ts|tsx)$/,
+            loader: 'ts-loader',
+        }, {
+            test: /\.css$/,
+            loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader'],
+            }),
+        }, {
+            test: /\.styl$/,
+            loader: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'stylus-loader'],
+            }),
+        }],
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+        }),
+        new ExtractTextPlugin('style.css'),
+    ],
+    resolveLoader: {
+        alias: {
+            'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js'),
+        },
+    },
+    node: {
+        fs: 'empty',
+    },
+};
+
+const TESTS_PATHS = {
+    source: path.join(__dirname, './tests/source'),
+    build: path.join(__dirname, './tests/build'),
+};
+
+const testsModule = {
+    context: TESTS_PATHS.source,
+    entry: {
+        index: './index',
+    },
+    output: {
+        path: TESTS_PATHS.build,
+        filename: '[name].js',
+    },
+    resolve: {
+        extensions: ['.js', '.ts', '.tsx', '.json'],
+    },
+    module: {
+        loaders: [{
+            test: /\.(ts|tsx)$/,
+            loader: 'ts-loader',
+        }],
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+        }),
+    ],
+};
+
+module.exports = [
+    testsModule,
+];

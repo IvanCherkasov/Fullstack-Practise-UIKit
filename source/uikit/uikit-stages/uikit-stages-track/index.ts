@@ -5,14 +5,14 @@ import UIKit from '../../uikit-core/index';
 
 class UIKitStages_Track extends UIKit.Core.UIKitElement {
 
-    private invert: boolean = false;
-
     constructor(element, mediator, type, invert: boolean) {
-        // @ts-ignore
         super(element, mediator, type);
-        this.invert = invert;
+        this.storage['invert'] = invert;
+        this.init();
+    }
 
-        if (this.invert === true && this.Type === 'vertical') {
+    protected init() {
+        if (this.storage.invert === true && this.type === 'vertical') {
             const addClassInvert = () => {
                 this.element.addClass('invert');
             };
@@ -20,19 +20,19 @@ class UIKitStages_Track extends UIKit.Core.UIKitElement {
         }
 
         let orientation: string[] = ['', ''];
-        if (this.Type === 'horizontal') {
+        if (this.type === 'horizontal') {
             orientation = ['width', 'left'];
-        } else if (this.Type === 'vertical') {
+        } else if (this.type === 'vertical') {
             orientation = ['height', 'top'];
         }
 
-        const stages = this.Mediator.getData('model.stages');
+        const stages = this.mediator.getData('model.stages');
         const percent = 100 / (stages - 1);
         const stageDom = $('<div>').addClass('uikit-stages-stage');
         const captionDom = $('<div>').addClass('uikit-stage-caption');
         const betweenDom = $('<div>')
             .addClass('uikit-stages-between')
-            .addClass(this.Type)
+            .addClass(this.type)
             .css(orientation[0], percent + '%');
 
         let shift: number = 0;
@@ -52,7 +52,7 @@ class UIKitStages_Track extends UIKit.Core.UIKitElement {
 
         const mediatorSubscribeModelStageCallback = (modelData) => {
             let betweens = this.element.find('.uikit-stages-between');
-            if (this.invert) {
+            if (this.storage.invert) {
                 betweens = $(betweens.get().reverse());
                 console.log(betweens);
             }
@@ -77,10 +77,11 @@ class UIKitStages_Track extends UIKit.Core.UIKitElement {
                 stagesEachMap);
         };
 
-        this.Mediator.subscribe(
+        this.mediator.subscribe(
             'model.stage',
             mediatorSubscribeModelStageCallback);
-        this.acceptType();
+
+        super.init();
     }
 }
 

@@ -3,15 +3,15 @@
 	display flex
 	background-color var(--color-1)
 	transition background-color 0.2s
-	
+
 	.left
 		position absolute
 		width 24px
 		height 24px
 		background-color var(--color-1)
-		border-radius 50%	
+		border-radius 50%
 		transition background-color 0.2s
-		
+
 	.right
 		position absolute
 		width 24px
@@ -19,7 +19,7 @@
 		background-color var(--color-1)
 		border-radius 50%
 		transition background-color 0.2s
-		
+
 	.text-left
 		display flex
 		position absolute
@@ -30,7 +30,7 @@
 		transition opacity 0.2s
 		z-index 1
 		cursor default
-		
+
 	.text-right
 		display flex
 		position absolute
@@ -44,7 +44,7 @@
 
 .uikit-toggle[text-enabled="false"] .text-right
 	display none
-		
+
 .uikit-toggle[text-enabled="false"] .text-left
 	display none
 
@@ -53,16 +53,16 @@
 	width 24px
 	justify-content center
 	margin 12px 0
-	
+
 	.left
 		top -12px
-		
+
 	.right
 		bottom -12px
-		
+
 	.text-left
 		display none
-		
+
 	.text-right
 		display none
 
@@ -71,57 +71,54 @@
 	width 36px
 	align-items center
 	margin 0 12px
-	
+
 	.left
 		left -12px
-		
+
 	.right
 		right -12px
-		
+
 	.text-left
 		left 0
 		height 24px
 		align-items center
-		
+
 	.text-right
 		right 0
 		height 24px
 		align-items center
-	
-		
+
+
 .uikit-toggle.checked
 	background-color var(--color-1)
-	
+
 .uikit-toggle:not(.checked)
 	background-color #e5e5e5
-	
+
 .uikit-toggle.checked
 	.left
 		background-color var(--color-1)
-		
+
 	.right
 		background-color var(--color-1)
-		
+
 .uikit-toggle:not(.checked)
 	.left
 		background-color #e5e5e5
-		
+
 	.right
 		background-color #e5e5e5
-		
+
 .uikit-toggle.checked
 	.text-left
 		opacity 1
-		
+
 	.text-right
 		opacity 0
-		
+
 .uikit-toggle:not(.checked)
 	.text-left
 		opacity 0
-		
+
 	.text-right
 		opacity 1
-		
-	
-	

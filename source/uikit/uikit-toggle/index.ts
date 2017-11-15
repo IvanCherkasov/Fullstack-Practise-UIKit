@@ -1,39 +1,35 @@
 /* tslint:disable */
 import './index.styl'
 import UIKit from '../uikit-core/index'
-import UIKitToggle_Thumb from './thumb/index'
+import UIKitToggle_Thumb from './uikit-toggle-thumb/index'
 
 class UIKitToggle extends  UIKit.Core.UIKitElement{
 
-    public Thumb: UIKitToggle_Thumb;
-    private Model: UIKitToggle_Model;
-    public Mediator;
+    private innerObjects: any[];
 
     constructor(element:any){
-        // @ts-ignore
         super(element);
         if (!this.element.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
         }
-        let that = this;
 
-        this.Type = 'horizontal';
-        this.TypesList = ['horizontal', 'vertical'];
+        this.init();
+    }
+
+    protected init(){
+
+        this.type = 'horizontal';
+        this.typesList = ['horizontal', 'vertical'];
         if (this.element.attr('type') !== undefined){
             if (this.element.attr('type') !== ''){
-                if (this.TypesList.indexOf(this.element.attr('type')) > -1){
-                    this.Type = this.element.attr('type');
+                if (this.typesList.indexOf(this.element.attr('type')) > -1){
+                    this.type = this.element.attr('type');
                 }
             }
         }
 
-        this._init();
-    }
-
-    protected _init(){
-        let that = this;
-        this.Model = new UIKitToggle_Model();
-        this.Mediator = new UIKit.Core.UIKitMediator(this.Model);
+        const model = new UIKitToggle_Model();
+        this.mediator = new UIKit.Core.UIKitMediator(model);
         var isChecked = false;
         if (this.element.attr('value') === 'true'){
           isChecked = true;
@@ -41,59 +37,53 @@ class UIKitToggle extends  UIKit.Core.UIKitElement{
           isChecked = false;
         }
 
-        this.Mediator.subscribe('model.checked', function(modelData){
-    			that.element.attr('value', modelData.checked);
-    			if (that.checked){
-    				that.element.addClass('checked');
-    			} else {
-    				that.element.removeClass('checked');
-    			}
-    		});
+        this.mediator.subscribe('model.checked', (modelData) => {
+                this.element.attr('value', modelData.checked);
+                if (this.checked){
+                    this.element.addClass('checked');
+                } else {
+                    this.element.removeClass('checked');
+                }
+            });
 
-        this.Thumb = new UIKitToggle_Thumb(
-    			this.element.find('.uikit-toggle-thumb'),
-    			this.Mediator,
-    			this.Type
-    			);
+        this.innerObjects.push(new UIKitToggle_Thumb(
+                this.element.find('.uikit-toggle-thumb'),
+                this.mediator,
+                this.type));
 
-        this.element.on('click', function(){
-    			that.checked = !that.checked;
-    		});
+        this.element.on('click', () => {
+                this.checked = !this.checked;
+            });
 
-    		setTimeout(function(){
-    			that.checked = isChecked;
-    		}, 0);
+        setTimeout(function(){
+            this.checked = isChecked;
+        }, 0);
 
-    		that.acceptType();
+        super.init();
     }
 
     public get checked(): boolean{
-  		return this.Mediator.getData('model.checked');
-  	}
+          return this.mediator.getData('model.checked');
+      }
 
-  	public set checked(value: boolean){
-  		if (typeof value === 'boolean'){
-  			this.Mediator.setData('model.checked', value);
-  		}
-  	}
+      public set checked(value: boolean){
+          if (typeof value === 'boolean'){
+              this.mediator.setData('model.checked', value);
+          }
+      }
 }
 
 class UIKitToggle_Model extends UIKit.Core.UIKitModel{
     constructor(){
-        //@ts-ignore
         super({
-            _ckecked: false,
-            get checked(){
-                return this._checked;
-            }
+            ckecked: false,
         });
     }
 
     public getData(property:string){
         switch(property){
             case "checked":
-                //@ts-ignore
-                return this.Data.checked;
+                return this.data.checked;
             default:
                 return undefined;
         }
@@ -103,8 +93,7 @@ class UIKitToggle_Model extends UIKit.Core.UIKitModel{
         switch(property){
             case "checked":
                 if (typeof data === 'boolean'){
-                    //@ts-ignore
-                    this.Data._checked = data;
+                    this.data.checked = data;
                     return true;
                 }
                 return false;
@@ -114,4 +103,4 @@ class UIKitToggle_Model extends UIKit.Core.UIKitModel{
     }
 }
 
-UIKit.Core.UIKitToggle = UIKitToggle;
+export default UIKitToggle;

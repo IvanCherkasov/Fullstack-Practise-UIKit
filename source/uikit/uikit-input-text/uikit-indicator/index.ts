@@ -2,17 +2,20 @@ import './index.styl';
 import UIKit from '../../uikit-core/index';
 import UIKitInputText_Caption from './uikit-indicator-caption/index';
 
-class UIKitInputText_Indicator extends UIKit.Core.UIKitElement {
+class UIKitInputText_Indicator extends UIKit.Core.UIKitComponent {
 
-    private caption: UIKitInputText_Caption;
+    private innerObjects: any[];
 
-    constructor(element, mediator, type?) {
-        // @ts-ignore
-        super(element, mediator, type);
+    constructor(element, mediator) {
+        super(element, mediator);
+        this.init();
+    }
 
-        this.caption = new UIKitInputText_Caption(
+    protected init() {
+        this.innerObjects.push(
+            new UIKitInputText_Caption(
             this.element.find('.uikit-indicator-caption'),
-            this.Mediator);
+            this.mediator));
 
         const meditorSubscribeIndicatorStatus = (value) => {
             if (value) {
@@ -26,13 +29,14 @@ class UIKitInputText_Indicator extends UIKit.Core.UIKitElement {
             this.enabled = value;
         };
 
-        mediator.subscribe(
+        this.mediator.subscribe(
             'indicator.status',
             meditorSubscribeIndicatorStatus);
 
-        mediator.subscribe(
+        this.mediator.subscribe(
             'indicator.enabled',
             meditorSubscribeIndicatorEnabled);
+        super.init();
     }
 }
 

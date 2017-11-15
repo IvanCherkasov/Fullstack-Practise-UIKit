@@ -1,11 +1,13 @@
 import './index.styl';
 import UIKit from '../../../uikit-core/index';
 
-class UIKitInputText_Caption extends UIKit.Core.UIKitElement {
-    constructor(element, mediator, type?) {
-        // @ts-ignore
-        super(element, mediator, type);
+class UIKitInputText_Caption extends UIKit.Core.UIKitComponent {
+    constructor(element, mediator) {
+        super(element, mediator);
+        this.init();
+    }
 
+    protected init() {
         const mediatorSubscribeIndicatorStatus = (value) => {
             if (value) {
                 this.element.text(this.element.attr('ok'));
@@ -14,9 +16,10 @@ class UIKitInputText_Caption extends UIKit.Core.UIKitElement {
             }
         };
 
-        this.Mediator.subscribe(
+        this.mediator.subscribe(
             'indicator.status',
             mediatorSubscribeIndicatorStatus);
+        super.init();
     }
 }
 

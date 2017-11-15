@@ -1,20 +1,25 @@
 import './index.styl';
 import UIKit from '../../uikit-core/index';
 
-class UIKitInputText_Input extends UIKit.Core.UIKitElement {
+class UIKitInputText_Input extends UIKit.Core.UIKitComponent {
 
-    private caption: string;
+    constructor(element, mediator) {
+        super(element, mediator);
 
-    constructor(element, mediator, type?) {
-        // @ts-ignore
-        super(element, mediator, type);
+        this.storage = {
+            caption: '',
+        };
 
-        this.caption = this.element.attr('caption');
+        this.init();
+    }
+
+    protected init() {
+        this.storage.caption = this.element.attr('caption');
 
         const focusInCallback = () => {
             const value = this.element.val();
             if (typeof value === 'string') {
-                if (value === this.caption) {
+                if (value === this.storage.caption) {
                     this.element.val('');
                 }
             }
@@ -22,12 +27,12 @@ class UIKitInputText_Input extends UIKit.Core.UIKitElement {
 
         const focusOutCallback = () => {
             let value = this.element.val();
-			if (typeof value === 'string') {
-				value = value.trim();
-				if (value === '') {
-					this.element.val(this.caption);
-				}
-			}
+            if (typeof value === 'string') {
+                value = value.trim();
+                if (value === '') {
+                    this.element.val(this.storage.caption);
+                }
+            }
         };
 
         this.element.focusin(focusInCallback);
@@ -39,7 +44,9 @@ class UIKitInputText_Input extends UIKit.Core.UIKitElement {
             }
         };
 
-        this.Mediator.subscribe('model.text', mediatorSubscribeModelText);
+        this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+
+        super.init();
     }
 }
 

@@ -1,15 +1,17 @@
-import './index.styl'
-import UIKit from '../../uikit-core/index'
+import './index.styl';
+import UIKit from '../../uikit-core/index';
 
-class UIKitButton_Caption extends UIKit.Core.UIKitElement{
-    constructor(element: any, mediator?, type?: string){
-        //@ts-ignore
-        super(element, mediator, type);
-        let that = this;
+class UIKitButton_Caption extends UIKit.Core.UIKitComponent{
+    constructor(element: any, mediator) {
+        super(element, mediator);
+        this.init();
+    }
 
-        this.Mediator.subscribe('button.caption', function(caption){
-			that.element.text(caption);
-		});
+    protected init() {
+        this.mediator.subscribe('button.caption', (caption) => {
+            this.element.text(caption);
+        });
+        super.init();
     }
 }
 

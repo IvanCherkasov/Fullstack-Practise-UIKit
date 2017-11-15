@@ -1,13 +1,15 @@
 import './index.styl';
 import UIKit from '../../uikit-core/index';
 
-class UIKitSlider_Input extends UIKit.Core.UIKitElement {
-    constructor(element, mediator, type) {
-        // @ts-ignore
-        super(element, mediator, type);
+class UIKitSlider_Input extends UIKit.Core.UIKitComponent {
+    constructor(element, mediator, types?, type?) {
+        super(element, mediator, types, type);
+        this.init();
+    }
 
+    protected init() {
         const mediatorSubscribeModelValue = (modelData) => {
-            const val = parseInt(this.element.val(), 10);
+            const val = parseInt((this.element.val()) as string, 10);
             if (val !== NaN) {
                 this.element.val(modelData.value);
             } else {
@@ -16,14 +18,14 @@ class UIKitSlider_Input extends UIKit.Core.UIKitElement {
                 }
             }
         };
-        this.Mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
 
         const changeUikitSliderInputCallback = () => {
             if (this.element.val()) {
-                const val = parseInt(this.element.val(), 10);
+                const val = parseInt((this.element.val()) as string, 10);
                 if (val !== NaN) {
-                    if (val !== this.Mediator.getData('model.value')) {
-                        this.Mediator.setData('model.value', val);
+                    if (val !== this.mediator.getData('model.value')) {
+                        this.mediator.setData('model.value', val);
                     }
                 }
             }
@@ -32,7 +34,7 @@ class UIKitSlider_Input extends UIKit.Core.UIKitElement {
             'change.uikit.slider.input',
             changeUikitSliderInputCallback);
 
-        this.stylize(this.Type);
+        super.init();
     }
 }
 

@@ -4,17 +4,21 @@ import UIKitSlider_Filled from './uikit-slider-filled/index';
 
 class UIKitSlider_Fill extends UIKit.Core.UIKitElement {
 
-    private filled: UIKitSlider_Filled;
+    private innerObjects: any[];
 
     constructor (element, mediator, type) {
-        // @ts-ignore
         super(element, mediator, type);
-        this.filled = new UIKitSlider_Filled(
-            this.element.find('.uikit-slider-filled'),
-            this.Mediator,
-            this.Type);
+        this.init();
+    }
 
-        this.stylize(this.Type);
+    protected init() {
+        this.innerObjects.push(
+            new UIKitSlider_Filled(
+            this.element.find('.uikit-slider-filled'),
+            this.mediator,
+            this.type));
+
+        super.init();
     }
 }
 

@@ -3,48 +3,49 @@ import UIKit from '../../uikit-core/index';
 
 class UIKitSlider_Rule extends UIKit.Core.UIKitElement {
 
-    private segments;
-
     constructor(element, mediator, type) {
-        // @ts-ignore
         super(element, mediator, type);
-        this.segments = this.element.attr('segments');
+        this.storage['segments'] = this.element.attr('segments');
 
-        const getValues = () => {
-            if (this.segments > 0) {
-                const minimum = this.Mediator.getData('model.minimum');
-                const maximum = this.Mediator.getData('model.maximum');
-                const crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.segments - 1));
-                let values: number[] = [];
-                let buf = minimum;
-                for (let i = 0; i < this.segments; i += 1) {
-                    values.push(Math.round(buf));
-                    buf += crat;
-                }
-                return values;
-            }
-            return undefined;
-        };
+        this.init();
 
-        this.stylize(this.Type);
-
-        if (this.segments !== 0) {
-            const values = getValues();
+        if (this.storage.segments !== 0) {
+            const values = this.getValues();
             if (values) {
-                if (this.Type === 'horizontal') {
+                if (this.type === 'horizontal') {
                     this.build(values, true);
-                } else if (this.Type === 'vertical') {
+                } else if (this.type === 'vertical') {
                     this.build(values, false);
                 }
             }
         }
     }
 
+    protected init() {
+        super.init();
+    }
+
+    private getValues() {
+        if (this.storage.segments > 0) {
+            const minimum = this.mediator.getData('model.minimum');
+            const maximum = this.mediator.getData('model.maximum');
+            const crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storage.segments - 1));
+            let values: number[] = [];
+            let buf = minimum;
+            for (let i = 0; i < this.storage.segments; i += 1) {
+                values.push(Math.round(buf));
+                buf += crat;
+            }
+            return values;
+        }
+        return undefined;
+    }
+
     private build(values: number[], isHorizontal: boolean): void {
 
         const size = (100 / (values.length + 1));
-        const minimum = this.Mediator.getData('model.minimum');
-        const maximum = this.Mediator.getData('model.maximum');
+        const minimum = this.mediator.getData('model.minimum');
+        const maximum = this.mediator.getData('model.maximum');
 
         let divs = [];
         let shiftType = '';
@@ -88,7 +89,7 @@ class UIKitSlider_Rule extends UIKit.Core.UIKitElement {
             this.element.append(item);
             item.on('click', () => {
                 const value = Number(item.attr('value'));
-                this.Mediator.setData('model.value', value);
+                this.mediator.setData('model.value', value);
             });
         };
     }

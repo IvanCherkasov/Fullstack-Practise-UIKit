@@ -1,394 +1,412 @@
-import './uikit-styles.styl'
-import $ from 'jquery'
+import './uikit-styles.styl';
+import $ from 'jquery';
+import themes from '../themes/load-all';
 
-interface ProtoObjects{
-	[key: string]: any
+namespace ElementTypes {
+    export enum TArrowButton {
+        LEFT,
+        RIGHT,
+    }
+
+    export enum TSlider {
+        HORIZONTAL,
+        VERTICAL,
+    }
+
+    export enum TStages {
+        HORIZONTAL,
+        VERTICAL,
+    }
 }
 
-class UIKitElement{
+class UIKitComponent {
 
-    private _typesList: string[];
-    private _original: any;
-    private _enabled: boolean = true;
+    protected element: JQuery;
+    protected types: object;
+    protected mediator: UIKitMediator;
+    protected type: string;
+    protected storage: {[key: string]: any} = {};
 
-    constructor(private _element: any, private _mediator?: UIKitMediator, private _type?: string){
-        if (_element && _element !== null){
-            if (!(_element instanceof $)){
-                if (_element instanceof HTMLCollection){
-                    _element = $(_element);
-                } else {
-                    throw ReferenceError('Переданный элемент не является объектом jQuery или HTMLCollection');
-                }
-            }
-            this._original = _element.clone();
+    constructor(element: JQuery, mediator: UIKitMediator, types?: object, type?: string) {
+        if (!element || element === null) {
+            throw ReferenceError('Передан пустой компонент');
+        }
+        this.element = element;
+
+        this.storage = {
+            enabled: true,
+        };
+
+        if (mediator) {
+            this.mediator = mediator;
+        }
+
+        if (types) {
+            this.types = types;
+        }
+
+        if (type) {
+            this.type = type;
         } else {
+            if (types && Object.keys(types).length > 0) {
+                this.type = types[0];
+            }
+        }
+    }
+
+    protected init(): void {
+    }
+
+    protected get enabled(): boolean {
+        return this.storage.enabled;
+    }
+
+    protected set enabled(value: boolean) {
+        this.storage.enabled = value;
+        if (value) {
+            this.element.addClass('disabled');
+        } else {
+            this.element.removeClass('disabled');
+        }
+        if (this.mediator) {
+            this.mediator.publish('element.enabled', value);
+        }
+    }
+}
+
+class UIKitElement {
+
+    protected element: JQuery;
+    protected original: JQuery;
+    protected mediator: UIKitMediator;
+    protected noRebuild: boolean = false;
+
+    protected storage: {[key: string]: any} = {};
+
+    constructor(element: JQuery) {
+        if (!element || element === null) {
             throw ReferenceError('Передан пустой элемент');
         }
+        if (!element.hasClass('uikit')) {
+            throw ReferenceError(
+                'Переданный элемент не является объектом uikit');
+        }
+
+        this.storage = {
+            type: '',
+            types: {},
+            enabled: true,
+        };
+
+        this.element = element;
+        this.original = element.clone();
+
+        if (this.element.attr('data-enabled') === 'false') {
+            this.enabled = false;
+        }
     }
 
-    protected _init(): void{
-
+    protected init(): void {
+        this.acceptType();
     }
 
-    protected rebuild(): void{
-        let that = this;
-        let parent = this._element.parent();
-        let spawned = false;
+    protected rebuild(): void {
+        const parent: JQuery = this.element.parent();
+        let spawned: boolean = false;
 
         let attributes = [];
-		this._element.each(function(){
-			$.each(this.attributes, function(){
-				if (this.specified){
-					attributes.push({
-						name: this.name,
-						value: this.value
-					});
-				}
-			});
+        const elementEachCallback = (item) => {
+            $.each(item.attributes, function () {
+                if (this.specified) {
+                    attributes.push({
+                        name: this.name,
+                        value: this.value,
+                    });
+                }
+            });
+        };
+        this.element.toArray().map(elementEachCallback);
+
+        let index = -1;
+        const parentChildrenFindEachCallback = (item, i) => {
+            if ($(item).is(this.element)) {
+                index = i;
+                return;
+            }
+        };
+        parent.children().toArray().map(parentChildrenFindEachCallback);
+
+        this.element.remove();
+        this.element = this.original.clone();
+
+        attributes.map((attr) => {
+            if (attr.name !== 'class') {
+                this.element.attr(attr.name, attr.value);
+            }
         });
 
-        var index = -1;
-		parent.children().each(function(i){
-			if ($(this).is(that._element)) {
-				index = i;
-				return;
-			}
-		});
+        const parentChildrenPlaceEachCallback = (item, i) => {
+            if (i === index) {
+                $(item).before(this.element);
+                spawned = true;
+                return;
+            }
+        };
+        parent.children().toArray().map(parentChildrenPlaceEachCallback);
 
-		this._element.remove();
-        this._element = this.Original.clone();
-
-        attributes.map(function(attr){
-			if (attr.name !== 'class'){
-				that._element.attr(attr.name, attr.value);
-			}
-        });
-
-        parent.children().each(function(i){UIKitModel
-			if (i === index){
-				$(this).before(that._element);
-				spawned = true;
-				return;
-			}
-        });
-
-        if (!spawned){
-			parent.append(this._element);
+        if (!spawned) {
+            parent.append(this.element);
         }
 
-        this._element.attr('type', this.Type);
-
-        this._element.ready(function(){
-			setTimeout(function(){
-				that._init();
-			}, 0);
-		});
+        this.element.ready(() => {
+            setTimeout(
+                () => {
+                    this.init();
+                },
+                0);
+        });
     }
 
-    protected clearStyle(): void{
-        var that = this;
-		UIKit.styles.forEach(function(item){
-			that._element.removeClass(item);
-		});
-    }
-
-    protected acceptType(): void{
-        if (!this._element.hasClass(this.Type)){
-			var baseClasses = this.Original.attr('class');
-			this._element.attr('class', '');
-			this._element.attr('class', baseClasses);
-			this._element.addClass(this.Type);
-		}
-    }
-
-    protected stylize(type: string){
-        this._element.addClass(type);
-    }
-
-    protected get TypesList(): string[]{
-        return this._typesList;
-    }
-
-    protected set TypesList(value: string[]){
-        this._typesList = value;
-    }
-
-    protected get Original(): any{
-        return this._original;
-    }
-
-    protected get element(){
-        return this._element;
-    }
-
-    public get Mediator(): UIKitMediator{
-        return this._mediator;
-    }
-
-    public set Mediator(value: UIKitMediator){
-        this._mediator = value;
-    }
-
-    public get Type(): string{
-        return this._type;
-    }
-
-    public set Type(value: string){
-        this._type = value;
-    }
-
-    public get type(): string{
-        return this._type;
-    }
-
-    public set type(value: string){
-        if (this.TypesList.indexOf(value) > -1){
-            this._type = value;
-            this.rebuild();
+    protected initTypes(types: object, type?: any): void {
+        if (Object.keys(types).length > 0) {
+            this.storage.types = types;
+            if (type) {
+                if (this.storage.types[type]) {
+                    this.storage.type = type;
+                }
+            } else {
+                this.storage.type = types[0];
+            }
         }
     }
 
-    public get enabled(): boolean{
-        return this._enabled;
+    // если элементу была присвоена вариация по ходу работы, то
+    // смена типа сотрет её
+    private acceptType(): void {
+        if (this.element.hasClass(this.type) === false) {
+            const baseClasses = this.original.attr('class');
+            this.element.attr('class', '')
+                .attr('class', baseClasses)
+                .addClass(this.type);
+        }
     }
 
-    public set enabled(value: boolean){
-        this._enabled = value;
-        if (value){
-            this._element.removeClass('disabled');
+    public get type(): string {
+        return this.storage.type;
+    }
+
+    public set type(value: string) {
+        if (this.storage.types[value]) {
+            this.storage.type = value;
+            if (this.noRebuild) {
+                this.acceptType();
+            } else {
+                this.rebuild();
+            }
+            if (this.mediator) {
+                if (this.noRebuild) {
+                    this.mediator.publish('element.type');
+                } else {
+                    this.mediator.publish('element.rebuild');
+                }
+            }
+        }
+    }
+
+    public get enabled(): boolean {
+        return this.storage.enabled;
+    }
+
+    public set enabled(value: boolean) {
+        this.storage.enabled = value;
+        if (value) {
+            this.element.addClass('disabled');
         } else {
-            this._element.addClass('disabled');
+            this.element.removeClass('disabled');
         }
-        if (this.Mediator){
-            this.Mediator.publish('element.enabled', value);
-        }
-    }
-
-    public set style(value: string){
-        let that = this;
-        if (UIKit.styles.indexOf(value) > -1){
-            that.clearStyle();
-            that._element.addClass(value);
-            if (this.Mediator){
-				this.Mediator.publish('element.style', name);
-			}
+        if (this.mediator) {
+            this.mediator.publish('element.enabled', value);
         }
     }
-
 }
 
-class UIKitMath{
-	constructor(){}
-	static Clamp(value, min, max){
-		return Math.min(Math.max(min, value), max);
-	}
-}
+class UIKitMediator {
 
-class UIKitMediator{
+    private channels: {[key: string]: Function[]} = {};
+    private middleware: any[];
+    private model: UIKitModel;
 
-    private _channels = {}
-    private _middleware = []
-
-    constructor(private _model: UIKitModel, middleware?: any){
-        var that = this;
-		if (middleware){
-			if (Array.isArray(middleware)){
-				this._middleware = middleware;
-			}
-		}
+    constructor(model: UIKitModel, middleWare?: Function[]) {
+        this.model = model;
+        if (middleWare) {
+            this.middleware = middleWare;
+        }
     }
 
-    public subscribe(channel: string, func): void{
-        if (!this._channels[channel]){
-			this._channels[channel] = [];
-		}
-		this._channels[channel].push({
-			callback: func
-		});
+    public subscribe(channel: string, callback): void {
+        if (!this.channels[channel]) {
+            this.channels[channel] = [];
+        }
+        this.channels[channel].push(callback);
     }
 
-    public publish(channel: string, ...args: any[]): boolean{
-        var that = this;
-		if (!this._channels[channel]){
-			return false;
-		}
-
-		this._channels[channel].forEach(function(subscription){
-			subscription.callback(...args);
-		});
-
-		return true;
+    public publish(channel: string, ...args: any[]): boolean {
+        if (!this.channels[channel]) {
+            return false;
+        }
+        const mapEmitCallback = (callback: Function) => {
+            callback(args);
+        };
+        this.channels[channel].map(mapEmitCallback);
+        return true;
     }
 
-    public getData(property: string): any{
-        var props = property.split('.');
-		var done = false;
-		var data = null;
+    public getData(property: string): any {
+        const props: string[] = property.split('.');
 
-		if (props[0] === 'model'){
-			data = this._model.getData(props[1]);
-			if (data !== undefined){
-				done = true;
-			}
-		}
+        if (props[0] === 'model') {
+            const newProps = property.replace('model.', '');
+            const data = this.model.getData(newProps);
+            if (data !== undefined) {
+                return true;
+            }
+        }
 
-		if (done){
-			return data;
-		} else {
-			console.error('no such property named "' + property + '"');
-			return undefined;
-		}
+        return undefined;
     }
 
-    public setData(property: string, data: any): boolean{
-        var props = property.split('.');
-		var done = false;
+    public setData(property: string, data: any): boolean {
+        const props: string[] = property.split('.');
 
-		if (props[0] === 'model'){
-			if (this._model.setData(props[1], data)){
-				done = true;
-			}
-		}
+        const emitMiddlewares = (funcs: Function[]) => {
+            funcs.map((func) => {
+                func('mediator set data', { property, data });
+            });
+        };
 
-		if (done === false){
-			console.error('no such property named "' + property + '"');
-			return false;
-		}
+        if (props[0] === 'model') {
+            const newProps = property.replace('model.', '');
+            if (this.model.setData(newProps, data)) {
+                this.publish(property, this.model.getAllData());
+                emitMiddlewares(this.middleware);
+                return true;
+            }
+        }
 
-		this.publish(property, this._model.Data);
-
-		this._middleware.forEach(function(func){
-			func('mediator set data', {
-				property: property,
-				data: data
-			});
-		});
+        return false;
     }
 }
 
-class UIKitModel{
+class UIKitModel {
 
-    public Data: ProtoObjects = {}
+    protected data: {[key: string]: any} = {};
 
-    constructor(data?: any) {
-		if (data !== null) {
-			this.Data = data;
-		}
-	}
-
-	getData(property: string){}
-	setData(property:string, data:any){}
-}
-
-class UIKitCoordinateSystem{
-
-    private _element: any;
-
-    constructor(dom){
-        this._element = dom;
-		let that = this;
+    constructor(data?: {[key: string]: any}) {
+        if (data) {
+            this.data = data;
+        }
     }
 
-    public get xMin(){
-		if (this._element){
-			return this._element.offset().left;
-		}
-		return 0;
-	}
+    public getAllData(): {[key: string]: any} {
+        return jQuery.extend(true, {}, this.data);
+    }
 
-	public get yMin(){
-		if (this._element){
-			return this._element.offset().top;
-		}
-		return 0;
-	}
+    public getData(property: string): any {
 
-	public get xMax(){
-		if (this._element){
-			return this._element.offset().left + this._element.width();
-		}
-		return 0;
-	}
+    }
 
-	public get yMax(){
-		if (this._element){
-			return this._element.offset().top + this._element.height();
-		}
-		return 0;
-	}
-
-	public get width(){
-		if (this._element){
-			return this._element.width();
-		}
-		return 0;
-	}
-
-	public get height(){
-		if (this._element){
-			return this._element.height();
-		}
-		return 0;
-	}
-}
-
-let style = '';
-let styles: string[] = [];
-
-var rawObject = require('!!to-raw-loader!css-as-json-loader!stylus-loader!./uikit-styles.styl');
-var jsonObject = JSON.parse(rawObject.raw);
-jsonObject.forEach(function(item){
-	if (Array.isArray(item['selectors'])){
-		for(var i = 0; i < item['selectors'].length; i++){
-			var ok = false;
-			var selector = item['selectors'][i];
-			if (selector.search('uikit-style-') > -1){
-				var strings = selector.split('.');
-				for (var j = 0; j < strings.length; j++){
-					if (strings[j].search('uikit-style-') > -1){
-						styles.push(strings[j].trim());
-						ok = true;
-					}
-					if (ok){
-						break;
-					}
-				}
-			}
-			if (ok){
-				break;
-			}
-		}
-	}
-});
-
-class UIKit{
-
-	public static Core: ProtoObjects = {
-		'UIKitElement': UIKitElement,
-		'UIKitMath': UIKitMath,
-		'UIKitCoordinateSystem': UIKitCoordinateSystem,
-		'UIKitMediator': UIKitMediator,
-		'UIKitModel': UIKitModel
-	}
-
-	public static set style(name){
-		if (styles.indexOf(name) > -1){
-			styles.forEach(function(item){
-				$('body').removeClass(item);
-			});
-			$('body').addClass(name);
-			style = name;
-		}
-	}
-
-	public static get style(){
-		return style;
-	}
-
-    public static get styles(): string[]{
-        return styles;
+    public setData(property: string, data: any): boolean {
+        return false;
     }
 }
 
-UIKit.style = styles[0]; //default
-export default UIKit;
+class UIKitMath {
+    public static clamp(value: number, minimum: number, maximum: number) {
+        return Math.min(Math.max(minimum, value), maximum);
+    }
+}
+
+class UIKitCoordinateSystem {
+
+    private element: JQuery;
+
+    constructor(element: JQuery) {
+        if (!element) {
+            return undefined;
+        }
+        this.element = element;
+    }
+
+    public get xMin(): number {
+        return this.element.offset().left;
+    }
+
+    public get yMin(): number {
+        return this.element.offset().top;
+    }
+
+    public get xMax(): number {
+        return this.element.offset().left + this.element.width();
+    }
+
+    public get yMax(): number {
+        return this.element.offset().top + this.element.height();
+    }
+
+    public get width(): number {
+        return this.element.width();
+    }
+
+    public get height(): number {
+        return this.element.height();
+    }
+}
+
+class UIKitThemeController {
+
+    private storage = {
+        themesList: [],
+        currentTheme: '',
+    };
+
+    constructor(theme?: string) {
+        this.storage.themesList = themes.list;
+        if (theme) {
+            this.theme = theme;
+        }
+    }
+
+    private changeTheme(value: string) {
+        this.themesList.map((item) => {
+            $('body').removeClass(item);
+        });
+        $('body').addClass(value);
+        this.storage.currentTheme = value;
+    }
+
+    public get themesList(): string[] {
+        return this.storage.themesList;
+    }
+
+    public get theme(): string {
+        return this.storage.currentTheme;
+    }
+
+    public set theme(value: string) {
+        if (this.themesList.indexOf(value) > -1) {
+            this.changeTheme(value);
+        }
+    }
+}
+
+export default {
+    Core: {
+        UIKitElement,
+        UIKitComponent,
+        UIKitMediator,
+        UIKitModel,
+        UIKitMath,
+        UIKitThemeController,
+        UIKitCoordinateSystem,
+        ElementTypes,
+    } };

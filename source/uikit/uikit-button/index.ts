@@ -1,60 +1,59 @@
-import './index.styl'
-import UIKit from '../uikit-core/index'
-import UIKitButton_Caption from './uikit-button-caption/index'
-import UIKitButton_Effect from './uikit-button-effect/index'
+import './index.styl';
+import UIKit from '../uikit-core/index';
+import UIKitButton_Caption from './uikit-button-caption/index';
+import UIKitButton_Effect from './uikit-button-effect/index';
 
 class UIKitButton extends UIKit.Core.UIKitElement{
 
-	private _model: any;
-		
-	private Caption;
-	private Radial;
+    private model: any;
+    private innerObjects: any[];
 
-    constructor(element: any){
-		//@ts-ignore
-		super(element);
-		
-        let that = this;
+    constructor(element: any) {
+        super(element);
+        this.init();
+    }
 
-        this._model = new UIKitButton_Model();
-        this.Mediator = new UIKit.Core.UIKitMediator(this._model);
-		
-		this.Caption = new UIKitButton_Caption(
-			this.element.find('.uikit-button-caption'),
-			this.Mediator
-			);
+    protected init() {
+        this.model = new UIKitButton_Model();
+        this.mediator = new UIKit.Core.UIKitMediator(this.model);
 
-		this.Radial = new UIKitButton_Effect(
-			this.element.find('.uikit-button-effect'),
-			this.Mediator
-			);
+        this.innerObjects.push(
+            new UIKitButton_Caption(
+                this.element.find('.uikit-button-caption'),
+                this.mediator));
 
-        this.element.on('click', function(event){
-			that.Mediator.publish('button.click', event); //запуск анимации у элемента effect
-			event.stopPropagation();
-		});
+        this.innerObjects.push(
+            new UIKitButton_Effect(
+                this.element.find('.uikit-button-effect'),
+                this.mediator));
 
-		this.element.on('mouseenter', function(){
-			that.Mediator.publish('button.hover', true); //обработка наведения там, где это невозможно сдлать через стили
-		});
+        this.element.on('click', (event) => {
+            this.mediator.publish('button.click', event);
+            event.stopPropagation();
+        });
 
-		this.element.on('mouseleave', function(){
-			that.Mediator.publish('button.hover', false); //обработка наведения там, где это невозможно сдлать через стили
-		});
+        this.element.on('mouseenter', () => {
+            this.mediator.publish('button.hover', true);
+        });
 
-		this.caption = this.element.attr('caption');
-	}
-	
-	public set caption(value: string){
-		this.Mediator.publish('button.caption', value);
-	}
+        this.element.on('mouseleave', () => {
+            this.mediator.publish('button.hover', false);
+        });
+
+        this.caption = this.element.attr('caption');
+
+        super.init();
+    }
+
+    public set caption(value: string) {
+        this.mediator.publish('button.caption', value);
+    }
 }
 
 class UIKitButton_Model extends UIKit.Core.UIKitModel{
-	constructor(){
-        //@ts-ignore
-		super();
-	}
+    constructor() {
+        super();
+    }
 }
 
-UIKit.Core.UIKitButton = UIKitButton;
+export default UIKitButton;

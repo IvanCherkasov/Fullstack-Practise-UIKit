@@ -3,8 +3,11 @@ import UIKit from '../../../../uikit-core/index';
 
 class UIKitSlider_Upper extends UIKit.Core.UIKitElement {
     constructor(dom, mediator, type) {
-        // @ts-ignore
         super(dom, mediator, type);
+        this.init();
+    }
+
+    protected init() {
         const div = this.element.find('div.no-select');
         let timerId: NodeJS.Timer;
 
@@ -22,21 +25,21 @@ class UIKitSlider_Upper extends UIKit.Core.UIKitElement {
             timerId = setTimeout(disable, 1000);
         };
 
-        this.Mediator.subscribe('model.value', (modelData) => {
+        this.mediator.subscribe('model.value', (modelData) => {
             print(modelData.value);
         });
 
-        this.Mediator.subscribe('thumb.hover', (value) => {
+        this.mediator.subscribe('thumb.hover', (value) => {
             if (value) {
                 show();
             }
         });
 
-        this.Mediator.subscribe('model.value', () => {
+        this.mediator.subscribe('model.value', () => {
             show();
         });
 
-        this.stylize(this.Type);
+        super.init();
     }
 }
 

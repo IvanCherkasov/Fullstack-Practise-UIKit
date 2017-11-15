@@ -4,43 +4,43 @@ import UIKit from '../uikit-core/index';
 
 class UIKitStages extends UIKit.Core.UIKitElement {
 
-    private INVERT: boolean;
-    private model;
-    private mediator;
-    private track: UIKitStages_Track;
+    private innerObjects: any[];
 
     constructor(element) {
-        // @ts-ignore
         super(element);
         if (!this.element.hasClass('uikit-stages')) {
             throw new ReferenceError('Элемент не является stages');
         }
 
+        this.storage = {
+            invert: false,
+        };
+        
+        this.init();
+    }
+
+    protected init(): void {
         if (this.element.attr('invert') !== undefined) {
             if (this.element.attr('invert') !== '') {
                 const isTrueSet = (this.element.attr('invert') === 'true');
                 if (isTrueSet) {
-                    this.INVERT = true;
+                    this.storage.invert = true;
                 }
             }
         }
 
-        this.Type = 'horizontal';
-        this.TypesList = ['horizontal', 'vertical'];
+        this.type = 'horizontal';
+        this.types = ['horizontal', 'vertical'];
         if (this.element.attr('type') !== undefined) {
             if (this.element.attr('type') !== '') {
-                if (this.TypesList.indexOf(this.element.attr('type')) > -1) {
-                    this.Type = this.element.attr('type');
+                if (this.types[this.element.attr('type')]) {
+                    this.type = this.element.attr('type');
                 }
             }
         }
 
-        this._init();
-    }
-
-    protected _init(): void {
-        this.model = new UIKitStages_Model();
-        this.mediator = new UIKit.Core.UIKitMediator(this.model);
+        const model = new UIKitStages_Model();
+        this.mediator = new UIKit.Core.UIKitMediator(model);
         const stages = Number(this.element.attr('stages'));
         let stage = Number(this.element.attr('stage'));
         this.mediator.setData('model.stages', stages);
@@ -64,11 +64,12 @@ class UIKitStages extends UIKit.Core.UIKitElement {
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
         this.mediator.subscribe('model.stages', mediatorSubscribeModelStages);
 
-        this.track = new UIKitStages_Track(
+        this.innerObjects.push(
+            new UIKitStages_Track(
             this.element.find('.uikit-stages-track'),
             this.mediator,
-            this.Type,
-            this.INVERT);
+            this.type,
+            this.storage.invert));
 
         setTimeout(
             () => {
@@ -84,7 +85,7 @@ class UIKitStages extends UIKit.Core.UIKitElement {
             return false;
         });
 
-        this.acceptType();
+        super.init();
     }
 
     public get stage(): number {
@@ -96,13 +97,13 @@ class UIKitStages extends UIKit.Core.UIKitElement {
     }
 
     public get invert(): boolean {
-        return this.INVERT;
+        return this.storage.invert;
     }
 
     public set invert(value: boolean) {
-        if (this.Type === 'vertical') {
+        if (this.type === 'vertical') {
             if (typeof value === 'boolean') {
-                this.INVERT = value;
+                this.storage.invert = value;
                 this.rebuild();
             }
         }
@@ -111,25 +112,18 @@ class UIKitStages extends UIKit.Core.UIKitElement {
 
 class UIKitStages_Model extends UIKit.Core.UIKitModel {
     constructor() {
-        // @ts-ignore
         super({
-            _stages: 0,
-            _stage: 0,
-            get stages() {
-                return this._stages;
-            },
-            get stage() {
-                return this._stage;
-            },
+            stages: 0,
+            stage: 0,
         });
     }
 
     public getData(property: string) {
         switch (property){
             case 'stages':
-                return this.Data.stages;
+                return this.data.stages;
             case 'stage':
-                return this.Data.stage;
+                return this.data.stage;
             default:
                 return undefined;
         }
@@ -140,11 +134,11 @@ class UIKitStages_Model extends UIKit.Core.UIKitModel {
         switch (property){
             case 'stages':
                 if (localData < 1) localData = 1;
-                this.Data._stages = localData;
+                this.data.stages = localData;
                 return true;
             case 'stage':
-                localData = UIKit.Core.UIKitMath.Clamp(localData, 0, this.Data.stages);
-                this.Data._stage = localData;
+                localData = UIKit.Core.UIKitMath.clamp(localData, 0, this.data.stages);
+                this.data.stage = localData;
                 return true;
             default:
                 return false;
@@ -152,4 +146,4 @@ class UIKitStages_Model extends UIKit.Core.UIKitModel {
     }
 }
 
-UIKit.Core.UIKitStages = UIKitStages;
+export default UIKitStages;

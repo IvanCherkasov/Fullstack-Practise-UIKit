@@ -1,55 +1,40 @@
-import './index.styl'
-import UIKit from '../uikit-core/index'
+import './index.styl';
+import UIKit from '../uikit-core/index';
 
 class UIKitArrowButton extends UIKit.Core.UIKitElement{
 
-    private Model: any;
+    private model: any;
 
-    constructor(element: any){
-        //@ts-ignore
+    constructor(element: JQuery) {
         super(element);
-        let that = this;
-        
-        this.Model = new UIKitArrowButton_Model();
-        this.Mediator = new UIKit.Core.UIKitMediator(this.Model);
-        
-        this.Type = 'left';
-		this.TypesList = ['left', 'right'];
-		if (this.element.attr('type') !== undefined){
-			if (this.element.attr('type') !== ''){
-				if (this.TypesList.indexOf(this.element.attr('type')) > -1){
-					this.Type = this.element.attr('type');
-				}
-			}
-        }
-        
-        this.Mediator.subscribe('arrowbutton.type', function(value){
-			that.acceptType();
-		});
-
-		that.acceptType();
+        this.init();
     }
 
-    public set type(value: string){
-        if (typeof value === 'string'){ // horizontal / vertical
-			if (this.TypesList.indexOf(value) > -1){
-				this.Type = value;
-				this.Mediator.publish('arrowbutton.type', value);
-			}
-		}
+    protected init() {
+
+        let type = UIKit.Core.ElementTypes.TArrowButton.LEFT;
+        /*if (this.element.attr('type') !== undefined) {
+            if (this.element.attr('type') !== '') {
+                if (this.types[this.element.attr('type')]) {
+                    type = this.element.attr('type');
+                }
+            }
+        }*/
+        this.initTypes(UIKit.Core.ElementTypes.TArrowButton, type);
+
+        this.model = new UIKitArrowButton_Model();
+        this.mediator = new UIKit.Core.UIKitMediator(this.model);
+
+        // смена типа не приводит к перестроению элемента
+        this.noRebuild = true;
+        super.init();
     }
-
-    public get type(): string{
-		return this.Type;
-	}
-
 }
 
 class UIKitArrowButton_Model extends UIKit.Core.UIKitModel{
-    constructor(){
-        //@ts-ignore
+    constructor() {
         super();
     }
 }
 
-UIKit.Core.UIKitArrowButton = UIKitArrowButton;
+export default UIKitArrowButton;
