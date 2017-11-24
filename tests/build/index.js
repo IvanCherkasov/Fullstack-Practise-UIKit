@@ -65,18 +65,71 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var TSlider;
-(function (TSlider) {
-    TSlider[TSlider["HORIZONTAL"] = 0] = "HORIZONTAL";
-    TSlider[TSlider["VERTICAL"] = 1] = "VERTICAL";
-})(TSlider || (TSlider = {}));
-var type = TSlider;
-console.log(type);
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "List", function() { return List; });
+var TSlider = /** @class */ (function () {
+    function TSlider() {
+    }
+    TSlider.HORIZONTAL = 'horizontal';
+    TSlider.VERTICAL = 'vertical';
+    return TSlider;
+}());
+console.log(TSlider);
 console.log(TSlider.HORIZONTAL);
-console.log(TSlider.HORIZONTAL in type);
-console.log(TSlider.HORIZONTAL in TSlider);
+console.log(TSlider.VERTICAL);
+console.log(TSlider['VERTICAL']);
+console.log(TSlider['HORIZONTAL']);
+console.log('по индексу ', TSlider[0]);
+console.log(Object.keys(TSlider));
+console.log(Object.keys(TSlider).length);
+var List = /** @class */ (function () {
+    function List() {
+        this.items = [];
+    }
+    List.prototype.add = function (item) {
+        this.items.push(item);
+    };
+    List.prototype.get = function (index) {
+        return this.items[index];
+    };
+    return List;
+}());
+
+var comp = new List();
+comp.add('hello');
+comp.add('world');
+console.log(comp);
+console.log(comp.get(0));
+var Types;
+(function (Types) {
+    Types[Types["ORIENTATION_HORIZONTAL"] = 2] = "ORIENTATION_HORIZONTAL";
+    Types[Types["ORIENTATION_VERTICAL"] = 3] = "ORIENTATION_VERTICAL";
+    Types[Types["DIRECTION_LEFT"] = 4] = "DIRECTION_LEFT";
+    Types[Types["DIRECTION_RIGHT"] = 5] = "DIRECTION_RIGHT";
+    Types[Types["DIRECTION_UP"] = 6] = "DIRECTION_UP";
+    Types[Types["DIRECTION_DOWN"] = 7] = "DIRECTION_DOWN";
+})(Types || (Types = {}));
+var t1 = Types.DIRECTION_DOWN | Types.ORIENTATION_HORIZONTAL;
+var t2 = Types.ORIENTATION_HORIZONTAL;
+var t3 = Types.ORIENTATION_HORIZONTAL | Types.DIRECTION_RIGHT;
+// console.log(t1 & Types.DIRECTION_DOWN);
+// console.log(t1 & Types.ORIENTATION_HORIZONTAL);
+if (t2 & Types.DIRECTION_LEFT) {
+    console.log(t2 & Types.DIRECTION_LEFT, true);
+}
+else {
+    console.log(t2 & Types.DIRECTION_LEFT, false);
+}
+if (t1 & Types.DIRECTION_LEFT) {
+    console.log(t1 & Types.DIRECTION_LEFT, true);
+}
+else {
+    console.log(t1 & Types.DIRECTION_LEFT, false);
+}
+// console.log(t3 & t2);
 
 
 /***/ })

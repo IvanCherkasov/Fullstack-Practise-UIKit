@@ -1,0 +1,42 @@
+.uikit-toggle-thumb
+    position absolute
+    transition left 0.2s, top 0.2s
+    display flex
+
+    .circle
+        border-radius 50%
+        background-color white
+        width 18px
+        height 18px
+
+.horizontal
+    .uikit-toggle-thumb
+        height 20px
+        align-items center
+
+        .circle
+            transform translateX(-50%)
+
+.vertical
+    .uikit-toggle-thumb
+        width 20px
+        justify-content center
+
+        .circle
+            transform translateY(-50%)
+
+.horizontal
+    .uikit-toggle-thumb.checked
+        left 100%
+
+.horizontal
+    .uikit-toggle-thumb:not(.checked)
+        left 0
+
+.vertical
+    .uikit-toggle-thumb.checked
+        top 0
+
+.vertical
+    .uikit-toggle-thumb:not(.checked)
+        top 100%

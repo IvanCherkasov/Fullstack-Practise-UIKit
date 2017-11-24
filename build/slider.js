@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 63);
+/******/ 	return __webpack_require__(__webpack_require__.s = 59);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -68,324 +68,339 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(jQuery) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(3);
+/* WEBPACK VAR INJECTION */(function(jQuery, global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Core; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__uikit_styles_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__themes_load_all__ = __webpack_require__(4);
 
 
-
-var UIKitElement = /** @class */ (function () {
-    function UIKitElement(element, mediator, type) {
-        this.noRebuild = false;
-        this.storage = {
-            type: '',
-            enabled: true,
+var Core;
+(function (Core) {
+    var Types;
+    (function (Types) {
+        Types[Types["ORIENTATION_HORIZONTAL"] = 1] = "ORIENTATION_HORIZONTAL";
+        Types[Types["ORIENTATION_VERTICAL"] = 2] = "ORIENTATION_VERTICAL";
+        Types[Types["DIRECTION_LEFT"] = 3] = "DIRECTION_LEFT";
+        Types[Types["DIRECTION_RIGHT"] = 4] = "DIRECTION_RIGHT";
+        Types[Types["DIRECTION_UP"] = 5] = "DIRECTION_UP";
+        Types[Types["DIRECTION_DOWN"] = 6] = "DIRECTION_DOWN";
+    })(Types = Core.Types || (Core.Types = {}));
+    var Element = /** @class */ (function () {
+        function Element(element) {
+            this.element = element;
+            this.storage = {};
+            if (!this.element || this.element === null) {
+                throw ReferenceError('Передан пустой элемент');
+            }
+            if (!this.element.hasClass('uikit')) {
+                throw ReferenceError('Переданный элемент не является объектом uikit');
+            }
+            this.storage = {
+                type: [-1],
+                enabled: true,
+                isInited: false,
+                noRebuild: true,
+            };
+            this.original = this.element.clone();
+            if (this.element.attr('data-enabled') === 'false') {
+                this.enabled = false;
+            }
+        }
+        Element.prototype.acceptType = function () {
+            if (this.mediator) {
+                this.mediator.publish('element.type', this.type);
+            }
         };
-        if (!element || element === null) {
-            throw ReferenceError('Передан пустой элемент');
-        }
-        if (!element.hasClass('uikit')) {
-            throw ReferenceError('Переданный элемент не является объектом uikit');
-        }
-        this.element = element;
-        this.original = element.clone();
-        if (mediator) {
-            this.mediator = mediator;
-        }
-        if (type) {
-            this.type = type;
-        }
-    }
-    UIKitElement.prototype.init = function () {
-        this.acceptType();
-    };
-    UIKitElement.prototype.rebuild = function () {
-        var _this = this;
-        var parent = this.element.parent();
-        var spawned = false;
-        var attributes = [];
-        var elementEachCallback = function (item) {
-            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a.each(item.attributes, function () {
-                if (this.specified) {
-                    attributes.push({
-                        name: this.name,
-                        value: this.value,
-                    });
+        Element.prototype.rebuild = function () {
+            var _this = this;
+            this.storage.isInited = false;
+            var parent = this.element.parent();
+            var spawned = false;
+            var attributes = [];
+            var elementEachCallback = function (item) {
+                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a.each(item.attributes, function () {
+                    if (this.specified) {
+                        attributes.push({
+                            name: this.name,
+                            value: this.value,
+                        });
+                    }
+                });
+            };
+            this.element.toArray().map(elementEachCallback);
+            var index = -1;
+            var parentChildrenFindEachCallback = function (item, i) {
+                if (__WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).is(_this.element)) {
+                    index = i;
+                    return;
+                }
+            };
+            parent.children().toArray().map(parentChildrenFindEachCallback);
+            this.element.remove();
+            this.element = this.original.clone();
+            attributes.map(function (attr) {
+                if (attr.name !== 'class') {
+                    _this.element.attr(attr.name, attr.value);
                 }
             });
+            var parentChildrenPlaceEachCallback = function (item, i) {
+                if (i === index) {
+                    __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).before(_this.element);
+                    spawned = true;
+                    return;
+                }
+            };
+            parent.children().toArray().map(parentChildrenPlaceEachCallback);
+            if (!spawned) {
+                parent.append(this.element);
+            }
+            this.element.ready(function () {
+                setTimeout(function () {
+                    _this.initialize();
+                }, 0);
+            });
         };
-        this.element.toArray().map(elementEachCallback);
-        var index = -1;
-        var parentChildrenFindEachCallback = function (item, i) {
-            if (__WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).is(_this.element)) {
-                index = i;
-                return;
+        Element.prototype.initialize = function () {
+            this.storage.isInited = true;
+            if (this.storage.type !== [-1]) {
+                this.acceptType();
             }
         };
-        parent.children().toArray().map(parentChildrenFindEachCallback);
-        this.element.remove();
-        this.element = this.original.clone();
-        attributes.map(function (attr) {
-            if (attr.name !== 'class') {
-                _this.element.attr(attr.name, attr.value);
-            }
+        Object.defineProperty(Element.prototype, "noRebuild", {
+            get: function () {
+                return this.storage.noRebuild;
+            },
+            set: function (value) {
+                this.storage.noRebuild = value;
+            },
+            enumerable: true,
+            configurable: true
         });
-        var parentChildrenPlaceEachCallback = function (item, i) {
-            if (i === index) {
-                __WEBPACK_IMPORTED_MODULE_1_jquery___default.a(item).before(_this.element);
-                spawned = true;
-                return;
-            }
-        };
-        parent.children().toArray().map(parentChildrenPlaceEachCallback);
-        if (!spawned) {
-            parent.append(this.element);
-        }
-        this.element.ready(function () {
-            setTimeout(function () {
-                _this.init();
-            }, 0);
+        Object.defineProperty(Element.prototype, "type", {
+            get: function () {
+                return this.storage.type;
+            },
+            set: function (type) {
+                if (type !== this.storage.type) {
+                    this.storage.type = type;
+                    if (this.storage.isInited) {
+                        if (this.noRebuild) {
+                            this.acceptType();
+                        }
+                        else {
+                            this.rebuild();
+                        }
+                    }
+                }
+            },
+            enumerable: true,
+            configurable: true
         });
-    };
-    // если элементу была присвоена вариация по ходу работы, то
-    // смена типа сотрет её
-    UIKitElement.prototype.acceptType = function () {
-        if (this.element.hasClass(this.type) === false) {
-            var baseClasses = this.original.attr('class');
-            this.element.attr('class', '')
-                .attr('class', baseClasses)
-                .addClass(this.type);
-        }
-    };
-    Object.defineProperty(UIKitElement.prototype, "type", {
-        get: function () {
-            return this.storage.type;
-        },
-        set: function (value) {
-            this.storage.type = value;
-            if (this.typesList.indexOf(value) > -1) {
-                if (this.noRebuild) {
-                    this.acceptType();
+        Object.defineProperty(Element.prototype, "enabled", {
+            get: function () {
+                return this.storage.enabled;
+            },
+            set: function (value) {
+                this.storage.enabled = value;
+                if (value) {
+                    this.element.addClass('disabled');
                 }
                 else {
-                    this.rebuild();
+                    this.element.removeClass('disabled');
                 }
                 if (this.mediator) {
-                    this.mediator.publish('element.rebuild');
+                    this.mediator.publish('element.enabled', value);
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Element;
+    }());
+    Core.Element = Element;
+    var Component = /** @class */ (function () {
+        function Component(element, mediator, type) {
+            this.element = element;
+            this.mediator = mediator;
+            this.storage = {};
+            if (!element || element === null) {
+                throw ReferenceError('Передан пустой компонент');
+            }
+            this.storage = {
+                type: [-1],
+            };
+            if (type) {
+                this.storage.type = type;
+            }
+        }
+        Component.prototype.initialize = function () {
+        };
+        Object.defineProperty(Component.prototype, "enabled", {
+            get: function () {
+                return this.storage.enabled;
+            },
+            set: function (value) {
+                this.storage.enabled = value;
+                if (value) {
+                    this.element.addClass('disabled');
+                }
+                else {
+                    this.element.removeClass('disabled');
+                }
+                if (this.mediator) {
+                    this.mediator.publish('element.enabled', value);
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Component.prototype, "type", {
+            get: function () {
+                return this.storage.type;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return Component;
+    }());
+    Core.Component = Component;
+    var Mediator = /** @class */ (function () {
+        function Mediator(model, middleWare) {
+            this.model = model;
+            this.middleWare = middleWare;
+            this.channels = {};
+        }
+        Mediator.prototype.publish = function (channel) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            if (!this.channels[channel]) {
+                return false;
+            }
+            var channelEmitCallbacks = function (callback) {
+                callback.apply(void 0, args);
+            };
+            this.channels[channel].map(channelEmitCallbacks);
+            return true;
+        };
+        Mediator.prototype.subscribe = function (channel, callback) {
+            if (!this.channels[channel]) {
+                this.channels[channel] = [];
+            }
+            this.channels[channel].push(callback);
+        };
+        Mediator.prototype.getData = function (property) {
+            var props = property.split('.');
+            if (props[0] === 'model') {
+                var newProps = property.replace('model.', '');
+                return this.model.getData(newProps);
+            }
+            return undefined;
+        };
+        Mediator.prototype.setData = function (property, data) {
+            var props = property.split('.');
+            var emitMiddlewares = function (funcs) {
+                if (funcs) {
+                    funcs.map(function (func) {
+                        func('mediator set data', { property: property, data: data });
+                    });
+                }
+            };
+            if (props[0] === 'model') {
+                var newProps = property.replace('model.', '');
+                if (this.model.setData(newProps, data)) {
+                    this.publish(property, this.model.getAllData());
+                    emitMiddlewares(this.middleWare);
+                    return true;
                 }
             }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitElement.prototype, "enabled", {
-        get: function () {
-            return this.storage.enabled;
-        },
-        set: function (value) {
-            this.storage.enabled = value;
-            if (value) {
-                this.element.addClass('disabled');
-            }
-            else {
-                this.element.removeClass('disabled');
-            }
-            if (this.mediator) {
-                this.mediator.publish('element.enabled', value);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitElement;
-}());
-var UIKitMediator = /** @class */ (function () {
-    function UIKitMediator(model, middleWare) {
-        this.channels = {};
-        this.model = model;
-        if (middleWare) {
-            this.middleware = middleWare;
-        }
-    }
-    UIKitMediator.prototype.subscribe = function (channel, callback) {
-        if (!this.channels[channel]) {
-            this.channels[channel] = [];
-        }
-        this.channels[channel].push(callback);
-    };
-    UIKitMediator.prototype.publish = function (channel) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        if (!this.channels[channel]) {
             return false;
-        }
-        var mapEmitCallback = function (callback) {
-            callback(args);
         };
-        this.channels[channel].map(mapEmitCallback);
-        return true;
-    };
-    UIKitMediator.prototype.getData = function (property) {
-        var props = property.split('.');
-        if (props[0] === 'model') {
-            var newProps = property.replace('model.', '');
-            var data = this.model.getData(newProps);
-            if (data !== undefined) {
-                return true;
-            }
-        }
-        return undefined;
-    };
-    UIKitMediator.prototype.setData = function (property, data) {
-        var props = property.split('.');
-        var emitMiddlewares = function (funcs) {
-            funcs.map(function (func) {
-                func('mediator set data', { property: property, data: data });
-            });
-        };
-        if (props[0] === 'model') {
-            var newProps = property.replace('model.', '');
-            if (this.model.setData(newProps, data)) {
-                this.publish(property, this.model.getAllData());
-                emitMiddlewares(this.middleware);
-                return true;
-            }
-        }
-        return false;
-    };
-    return UIKitMediator;
-}());
-var UIKitModel = /** @class */ (function () {
-    function UIKitModel(data) {
-        this.data = {};
-        if (data) {
+        return Mediator;
+    }());
+    Core.Mediator = Mediator;
+    var Model = /** @class */ (function () {
+        function Model(data) {
             this.data = data;
         }
-    }
-    UIKitModel.prototype.getAllData = function () {
-        return jQuery.extend(true, {}, this.data);
-    };
-    UIKitModel.prototype.getData = function (property) {
-    };
-    UIKitModel.prototype.setData = function (property, data) {
-        return false;
-    };
-    return UIKitModel;
-}());
-var UIKitMath = /** @class */ (function () {
-    function UIKitMath() {
-    }
-    UIKitMath.clamp = function (value, minimum, maximum) {
-        return Math.min(Math.max(minimum, value), maximum);
-    };
-    return UIKitMath;
-}());
-var UIKitCoordinateSystem = /** @class */ (function () {
-    function UIKitCoordinateSystem(element) {
-        if (!element) {
-            return undefined;
-        }
-        this.element = element;
-    }
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "xMin", {
-        get: function () {
-            return this.element.offset().left;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "yMin", {
-        get: function () {
-            return this.element.offset().top;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "xMax", {
-        get: function () {
-            return this.element.offset().left + this.element.width();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "yMax", {
-        get: function () {
-            return this.element.offset().top + this.element.height();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "width", {
-        get: function () {
-            return this.element.width();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitCoordinateSystem.prototype, "height", {
-        get: function () {
-            return this.element.height();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitCoordinateSystem;
-}());
-var UIKitThemeController = /** @class */ (function () {
-    function UIKitThemeController(theme) {
-        this.storage = {
-            themesList: [],
-            currentTheme: '',
+        Model.prototype.getAllData = function () {
+            return jQuery.extend(true, {}, this.data);
         };
-        this.storage.themesList = __WEBPACK_IMPORTED_MODULE_2__themes_load_all__["a" /* default */].list;
-        if (theme) {
-            this.theme = theme;
+        Model.prototype.getData = function (property) {
+        };
+        Model.prototype.setData = function (property, data) {
+            return false;
+        };
+        return Model;
+    }());
+    Core.Model = Model;
+    var CoordinateSystem = /** @class */ (function () {
+        function CoordinateSystem(element) {
+            this.element = element;
         }
-    }
-    UIKitThemeController.prototype.changeTheme = function (value) {
-        this.themesList.map(function (item) {
-            __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').removeClass(item);
+        Object.defineProperty(CoordinateSystem.prototype, "xMin", {
+            get: function () {
+                return this.element.offset().left;
+            },
+            enumerable: true,
+            configurable: true
         });
-        __WEBPACK_IMPORTED_MODULE_1_jquery___default.a('body').addClass(value);
-        this.storage.currentTheme = value;
-    };
-    Object.defineProperty(UIKitThemeController.prototype, "themesList", {
-        get: function () {
-            return this.storage.themesList;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(UIKitThemeController.prototype, "theme", {
-        get: function () {
-            return this.storage.currentTheme;
-        },
-        set: function (value) {
-            if (this.themesList.indexOf(value) > -1) {
-                this.changeTheme(value);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitThemeController;
-}());
-/* harmony default export */ __webpack_exports__["a"] = ({
-    Core: {
-        UIKitElement: UIKitElement,
-        UIKitMediator: UIKitMediator,
-        UIKitModel: UIKitModel,
-        UIKitMath: UIKitMath,
-        UIKitThemeController: UIKitThemeController,
-        UIKitCoordinateSystem: UIKitCoordinateSystem,
-    }
-});
+        Object.defineProperty(CoordinateSystem.prototype, "yMin", {
+            get: function () {
+                return this.element.offset().top;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CoordinateSystem.prototype, "xMax", {
+            get: function () {
+                return this.element.offset().left + this.element.width();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CoordinateSystem.prototype, "yMax", {
+            get: function () {
+                return this.element.offset().top + this.element.height();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CoordinateSystem.prototype, "width", {
+            get: function () {
+                return this.element.width();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(CoordinateSystem.prototype, "height", {
+            get: function () {
+                return this.element.height();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return CoordinateSystem;
+    }());
+    Core.CoordinateSystem = CoordinateSystem;
+    var ThemeController = /** @class */ (function () {
+        function ThemeController() {
+        }
+        return ThemeController;
+    }());
+    Core.ThemeController = ThemeController;
+    var Math;
+    (function (Math) {
+        function clamp(value, minimum, maximum) {
+            return global.Math.min(global.Math.max(minimum, value), maximum);
+        }
+        Math.clamp = clamp;
+    })(Math = Core.Math || (Core.Math = {}));
+})(Core || (Core = {}));
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(3)))
 
 /***/ }),
 /* 1 */
@@ -10223,14 +10238,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_index__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_radial_progress_index__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_arrow_button_index__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__uikit_stages_index__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__uikit_input_text_index__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__uikit_textarea_index__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__uikit_toggle_index__ = __webpack_require__(57);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_index__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_index__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__radial_progress_index__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__arrow_button_index__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stages_index__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_text_index__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__textarea_index__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__toggle_index__ = __webpack_require__(53);
 
 
 
@@ -10240,26 +10255,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 
-var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* default */].Core;
-var types = {
-    VERTICAL: 0,
-    HORIZONTAL: 1,
-};
-console.log('types', types);
-console.log('length', Object.keys(types).length);
-for (var prop in types) {
-    console.log(prop, types[prop]);
-}
+var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* Core */];
 /* harmony default export */ __webpack_exports__["a"] = ({
     Core: Core,
-    UIKitSlider: __WEBPACK_IMPORTED_MODULE_1__uikit_slider_index__["a" /* default */],
-    UIKitButton: __WEBPACK_IMPORTED_MODULE_2__uikit_button_index__["a" /* default */],
-    UIKitRadialProgress: __WEBPACK_IMPORTED_MODULE_3__uikit_radial_progress_index__["a" /* default */],
-    UIKitArrowButton: __WEBPACK_IMPORTED_MODULE_4__uikit_arrow_button_index__["a" /* default */],
-    UIKitStages: __WEBPACK_IMPORTED_MODULE_5__uikit_stages_index__["a" /* default */],
-    UIKitInputText: __WEBPACK_IMPORTED_MODULE_6__uikit_input_text_index__["a" /* default */],
-    UIKitTextarea: __WEBPACK_IMPORTED_MODULE_7__uikit_textarea_index__["a" /* default */],
-    UIKitToggle: __WEBPACK_IMPORTED_MODULE_8__uikit_toggle_index__["a" /* default */],
+    Slider: __WEBPACK_IMPORTED_MODULE_1__slider_index__["a" /* default */],
+    Button: __WEBPACK_IMPORTED_MODULE_2__button_index__["a" /* default */],
+    RadialProgress: __WEBPACK_IMPORTED_MODULE_3__radial_progress_index__["a" /* default */],
+    ArrowButton: __WEBPACK_IMPORTED_MODULE_4__arrow_button_index__["a" /* default */],
+    Stages: __WEBPACK_IMPORTED_MODULE_5__stages_index__["a" /* default */],
+    InputText: __WEBPACK_IMPORTED_MODULE_6__input_text_index__["a" /* default */],
+    Textarea: __WEBPACK_IMPORTED_MODULE_7__textarea_index__["a" /* default */],
+    Toggle: __WEBPACK_IMPORTED_MODULE_8__toggle_index__["a" /* default */],
 });
 
 
@@ -10267,76 +10273,44 @@ for (var prop in types) {
 /* 3 */
 /***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
+var g;
+
+// This works in non-strict mode
+g = function () {
+	return this;
+}();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
-
-
-__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__["list"].map(item => {
-    __webpack_require__(6)(`./${item}/style.styl`);
-});
-
-/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
-
-module.exports = {"list":["uikit-theme-aqua","uikit-theme-lightred"]}
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./uikit-theme-aqua/style.styl": 7,
-	"./uikit-theme-lightred/style.styl": 8
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number or string
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 6;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_input_index__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_track_index__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__slider_rule_index__ = __webpack_require__(19);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10352,30 +10326,25 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitSlider = /** @class */ (function (_super) {
-    __extends(UIKitSlider, _super);
-    function UIKitSlider(element) {
+var Slider = /** @class */ (function (_super) {
+    __extends(Slider, _super);
+    function Slider(element) {
         var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-slider')) {
             throw new ReferenceError('Элемент не является слайдером');
         }
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitSlider.prototype.init = function () {
+    Slider.prototype.initialize = function () {
         var _this = this;
-        this.type = 'horizontal';
-        this.typesList = ['horizontal', 'vertical'];
-        if (this.element.attr('type') !== undefined) {
-            if (this.element.attr('type') !== '') {
-                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
-                    this.type = this.element.attr('type');
-                }
-            }
+        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
+        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
+            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
         }
         var middleWare = [];
-        var model = new UIKitSlider_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
+        var model = new Slider_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
         this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
         this.mediator.subscribe('model.value', function (modelData) {
@@ -10387,9 +10356,11 @@ var UIKitSlider = /** @class */ (function (_super) {
         this.mediator.subscribe('model.maximum', function (modelData) {
             _this.element.attr('maximum', modelData.maximum);
         });
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.mediator, this.type));
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_4__uikit_slider_rule_index__["a" /* default */](this.element.find('.uikit-slider-rule'), this.mediator, this.type));
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.mediator, this.type));
+        this.components = {
+            input: new __WEBPACK_IMPORTED_MODULE_2__slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.mediator, this.type),
+            track: new __WEBPACK_IMPORTED_MODULE_3__slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.mediator, this.type),
+            rule: new __WEBPACK_IMPORTED_MODULE_4__slider_rule_index__["a" /* default */](this.element.find('.uikit-slider-rule'), this.mediator, this.type),
+        };
         setTimeout(function () {
             _this.mediator.setData('model.value', Number(_this.element.attr('value')));
         }, 0);
@@ -10399,13 +10370,13 @@ var UIKitSlider = /** @class */ (function (_super) {
         this.element.on('selectstart', function () {
             return false;
         });
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitSlider;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitSlider_Model = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Model, _super);
-    function UIKitSlider_Model() {
+    return Slider;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Slider_Model = /** @class */ (function (_super) {
+    __extends(Slider_Model, _super);
+    function Slider_Model() {
         return _super.call(this, {
             value: 0,
             minimum: 0,
@@ -10413,7 +10384,7 @@ var UIKitSlider_Model = /** @class */ (function (_super) {
             cs: null,
         }) || this;
     }
-    UIKitSlider_Model.prototype.getData = function (property) {
+    Slider_Model.prototype.getData = function (property) {
         switch (property) {
             case 'value':
                 return this.data.value;
@@ -10427,10 +10398,10 @@ var UIKitSlider_Model = /** @class */ (function (_super) {
                 return undefined;
         }
     };
-    UIKitSlider_Model.prototype.setData = function (property, data) {
+    Slider_Model.prototype.setData = function (property, data) {
         switch (property) {
             case 'value':
-                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(data, this.data.minimum, this.data.maximum);
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp(data, this.data.minimum, this.data.maximum);
                 this.data.value = value;
                 return true;
             case 'minimum':
@@ -10440,30 +10411,30 @@ var UIKitSlider_Model = /** @class */ (function (_super) {
                 this.data.maximum = data;
                 return true;
             case 'coordinateSystem':
-                var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitCoordinateSystem(data);
+                var cs = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].CoordinateSystem(data);
                 this.data.cs = cs;
                 return true;
             default:
                 return false;
         }
     };
-    return UIKitSlider_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider);
+    return Slider_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Slider);
 
 
 /***/ }),
-/* 10 */
+/* 6 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 11 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10478,14 +10449,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitSlider_Input = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Input, _super);
-    function UIKitSlider_Input(element, mediator, type) {
+var Slider_Input = /** @class */ (function (_super) {
+    __extends(Slider_Input, _super);
+    function Slider_Input(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitSlider_Input.prototype.init = function () {
+    Slider_Input.prototype.initialize = function () {
         var _this = this;
         var mediatorSubscribeModelValue = function (modelData) {
             var val = parseInt((_this.element.val()), 10);
@@ -10510,29 +10481,29 @@ var UIKitSlider_Input = /** @class */ (function (_super) {
             }
         };
         this.element.on('change.uikit.slider.input', changeUikitSliderInputCallback);
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitSlider_Input;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Input);
+    return Slider_Input;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Input);
 
 
 /***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 13 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(14);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_fill_index__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_thumb_index__ = __webpack_require__(15);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10547,19 +10518,23 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitSlider_Track = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Track, _super);
-    function UIKitSlider_Track(element, mediator, type) {
+var Slider_Track = /** @class */ (function (_super) {
+    __extends(Slider_Track, _super);
+    function Slider_Track(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
-        _this.storage['isDrag'] = false;
-        _this.init();
+        _this.storage = {
+            isDrag: false,
+        };
+        _this.initialize();
         return _this;
     }
-    UIKitSlider_Track.prototype.init = function () {
+    Slider_Track.prototype.initialize = function () {
         var _this = this;
         this.mediator.setData('model.coordinateSystem', this.element);
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_fill_index__["a" /* default */](this.element.find('.uikit-slider-fill'), this.mediator, this.type));
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_slider_thumb_index__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.mediator, this.type));
+        this.components = {
+            fill: new __WEBPACK_IMPORTED_MODULE_2__slider_fill_index__["a" /* default */](this.element.find('.uikit-slider-fill'), this.mediator, this.type),
+            thumb: new __WEBPACK_IMPORTED_MODULE_3__slider_thumb_index__["a" /* default */](this.element.find('.uikit-slider-thumb'), this.mediator, this.type),
+        };
         var startDrag = function () {
             _this.storage.isDrag = true;
             var documentOnMousemove = function (event) {
@@ -10568,11 +10543,11 @@ var UIKitSlider_Track = /** @class */ (function (_super) {
                 var maximum = _this.mediator.getData('model.maximum');
                 var position = 0;
                 var percent = 0;
-                if (_this.type === 'horizontal') {
+                if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
                     position = event.pageX - coordinateSystem.xMin;
                     percent = (100 / (coordinateSystem.width)) * position;
                 }
-                else if (_this.type === 'vertical') {
+                else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
                     position = event.pageY - coordinateSystem.yMin;
                     percent = (100 / (coordinateSystem.height)) * position;
                     percent = 100 - percent;
@@ -10596,11 +10571,11 @@ var UIKitSlider_Track = /** @class */ (function (_super) {
             var maximum = _this.mediator.getData('model.maximum');
             var position = 0;
             var percent = 0;
-            if (_this.type === 'horizontal') {
+            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
                 position = event.pageX - coordinateSystem.xMin;
                 percent = (100 / (coordinateSystem.width)) * position;
             }
-            else if (_this.type === 'vertical') {
+            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
                 position = event.pageY - coordinateSystem.yMin;
                 percent = (100 / (coordinateSystem.height)) * position;
                 percent = 100 - percent;
@@ -10613,29 +10588,29 @@ var UIKitSlider_Track = /** @class */ (function (_super) {
         this.element.on('mouseenter.uikit.slider.track', function () {
             _this.mediator.publish('track.hover', true);
         });
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitSlider_Track;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Track);
+    return Slider_Track;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Track);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 14 */
+/* 10 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 15 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_filled_index__ = __webpack_require__(13);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10649,21 +10624,234 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitSlider_Fill = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Fill, _super);
-    function UIKitSlider_Fill(element, mediator, type) {
+var Slider_Fill = /** @class */ (function (_super) {
+    __extends(Slider_Fill, _super);
+    function Slider_Fill(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitSlider_Fill.prototype.init = function () {
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_filled_index__["a" /* default */](this.element.find('.uikit-slider-filled'), this.mediator, this.type));
-        _super.prototype.init.call(this);
+    Slider_Fill.prototype.initialize = function () {
+        this.components = {
+            filled: new __WEBPACK_IMPORTED_MODULE_2__slider_filled_index__["a" /* default */](this.element.find('.uikit-slider-filled'), this.mediator, this.type),
+        };
+        _super.prototype.initialize.call(this);
     };
-    return UIKitSlider_Fill;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Fill);
+    return Slider_Fill;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Fill);
 
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Slider_Filled = /** @class */ (function (_super) {
+    __extends(Slider_Filled, _super);
+    function Slider_Filled(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
+        return _this;
+    }
+    Slider_Filled.prototype.initialize = function () {
+        var _this = this;
+        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp;
+        var moveFilled = function (position) {
+            var percent = 0;
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                percent = (100 / coordinateSystem.width) * position;
+                _this.element.css('width', clamp(percent, 0, 100) + '%');
+            }
+            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                percent = (100 / coordinateSystem.height) * position;
+                _this.element.css('height', (clamp(percent, 0, 100)) + '%');
+            }
+        };
+        var mediatorSubscribeModelValue = function (modelData) {
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            var minimum = _this.mediator.getData('model.minimum');
+            var maximum = _this.mediator.getData('model.maximum');
+            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
+            percent *= 100;
+            var position = 0;
+            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                position = Math.round(((percent * (coordinateSystem.width)) / 100));
+            }
+            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                position = Math.round(((percent * (coordinateSystem.height)) / 100));
+            }
+            moveFilled(position);
+        };
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        _super.prototype.initialize.call(this);
+    };
+    return Slider_Filled;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Filled);
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_upper_index__ = __webpack_require__(17);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Slider_Thumb = /** @class */ (function (_super) {
+    __extends(Slider_Thumb, _super);
+    function Slider_Thumb(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp;
+        _this.storage['isDrag'] = false;
+        _this.storage['isHover'] = false;
+        _this.initialize();
+        return _this;
+    }
+    Slider_Thumb.prototype.initialize = function () {
+        var _this = this;
+        this.components = {
+            upper: new __WEBPACK_IMPORTED_MODULE_2__slider_upper_index__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.mediator, this.type),
+        };
+        this.element.on('mouseenter.uikit.slider.thumb', function () {
+            _this.storage.isHover = true;
+            _this.mediator.publish('thumb.hover', true);
+        });
+        this.element.on('mouseleave.uikit.slider.thumb', function () {
+            _this.storage.isHover = false;
+            _this.mediator.publish('thumb.hover', false);
+        });
+        var mediatorSubscribeModelValue = function (modelData) {
+            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
+            var minimum = _this.mediator.getData('model.minimum');
+            var maximum = _this.mediator.getData('model.maximum');
+            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
+            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                var position = Math.round(((percent * (coordinateSystem.width)) / 100));
+                _this.moveThumb(position);
+            }
+            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                var position = Math.round(((percent * (coordinateSystem.height)) / 100));
+                _this.moveThumb(position);
+            }
+        };
+        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
+        this.element.on('mousedown.uikit.slider.thumb', function (event) {
+            _this.startDrag();
+            event.stopPropagation();
+        });
+        _super.prototype.initialize.call(this);
+    };
+    Slider_Thumb.prototype.calculateValue = function (position) {
+        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+        var minimum = this.mediator.getData('model.minimum');
+        var maximum = this.mediator.getData('model.maximum');
+        var percent = 0;
+        if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            percent = (100 / coordinateSystem.width) * position;
+        }
+        else if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            percent = (100 / coordinateSystem.height) * position;
+            percent = 100 - percent;
+        }
+        var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
+        return value;
+    };
+    Slider_Thumb.prototype.moveThumb = function (position) {
+        if (position >= 0) {
+            var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                var percent = (100 / coordinateSystem.width) * (position);
+                var maximum = (100 / coordinateSystem.xMax) *
+                    (coordinateSystem.xMax - (this.element.width() / 2));
+                var minimum = (100 / coordinateSystem.width) * this.element.width();
+                this.element.css('left', this.clamp(percent, -minimum, maximum) + '%');
+            }
+            else if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                var percent = (100 / coordinateSystem.height) * (position);
+                var maximum = (100 / coordinateSystem.yMax) *
+                    (coordinateSystem.yMax + (this.element.width()));
+                var minimum = (100 / coordinateSystem.height) * this.element.width() / 2;
+                this.element.css('top', (100 - this.clamp(percent, -minimum, maximum)) + '%');
+            }
+        }
+    };
+    Slider_Thumb.prototype.startDrag = function () {
+        var _this = this;
+        this.storage.isDrag = true;
+        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
+        var documentMousemove = function (event) {
+            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                var position = event.pageX - coordinateSystem.xMin;
+                var value = _this.calculateValue(position);
+                if (value !== _this.mediator.getData('model.value')) {
+                    _this.mediator.setData('model.value', value);
+                }
+            }
+            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                var position = event.pageY - coordinateSystem.yMin;
+                var value = _this.calculateValue(position);
+                if (value !== _this.mediator.getData('model.value')) {
+                    _this.mediator.setData('model.value', value);
+                }
+            }
+        };
+        $(document).on('mousemove.uikit.slider.thumb', documentMousemove);
+        var documentMouseup = function () {
+            $(document).off('mousemove.uikit.slider.thumb');
+            $(document).off('mouseup.uikit.slider.thumb');
+            _this.storage.isDrag = false;
+        };
+        $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
+    };
+    return Slider_Thumb;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Thumb);
+
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
 /* 16 */
@@ -10691,223 +10879,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitSlider_Filled = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Filled, _super);
-    function UIKitSlider_Filled(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
-        return _this;
-    }
-    UIKitSlider_Filled.prototype.init = function () {
-        var _this = this;
-        var clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp;
-        var moveFilled = function (position) {
-            var percent = 0;
-            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
-            if (_this.type === 'horizontal') {
-                percent = (100 / coordinateSystem.width) * position;
-                _this.element.css('width', clamp(percent, 0, 100) + '%');
-            }
-            else if (_this.type === 'vertical') {
-                percent = (100 / coordinateSystem.height) * position;
-                _this.element.css('height', (clamp(percent, 0, 100)) + '%');
-            }
-        };
-        var mediatorSubscribeModelValue = function (modelData) {
-            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
-            var minimum = _this.mediator.getData('model.minimum');
-            var maximum = _this.mediator.getData('model.maximum');
-            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
-            percent *= 100;
-            var position = 0;
-            if (_this.type === 'horizontal') {
-                position = Math.round(((percent * (coordinateSystem.width)) / 100));
-            }
-            else if (_this.type === 'vertical') {
-                position = Math.round(((percent * (coordinateSystem.height)) / 100));
-            }
-            moveFilled(position);
-        };
-        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
-        _super.prototype.init.call(this);
-    };
-    return UIKitSlider_Filled;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Filled);
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__ = __webpack_require__(21);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var UIKitSlider_Thumb = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Thumb, _super);
-    function UIKitSlider_Thumb(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp;
-        _this.storage['isDrag'] = false;
-        _this.storage['isHover'] = false;
-        _this.init();
-        return _this;
-    }
-    UIKitSlider_Thumb.prototype.init = function () {
-        var _this = this;
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_slider_upper_index__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.mediator, this.type));
-        this.element.on('mouseenter.uikit.slider.thumb', function () {
-            _this.storage.isHover = true;
-            _this.mediator.publish('thumb.hover', true);
-        });
-        this.element.on('mouseleave.uikit.slider.thumb', function () {
-            _this.storage.isHover = false;
-            _this.mediator.publish('thumb.hover', false);
-        });
-        var mediatorSubscribeModelValue = function (modelData) {
-            var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
-            var minimum = _this.mediator.getData('model.minimum');
-            var maximum = _this.mediator.getData('model.maximum');
-            var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
-            if (_this.type === 'horizontal') {
-                var position = Math.round(((percent * (coordinateSystem.width)) / 100));
-                _this.moveThumb(position);
-            }
-            else if (_this.type === 'vertical') {
-                var position = Math.round(((percent * (coordinateSystem.height)) / 100));
-                _this.moveThumb(position);
-            }
-        };
-        this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
-        this.element.on('mousedown.uikit.slider.thumb', function (event) {
-            _this.startDrag();
-            event.stopPropagation();
-        });
-        _super.prototype.init.call(this);
-    };
-    UIKitSlider_Thumb.prototype.calculateValue = function (position) {
-        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
-        var minimum = this.mediator.getData('model.minimum');
-        var maximum = this.mediator.getData('model.maximum');
-        var percent = 0;
-        if (this.type === 'horizontal') {
-            percent = (100 / coordinateSystem.width) * position;
-        }
-        else if (this.type === 'vertical') {
-            percent = (100 / coordinateSystem.height) * position;
-            percent = 100 - percent;
-        }
-        var value = Math.round(((percent * (maximum - minimum)) / 100) + minimum);
-        return value;
-    };
-    UIKitSlider_Thumb.prototype.moveThumb = function (position) {
-        if (position >= 0) {
-            var coordinateSystem = this.mediator.getData('model.coordinateSystem');
-            if (this.type === 'horizontal') {
-                var percent = (100 / coordinateSystem.width) * (position);
-                var maximum = (100 / coordinateSystem.xMax) *
-                    (coordinateSystem.xMax - (this.element.width() / 2));
-                var minimum = (100 / coordinateSystem.width) * this.element.width();
-                this.element.css('left', this.clamp(percent, -minimum, maximum) + '%');
-            }
-            else if (this.type === 'vertical') {
-                var percent = (100 / coordinateSystem.height) * (position);
-                var maximum = (100 / coordinateSystem.yMax) *
-                    (coordinateSystem.yMax + (this.element.width()));
-                var minimum = (100 / coordinateSystem.height) * this.element.width() / 2;
-                this.element.css('top', (100 - this.clamp(percent, -minimum, maximum)) + '%');
-            }
-        }
-    };
-    UIKitSlider_Thumb.prototype.startDrag = function () {
-        var _this = this;
-        this.storage.isDrag = true;
-        var coordinateSystem = this.mediator.getData('model.coordinateSystem');
-        var documentMousemove = function (event) {
-            if (_this.type === 'horizontal') {
-                var position = event.pageX - coordinateSystem.xMin;
-                var value = _this.calculateValue(position);
-                if (value !== _this.mediator.getData('model.value')) {
-                    _this.mediator.setData('model.value', value);
-                }
-            }
-            else if (_this.type === 'vertical') {
-                var position = event.pageY - coordinateSystem.yMin;
-                var value = _this.calculateValue(position);
-                if (value !== _this.mediator.getData('model.value')) {
-                    _this.mediator.setData('model.value', value);
-                }
-            }
-        };
-        $(document).on('mousemove.uikit.slider.thumb', documentMousemove);
-        var documentMouseup = function () {
-            $(document).off('mousemove.uikit.slider.thumb');
-            $(document).off('mouseup.uikit.slider.thumb');
-            _this.storage.isDrag = false;
-        };
-        $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
-    };
-    return UIKitSlider_Thumb;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Thumb);
-
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 21 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var UIKitSlider_Upper = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Upper, _super);
-    function UIKitSlider_Upper(dom, mediator, type) {
+var Slider_Upper = /** @class */ (function (_super) {
+    __extends(Slider_Upper, _super);
+    function Slider_Upper(dom, mediator, type) {
         var _this = _super.call(this, dom, mediator, type) || this;
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitSlider_Upper.prototype.init = function () {
+    Slider_Upper.prototype.initialize = function () {
         var _this = this;
         var div = this.element.find('div.no-select');
         var timerId;
@@ -10933,25 +10912,25 @@ var UIKitSlider_Upper = /** @class */ (function (_super) {
         this.mediator.subscribe('model.value', function () {
             show();
         });
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitSlider_Upper;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Upper);
+    return Slider_Upper;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Upper);
 
 
 /***/ }),
-/* 22 */
+/* 18 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 23 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(24);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10966,29 +10945,28 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitSlider_Rule = /** @class */ (function (_super) {
-    __extends(UIKitSlider_Rule, _super);
-    function UIKitSlider_Rule(element, mediator, type) {
+var Slider_Rule = /** @class */ (function (_super) {
+    __extends(Slider_Rule, _super);
+    function Slider_Rule(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
         _this.storage['segments'] = _this.element.attr('segments');
-        _this.init();
+        _this.initialize();
         if (_this.storage.segments !== 0) {
             var values = _this.getValues();
             if (values) {
-                if (_this.type === 'horizontal') {
-                    _this.build(values, true);
+                var isHorizontal = true;
+                if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                    isHorizontal = false;
                 }
-                else if (_this.type === 'vertical') {
-                    _this.build(values, false);
-                }
+                _this.build(values, isHorizontal);
             }
         }
         return _this;
     }
-    UIKitSlider_Rule.prototype.init = function () {
-        _super.prototype.init.call(this);
+    Slider_Rule.prototype.initialize = function () {
+        _super.prototype.initialize.call(this);
     };
-    UIKitSlider_Rule.prototype.getValues = function () {
+    Slider_Rule.prototype.getValues = function () {
         if (this.storage.segments > 0) {
             var minimum = this.mediator.getData('model.minimum');
             var maximum = this.mediator.getData('model.maximum');
@@ -11003,7 +10981,7 @@ var UIKitSlider_Rule = /** @class */ (function (_super) {
         }
         return undefined;
     };
-    UIKitSlider_Rule.prototype.build = function (values, isHorizontal) {
+    Slider_Rule.prototype.build = function (values, isHorizontal) {
         var _this = this;
         var size = (100 / (values.length + 1));
         var minimum = this.mediator.getData('model.minimum');
@@ -11050,11 +11028,133 @@ var UIKitSlider_Rule = /** @class */ (function (_super) {
             });
         };
     };
-    return UIKitSlider_Rule;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitSlider_Rule);
+    return Slider_Rule;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Slider_Rule);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_caption_index__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button_effect_index__ = __webpack_require__(25);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var Button = /** @class */ (function (_super) {
+    __extends(Button, _super);
+    function Button(element) {
+        var _this = _super.call(this, element) || this;
+        _this.initialize();
+        return _this;
+    }
+    Button.prototype.initialize = function () {
+        var _this = this;
+        var model = new Button_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        this.components = {
+            caption: new __WEBPACK_IMPORTED_MODULE_2__button_caption_index__["a" /* default */](this.element.find('.uikit-button-caption'), this.mediator),
+            effect: new __WEBPACK_IMPORTED_MODULE_3__button_effect_index__["a" /* default */](this.element.find('.uikit-button-effect'), this.mediator),
+        };
+        this.element.on('click', function (event) {
+            _this.mediator.publish('button.click', event);
+            event.stopPropagation();
+        });
+        this.element.on('mouseenter', function () {
+            _this.mediator.publish('button.hover', true);
+        });
+        this.element.on('mouseleave', function () {
+            _this.mediator.publish('button.hover', false);
+        });
+        this.caption = this.element.attr('caption');
+        _super.prototype.initialize.call(this);
+    };
+    Object.defineProperty(Button.prototype, "caption", {
+        set: function (value) {
+            this.mediator.publish('button.caption', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Button;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Button_Model = /** @class */ (function (_super) {
+    __extends(Button_Model, _super);
+    function Button_Model() {
+        return _super.call(this) || this;
+    }
+    return Button_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Button);
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Button_Caption = /** @class */ (function (_super) {
+    __extends(Button_Caption, _super);
+    function Button_Caption(element, mediator) {
+        var _this = _super.call(this, element, mediator) || this;
+        _this.initialize();
+        return _this;
+    }
+    Button_Caption.prototype.initialize = function () {
+        var _this = this;
+        this.mediator.subscribe('button.caption', function (caption) {
+            _this.element.text(caption);
+        });
+        _super.prototype.initialize.call(this);
+    };
+    return Button_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Button_Caption);
+
 
 /***/ }),
 /* 24 */
@@ -11067,82 +11167,7 @@ var UIKitSlider_Rule = /** @class */ (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__ = __webpack_require__(29);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-var UIKitButton = /** @class */ (function (_super) {
-    __extends(UIKitButton, _super);
-    function UIKitButton(element) {
-        var _this = _super.call(this, element) || this;
-        _this.init();
-        return _this;
-    }
-    UIKitButton.prototype.init = function () {
-        var _this = this;
-        this.model = new UIKitButton_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_button_caption_index__["a" /* default */](this.element.find('.uikit-button-caption'), this.mediator));
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_button_effect_index__["a" /* default */](this.element.find('.uikit-button-effect'), this.mediator));
-        this.element.on('click', function (event) {
-            _this.mediator.publish('button.click', event);
-            event.stopPropagation();
-        });
-        this.element.on('mouseenter', function () {
-            _this.mediator.publish('button.hover', true);
-        });
-        this.element.on('mouseleave', function () {
-            _this.mediator.publish('button.hover', false);
-        });
-        this.caption = this.element.attr('caption');
-        _super.prototype.init.call(this);
-    };
-    Object.defineProperty(UIKitButton.prototype, "caption", {
-        set: function (value) {
-            this.mediator.publish('button.caption', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitButton;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitButton_Model = /** @class */ (function (_super) {
-    __extends(UIKitButton_Model, _super);
-    function UIKitButton_Model() {
-        return _super.call(this) || this;
-    }
-    return UIKitButton_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitButton);
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 27 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(28);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11157,59 +11182,14 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitButton_Caption = /** @class */ (function (_super) {
-    __extends(UIKitButton_Caption, _super);
-    function UIKitButton_Caption(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
+var Button_Effect = /** @class */ (function (_super) {
+    __extends(Button_Effect, _super);
+    function Button_Effect(element, mediator) {
+        var _this = _super.call(this, element, mediator) || this;
+        _this.initialize();
         return _this;
     }
-    UIKitButton_Caption.prototype.init = function () {
-        var _this = this;
-        this.mediator.subscribe('button.caption', function (caption) {
-            _this.element.text(caption);
-        });
-        _super.prototype.init.call(this);
-    };
-    return UIKitButton_Caption;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Caption);
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 29 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var UIKitButton_Effect = /** @class */ (function (_super) {
-    __extends(UIKitButton_Effect, _super);
-    function UIKitButton_Effect(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
-        return _this;
-    }
-    UIKitButton_Effect.prototype.init = function () {
+    Button_Effect.prototype.initialize = function () {
         var _this = this;
         this.mediator.subscribe('button.click', function (event) {
             var target = $(event.currentTarget);
@@ -11225,29 +11205,29 @@ var UIKitButton_Effect = /** @class */ (function (_super) {
                 .css('height', size);
             _this.element.addClass('animate');
         });
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitButton_Effect;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitButton_Effect);
+    return Button_Effect;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Button_Effect);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 30 */
+/* 26 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 31 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__ = __webpack_require__(29);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11261,20 +11241,20 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitRadialProgress = /** @class */ (function (_super) {
-    __extends(UIKitRadialProgress, _super);
-    function UIKitRadialProgress(element) {
+var RadialProgress = /** @class */ (function (_super) {
+    __extends(RadialProgress, _super);
+    function RadialProgress(element) {
         var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-radial-progress')) {
             throw new ReferenceError('Элемент не является радиальным прогресс баром');
         }
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitRadialProgress.prototype.init = function () {
+    RadialProgress.prototype.initialize = function () {
         var _this = this;
-        this.model = new UIKitRadialProgress_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
+        var model = new RadialProgress_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
         this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
         this.mediator.subscribe('model.value', function (modelData) {
@@ -11286,7 +11266,9 @@ var UIKitRadialProgress = /** @class */ (function (_super) {
         this.mediator.subscribe('model.maximum', function (modelData) {
             _this.element.attr('maximum', modelData.maximum);
         });
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_radial_progress_caption_index__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.mediator));
+        this.components = {
+            caption: new __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.mediator),
+        };
         var mediatorSubscribeModelValue = function (modelData) {
             var itemRight = _this.element.find('.progress-right');
             var itemLeft = _this.element.find('.progress-left');
@@ -11310,9 +11292,9 @@ var UIKitRadialProgress = /** @class */ (function (_super) {
             return false;
         });
         this.value = Number(this.element.attr('value'));
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    Object.defineProperty(UIKitRadialProgress.prototype, "value", {
+    Object.defineProperty(RadialProgress.prototype, "value", {
         get: function () {
             return this.mediator.getData('model.value');
         },
@@ -11322,18 +11304,18 @@ var UIKitRadialProgress = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    return UIKitRadialProgress;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitRadialProgress_Model = /** @class */ (function (_super) {
-    __extends(UIKitRadialProgress_Model, _super);
-    function UIKitRadialProgress_Model() {
+    return RadialProgress;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var RadialProgress_Model = /** @class */ (function (_super) {
+    __extends(RadialProgress_Model, _super);
+    function RadialProgress_Model() {
         return _super.call(this, {
             value: 0,
             minimum: 0,
             maximum: 0,
         }) || this;
     }
-    UIKitRadialProgress_Model.prototype.getData = function (property) {
+    RadialProgress_Model.prototype.getData = function (property) {
         switch (property) {
             case 'value':
                 return this.data.value;
@@ -11345,10 +11327,10 @@ var UIKitRadialProgress_Model = /** @class */ (function (_super) {
                 return undefined;
         }
     };
-    UIKitRadialProgress_Model.prototype.setData = function (property, data) {
+    RadialProgress_Model.prototype.setData = function (property, data) {
         switch (property) {
             case 'value':
-                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(data, this.data.minimum, this.data.maximum);
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp(data, this.data.minimum, this.data.maximum);
                 this.data.value = value;
                 return true;
             case 'minimum':
@@ -11361,9 +11343,124 @@ var UIKitRadialProgress_Model = /** @class */ (function (_super) {
                 return false;
         }
     };
-    return UIKitRadialProgress_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress);
+    return RadialProgress_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (RadialProgress);
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var RadialProgress_Caption = /** @class */ (function (_super) {
+    __extends(RadialProgress_Caption, _super);
+    function RadialProgress_Caption(dom, mediator) {
+        var _this = _super.call(this, dom, mediator) || this;
+        _this.initialize();
+        return _this;
+    }
+    RadialProgress_Caption.prototype.initialize = function () {
+        var _this = this;
+        var print = function (value) {
+            _this.element.text(value);
+        };
+        this.mediator.subscribe('model.value', function (modelData) {
+            print(modelData.value);
+        });
+        this.initialize();
+    };
+    return RadialProgress_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (RadialProgress_Caption);
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ArrowButton = /** @class */ (function (_super) {
+    __extends(ArrowButton, _super);
+    function ArrowButton(element) {
+        var _this = _super.call(this, element) || this;
+        _this.initialize();
+        return _this;
+    }
+    ArrowButton.prototype.initialize = function () {
+        var _this = this;
+        // применение типа отложено до инициализации (super.initialize())
+        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_LEFT];
+        if (this.element.attr('data-type').toLowerCase() === 'right') {
+            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_RIGHT];
+        }
+        var model = new ArrowButton_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        var midiatorElementType = function (type) {
+            if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_LEFT) > -1) {
+                _this.element.removeClass('right');
+                _this.element.addClass('left');
+            }
+            else if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_RIGHT) > -1) {
+                _this.element.removeClass('left');
+                _this.element.addClass('right');
+            }
+        };
+        this.mediator.subscribe('element.type', midiatorElementType);
+        _super.prototype.initialize.call(this);
+    };
+    return ArrowButton;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var ArrowButton_Model = /** @class */ (function (_super) {
+    __extends(ArrowButton_Model, _super);
+    function ArrowButton_Model() {
+        return _super.call(this) || this;
+    }
+    return ArrowButton_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (ArrowButton);
 
 
 /***/ }),
@@ -11380,118 +11477,7 @@ var UIKitRadialProgress_Model = /** @class */ (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var UIKitRadialProgress_Caption = /** @class */ (function (_super) {
-    __extends(UIKitRadialProgress_Caption, _super);
-    function UIKitRadialProgress_Caption(dom, mediator) {
-        var _this = _super.call(this, dom, mediator) || this;
-        _this.init();
-        return _this;
-    }
-    UIKitRadialProgress_Caption.prototype.init = function () {
-        var _this = this;
-        var print = function (value) {
-            _this.element.text(value);
-        };
-        this.mediator.subscribe('model.value', function (modelData) {
-            print(modelData.value);
-        });
-        this.init();
-    };
-    return UIKitRadialProgress_Caption;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitRadialProgress_Caption);
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 35 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var UIKitArrowButton = /** @class */ (function (_super) {
-    __extends(UIKitArrowButton, _super);
-    function UIKitArrowButton(element) {
-        var _this = _super.call(this, element) || this;
-        _this.TYPE_LEFT = 'left';
-        _this.TYPE_RIGHT = 'right';
-        _this.init();
-        return _this;
-    }
-    UIKitArrowButton.prototype.init = function () {
-        this.model = new UIKitArrowButton_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(this.model);
-        this.typesList = [this.TYPE_LEFT, this.TYPE_RIGHT];
-        this.type = this.TYPE_LEFT;
-        if (this.element.attr('type') !== undefined) {
-            if (this.element.attr('type') !== '') {
-                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
-                    this.type = this.element.attr('type');
-                }
-            }
-        }
-        // смена типа не приводит к перестроению элемента
-        this.noRebuild = true;
-        _super.prototype.init.call(this);
-    };
-    return UIKitArrowButton;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitArrowButton_Model = /** @class */ (function (_super) {
-    __extends(UIKitArrowButton_Model, _super);
-    function UIKitArrowButton_Model() {
-        return _super.call(this) || this;
-    }
-    return UIKitArrowButton_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitArrowButton);
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 37 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_track_index__ = __webpack_require__(35);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11505,19 +11491,21 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitStages = /** @class */ (function (_super) {
-    __extends(UIKitStages, _super);
-    function UIKitStages(element) {
+var Stages = /** @class */ (function (_super) {
+    __extends(Stages, _super);
+    function Stages(element) {
         var _this = _super.call(this, element) || this;
         if (!_this.element.hasClass('uikit-stages')) {
             throw new ReferenceError('Элемент не является stages');
         }
-        _this.storage['invert'] = false;
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitStages.prototype.init = function () {
+    Stages.prototype.initialize = function () {
         var _this = this;
+        this.storage = {
+            invert: false,
+        };
         if (this.element.attr('invert') !== undefined) {
             if (this.element.attr('invert') !== '') {
                 var isTrueSet = (this.element.attr('invert') === 'true');
@@ -11526,17 +11514,12 @@ var UIKitStages = /** @class */ (function (_super) {
                 }
             }
         }
-        this.type = 'horizontal';
-        this.typesList = ['horizontal', 'vertical'];
-        if (this.element.attr('type') !== undefined) {
-            if (this.element.attr('type') !== '') {
-                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
-                    this.type = this.element.attr('type');
-                }
-            }
+        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
+        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
+            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
         }
-        var model = new UIKitStages_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
+        var model = new Stages_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         var stages = Number(this.element.attr('stages'));
         var stage = Number(this.element.attr('stage'));
         this.mediator.setData('model.stages', stages);
@@ -11554,7 +11537,9 @@ var UIKitStages = /** @class */ (function (_super) {
         };
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
         this.mediator.subscribe('model.stages', mediatorSubscribeModelStages);
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_1__uikit_stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.type, this.storage.invert));
+        this.components = {
+            track: new __WEBPACK_IMPORTED_MODULE_2__stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.type, this.invert),
+        };
         setTimeout(function () {
             _this.mediator.setData('model.stage', stage);
         }, 0);
@@ -11564,9 +11549,9 @@ var UIKitStages = /** @class */ (function (_super) {
         this.element.on('selectstart', function () {
             return false;
         });
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    Object.defineProperty(UIKitStages.prototype, "stage", {
+    Object.defineProperty(Stages.prototype, "stage", {
         get: function () {
             return this.mediator.getData('model.stage');
         },
@@ -11576,32 +11561,30 @@ var UIKitStages = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(UIKitStages.prototype, "invert", {
+    Object.defineProperty(Stages.prototype, "invert", {
         get: function () {
             return this.storage.invert;
         },
         set: function (value) {
-            if (this.type === 'vertical') {
-                if (typeof value === 'boolean') {
-                    this.storage.invert = value;
-                    this.rebuild();
-                }
+            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                this.storage.invert = value;
+                this.rebuild();
             }
         },
         enumerable: true,
         configurable: true
     });
-    return UIKitStages;
-}(__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitStages_Model = /** @class */ (function (_super) {
-    __extends(UIKitStages_Model, _super);
-    function UIKitStages_Model() {
+    return Stages;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Stages_Model = /** @class */ (function (_super) {
+    __extends(Stages_Model, _super);
+    function Stages_Model() {
         return _super.call(this, {
             stages: 0,
             stage: 0,
         }) || this;
     }
-    UIKitStages_Model.prototype.getData = function (property) {
+    Stages_Model.prototype.getData = function (property) {
         switch (property) {
             case 'stages':
                 return this.data.stages;
@@ -11611,7 +11594,7 @@ var UIKitStages_Model = /** @class */ (function (_super) {
                 return undefined;
         }
     };
-    UIKitStages_Model.prototype.setData = function (property, data) {
+    Stages_Model.prototype.setData = function (property, data) {
         var localData = data;
         switch (property) {
             case 'stages':
@@ -11620,33 +11603,33 @@ var UIKitStages_Model = /** @class */ (function (_super) {
                 this.data.stages = localData;
                 return true;
             case 'stage':
-                localData = __WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitMath.clamp(localData, 0, this.data.stages);
+                localData = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp(localData, 0, this.data.stages);
                 this.data.stage = localData;
                 return true;
             default:
                 return false;
         }
     };
-    return UIKitStages_Model;
-}(__WEBPACK_IMPORTED_MODULE_2__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitStages);
+    return Stages_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Stages);
 
 
 /***/ }),
-/* 38 */
+/* 34 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 39 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(40);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stages_stage_index__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_stages_between_index__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_stage_index__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_between_index__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11662,28 +11645,30 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var UIKitStages_Track = /** @class */ (function (_super) {
-    __extends(UIKitStages_Track, _super);
-    function UIKitStages_Track(element, mediator, type, invert) {
+var Stages_Track = /** @class */ (function (_super) {
+    __extends(Stages_Track, _super);
+    function Stages_Track(element, mediator, type, invert) {
         var _this = _super.call(this, element, mediator, type) || this;
         _this.storage['invert'] = invert;
-        _this.init();
+        _this.initialize();
         return _this;
     }
-    UIKitStages_Track.prototype.init = function () {
+    Stages_Track.prototype.initialize = function () {
         var _this = this;
-        if (this.storage.invert === true && this.type === 'vertical') {
-            var addClassInvert = function () {
-                _this.element.addClass('invert');
-            };
-            setTimeout(addClassInvert, 0);
+        if (this.storage.invert === true) {
+            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                var addClassInvert = function () {
+                    _this.element.addClass('invert');
+                };
+                setTimeout(addClassInvert, 0);
+            }
         }
-        var orientation = ['', ''];
-        if (this.type === 'horizontal') {
-            orientation = ['width', 'left'];
-        }
-        else if (this.type === 'vertical') {
+        // базовый
+        var typeClass = 'horizontal';
+        var orientation = ['width', 'left'];
+        if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
             orientation = ['height', 'top'];
+            typeClass = 'vertical';
         }
         var stages = this.mediator.getData('model.stages');
         var percent = 100 / (stages - 1);
@@ -11691,7 +11676,7 @@ var UIKitStages_Track = /** @class */ (function (_super) {
         var captionDom = $('<div>').addClass('uikit-stage-caption');
         var betweenDom = $('<div>')
             .addClass('uikit-stages-between')
-            .addClass(this.type)
+            .addClass(typeClass)
             .css(orientation[0], percent + '%');
         var shift = 0;
         for (var i = 1; i <= stages - 1; i += 1) {
@@ -11731,13 +11716,47 @@ var UIKitStages_Track = /** @class */ (function (_super) {
             _this.element.find('.uikit-stages-stage').toArray().map(stagesEachMap);
         };
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStageCallback);
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitStages_Track;
-}(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitStages_Track);
+    return Stages_Track;
+}(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Stages_Track);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 37 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stage_caption_index__ = __webpack_require__(39);
+
+
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
 
 /***/ }),
 /* 40 */
@@ -11752,8 +11771,6 @@ var UIKitStages_Track = /** @class */ (function (_super) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_stage_caption_index__ = __webpack_require__(43);
-
 
 
 
@@ -11770,7 +11787,106 @@ var UIKitStages_Track = /** @class */ (function (_super) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__indicator_index__ = __webpack_require__(47);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
+
+
+
+var InputText = /** @class */ (function (_super) {
+    __extends(InputText, _super);
+    function InputText(element) {
+        var _this = _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-input-text')) {
+            throw new ReferenceError('Элемент не является полем ввода UIKit');
+        }
+        _this.initialize();
+        return _this;
+    }
+    InputText.prototype.initialize = function () {
+        var model = new InputText_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        this.components = {
+            input: new __WEBPACK_IMPORTED_MODULE_2__input_index__["a" /* default */](this.element.find('input'), this.mediator),
+            indicator: new __WEBPACK_IMPORTED_MODULE_3__indicator_index__["a" /* default */](this.element.find('.uikit-indicator'), this.mediator),
+        };
+        if (this.element.attr('indicator') === 'true') {
+            this.indicator.enabled = true;
+        }
+        else {
+            this.indicator.enabled = false;
+        }
+        this.indicator.status = true;
+        _super.prototype.initialize.call(this);
+    };
+    Object.defineProperty(InputText.prototype, "text", {
+        get: function () {
+            return this.mediator.getData('model.text');
+        },
+        set: function (value) {
+            this.mediator.setData('model.text', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(InputText.prototype, "indicator", {
+        get: function () {
+            var mediator = this.mediator;
+            return {
+                set enabled(value) {
+                    mediator.publish('indicator.enabled', value);
+                },
+                set status(value) {
+                    mediator.publish('indicator.status', value);
+                },
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return InputText;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var InputText_Model = /** @class */ (function (_super) {
+    __extends(InputText_Model, _super);
+    function InputText_Model() {
+        return _super.call(this, {
+            text: '',
+        }) || this;
+    }
+    InputText_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'text':
+                return this.data.text;
+            default:
+                return undefined;
+        }
+    };
+    InputText_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'text':
+                if (typeof data === 'string') {
+                    this.data.text = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return InputText_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (InputText);
 
 
 /***/ }),
@@ -11786,7 +11902,62 @@ var UIKitStages_Track = /** @class */ (function (_super) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 
+
+var InputText_Input = /** @class */ (function (_super) {
+    __extends(InputText_Input, _super);
+    function InputText_Input(element, mediator) {
+        var _this = _super.call(this, element, mediator) || this;
+        _this.initialize();
+        return _this;
+    }
+    InputText_Input.prototype.initialize = function () {
+        var _this = this;
+        this.storage = {
+            caption: '',
+        };
+        this.storage.caption = this.element.attr('caption');
+        var focusInCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                if (value === _this.storage.caption) {
+                    _this.element.val('');
+                }
+            }
+        };
+        var focusOutCallback = function () {
+            var value = _this.element.val();
+            if (typeof value === 'string') {
+                value = value.trim();
+                if (value === '') {
+                    _this.element.val(_this.storage.caption);
+                }
+            }
+        };
+        this.element.focusin(focusInCallback);
+        this.element.focusout(focusOutCallback);
+        var mediatorSubscribeModelText = function (modelData) {
+            if (modelData.text !== _this.element.val()) {
+                _this.element.val(modelData.text);
+            }
+        };
+        this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+        _super.prototype.initialize.call(this);
+    };
+    return InputText_Input;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (InputText_Input);
 
 
 /***/ }),
@@ -11803,8 +11974,7 @@ var UIKitStages_Track = /** @class */ (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__ = __webpack_require__(49);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__ = __webpack_require__(49);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11818,88 +11988,45 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-
-var UIKitInputText = /** @class */ (function (_super) {
-    __extends(UIKitInputText, _super);
-    function UIKitInputText(element) {
-        var _this = _super.call(this, element) || this;
-        if (!_this.element.hasClass('uikit-input-text')) {
-            throw new ReferenceError('Элемент не является полем ввода UIKit');
-        }
-        _this.init();
+var InputText_Indicator = /** @class */ (function (_super) {
+    __extends(InputText_Indicator, _super);
+    function InputText_Indicator(element, mediator) {
+        var _this = _super.call(this, element, mediator) || this;
+        _this.initialize();
         return _this;
     }
-    UIKitInputText.prototype.init = function () {
-        var model = new UIKitInputText_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_input_index__["a" /* default */](this.element.find('input'), this.mediator));
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_3__uikit_indicator_index__["a" /* default */](this.element.find('.uikit-indicator'), this.mediator));
-        if (this.element.attr('indicator') === 'true') {
-            this.innerObjects[1].enabled = true;
-        }
-        else {
-            this.innerObjects[1].enabled = false;
-        }
-        this.innerObjects[1].status = true;
-        _super.prototype.init.call(this);
+    InputText_Indicator.prototype.initialize = function () {
+        var _this = this;
+        this.components = {
+            caption: new __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.mediator),
+        };
+        var meditorSubscribeIndicatorStatus = function (value) {
+            if (value) {
+                _this.element.addClass('indicator-ok');
+            }
+            else {
+                _this.element.removeClass('indicator-ok');
+            }
+        };
+        var meditorSubscribeIndicatorEnabled = function (value) {
+            _this.enabled = value;
+        };
+        this.mediator.subscribe('indicator.status', meditorSubscribeIndicatorStatus);
+        this.mediator.subscribe('indicator.enabled', meditorSubscribeIndicatorEnabled);
+        _super.prototype.initialize.call(this);
     };
-    Object.defineProperty(UIKitInputText.prototype, "text", {
-        get: function () {
-            return this.mediator.getData('model.text');
-        },
+    Object.defineProperty(InputText_Indicator.prototype, "status", {
         set: function (value) {
-            this.mediator.setData('model.text', value);
+            if (this.mediator) {
+                this.mediator.publish('indicator.status', value);
+            }
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(UIKitInputText.prototype, "indicator", {
-        get: function () {
-            var mediator = this.mediator;
-            return {
-                set enabled(value) {
-                    mediator.publish('indicator.enabled', value);
-                },
-                set status(value) {
-                    mediator.publish('indicator.status', value);
-                },
-            };
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitInputText;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitInputText_Model = /** @class */ (function (_super) {
-    __extends(UIKitInputText_Model, _super);
-    function UIKitInputText_Model() {
-        return _super.call(this, {
-            text: '',
-        }) || this;
-    }
-    UIKitInputText_Model.prototype.getData = function (property) {
-        switch (property) {
-            case 'text':
-                return this.data.text;
-            default:
-                return undefined;
-        }
-    };
-    UIKitInputText_Model.prototype.setData = function (property, data) {
-        switch (property) {
-            case 'text':
-                if (typeof data === 'string') {
-                    this.data.text = data;
-                    return true;
-                }
-                return false;
-            default:
-                return false;
-        }
-    };
-    return UIKitInputText_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitInputText);
+    return InputText_Indicator;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (InputText_Indicator);
 
 
 /***/ }),
@@ -11928,16 +12055,72 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitInputText_Input = /** @class */ (function (_super) {
-    __extends(UIKitInputText_Input, _super);
-    function UIKitInputText_Input(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
+var InputText_Caption = /** @class */ (function (_super) {
+    __extends(InputText_Caption, _super);
+    function InputText_Caption(element, mediator) {
+        var _this = _super.call(this, element, mediator) || this;
+        _this.initialize();
         return _this;
     }
-    UIKitInputText_Input.prototype.init = function () {
+    InputText_Caption.prototype.initialize = function () {
+        var _this = this;
+        var mediatorSubscribeIndicatorStatus = function (value) {
+            if (value) {
+                _this.element.text(_this.element.attr('ok'));
+            }
+            else {
+                _this.element.text(_this.element.attr('error'));
+            }
+        };
+        this.mediator.subscribe('indicator.status', mediatorSubscribeIndicatorStatus);
+        _super.prototype.initialize.call(this);
+    };
+    return InputText_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (InputText_Caption);
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Textarea = /** @class */ (function (_super) {
+    __extends(Textarea, _super);
+    function Textarea(element) {
+        var _this = _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-textarea')) {
+            throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
+        }
+        _this.initialize();
+        return _this;
+    }
+    Textarea.prototype.initialize = function () {
         var _this = this;
         this.caption = this.element.attr('caption');
+        var model = new Textarea_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         var focusInCallback = function () {
             var value = _this.element.val();
             if (typeof value === 'string') {
@@ -11958,74 +12141,47 @@ var UIKitInputText_Input = /** @class */ (function (_super) {
         this.element.focusin(focusInCallback);
         this.element.focusout(focusOutCallback);
         var mediatorSubscribeModelText = function (modelData) {
-            if (modelData.text !== _this.element.val()) {
-                _this.element.val(modelData.text);
-            }
+            _this.element.val(modelData.text);
         };
         this.mediator.subscribe('model.text', mediatorSubscribeModelText);
-        _super.prototype.init.call(this);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitInputText_Input;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Input);
-
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 51 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__ = __webpack_require__(53);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-var UIKitInputText_Indicator = /** @class */ (function (_super) {
-    __extends(UIKitInputText_Indicator, _super);
-    function UIKitInputText_Indicator(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
-        return _this;
+    Object.defineProperty(Textarea.prototype, "text", {
+        get: function () {
+            return this.mediator.getData('model.text');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Textarea;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Textarea_Model = /** @class */ (function (_super) {
+    __extends(Textarea_Model, _super);
+    function Textarea_Model() {
+        return _super.call(this, {
+            text: '',
+        }) || this;
     }
-    UIKitInputText_Indicator.prototype.init = function () {
-        var _this = this;
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_indicator_caption_index__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.mediator));
-        var meditorSubscribeIndicatorStatus = function (value) {
-            if (value) {
-                _this.element.addClass('indicator-ok');
-            }
-            else {
-                _this.element.removeClass('indicator-ok');
-            }
-        };
-        var meditorSubscribeIndicatorEnabled = function (value) {
-            _this.enabled = value;
-        };
-        this.mediator.subscribe('indicator.status', meditorSubscribeIndicatorStatus);
-        this.mediator.subscribe('indicator.enabled', meditorSubscribeIndicatorEnabled);
-        _super.prototype.init.call(this);
+    Textarea_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'text':
+                return this.data.text;
+            default:
+                return undefined;
+        }
     };
-    return UIKitInputText_Indicator;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Indicator);
+    Textarea_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'text':
+                this.data.text = data;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return Textarea_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Textarea);
 
 
 /***/ }),
@@ -12042,6 +12198,7 @@ var UIKitInputText_Indicator = /** @class */ (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__toggle_thumb_index__ = __webpack_require__(55);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12054,29 +12211,108 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitInputText_Caption = /** @class */ (function (_super) {
-    __extends(UIKitInputText_Caption, _super);
-    function UIKitInputText_Caption(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
+
+var Toggle = /** @class */ (function (_super) {
+    __extends(Toggle, _super);
+    function Toggle(element) {
+        var _this = _super.call(this, element) || this;
+        if (!_this.element.hasClass('uikit-toggle')) {
+            throw new ReferenceError('Элемент не является переключателем uikit');
+        }
+        _this.initialize();
         return _this;
     }
-    UIKitInputText_Caption.prototype.init = function () {
+    Toggle.prototype.initialize = function () {
         var _this = this;
-        var mediatorSubscribeIndicatorStatus = function (value) {
-            if (value) {
-                _this.element.text(_this.element.attr('ok'));
+        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
+        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
+            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
+        }
+        var model = new Toggle_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        var isChecked = false;
+        if (this.element.attr('value') === 'true') {
+            isChecked = true;
+        }
+        else {
+            isChecked = false;
+        }
+        this.mediator.subscribe('model.checked', function (modelData) {
+            _this.element.attr('value', modelData.checked);
+            if (_this.checked) {
+                _this.element.addClass('checked');
             }
             else {
-                _this.element.text(_this.element.attr('error'));
+                _this.element.removeClass('checked');
+            }
+        });
+        this.components = {
+            thumb: new __WEBPACK_IMPORTED_MODULE_2__toggle_thumb_index__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.mediator, this.type),
+        };
+        this.element.on('click', function () {
+            _this.checked = !_this.checked;
+        });
+        var medaitorElementType = function (type) {
+            console.log(type);
+            if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                _this.element.removeClass('vertical');
+                _this.element.addClass('horizontal');
+            }
+            else if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                _this.element.removeClass('horizontal');
+                _this.element.addClass('vertical');
             }
         };
-        this.mediator.subscribe('indicator.status', mediatorSubscribeIndicatorStatus);
-        _super.prototype.init.call(this);
+        this.mediator.subscribe('element.type', medaitorElementType);
+        setTimeout(function () {
+            this.checked = isChecked;
+        }, 0);
+        _super.prototype.initialize.call(this);
     };
-    return UIKitInputText_Caption;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitInputText_Caption);
+    Object.defineProperty(Toggle.prototype, "checked", {
+        get: function () {
+            return this.mediator.getData('model.checked');
+        },
+        set: function (value) {
+            if (typeof value === 'boolean') {
+                this.mediator.setData('model.checked', value);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Toggle;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Toggle_Model = /** @class */ (function (_super) {
+    __extends(Toggle_Model, _super);
+    function Toggle_Model() {
+        return _super.call(this, {
+            ckecked: false,
+        }) || this;
+    }
+    Toggle_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'checked':
+                return this.data.checked;
+            default:
+                return undefined;
+        }
+    };
+    Toggle_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'checked':
+                if (typeof data === 'boolean') {
+                    this.data.checked = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return Toggle_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Toggle);
 
 
 /***/ }),
@@ -12105,81 +12341,27 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-var UIKitTextarea = /** @class */ (function (_super) {
-    __extends(UIKitTextarea, _super);
-    function UIKitTextarea(element) {
-        var _this = _super.call(this, element) || this;
-        if (!_this.element.hasClass('uikit-textarea')) {
-            throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
-        }
-        _this.init();
+var Toggle_Thumb = /** @class */ (function (_super) {
+    __extends(Toggle_Thumb, _super);
+    function Toggle_Thumb(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
         return _this;
     }
-    UIKitTextarea.prototype.init = function () {
+    Toggle_Thumb.prototype.initialize = function () {
         var _this = this;
-        this.caption = this.element.attr('caption');
-        var model = new UIKitTextarea_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
-        var focusInCallback = function () {
-            var value = _this.element.val();
-            if (typeof value === 'string') {
-                if (value === _this.caption) {
-                    _this.element.val('');
-                }
+        this.mediator.subscribe('model.checked', function (modelData) {
+            if (modelData.checked) {
+                _this.element.addClass('checked');
             }
-        };
-        var focusOutCallback = function () {
-            var value = _this.element.val();
-            if (typeof value === 'string') {
-                value = value.trim();
-                if (value === '') {
-                    _this.element.val(_this.caption);
-                }
+            else {
+                _this.element.removeClass('checked');
             }
-        };
-        this.element.focusin(focusInCallback);
-        this.element.focusout(focusOutCallback);
-        var mediatorSubscribeModelText = function (modelData) {
-            _this.element.val(modelData.text);
-        };
-        this.mediator.subscribe('model.text', mediatorSubscribeModelText);
+        });
     };
-    Object.defineProperty(UIKitTextarea.prototype, "text", {
-        get: function () {
-            return this.mediator.getData('model.text');
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitTextarea;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitTextarea_Model = /** @class */ (function (_super) {
-    __extends(UIKitTextarea_Model, _super);
-    function UIKitTextarea_Model() {
-        return _super.call(this, {
-            text: '',
-        }) || this;
-    }
-    UIKitTextarea_Model.prototype.getData = function (property) {
-        switch (property) {
-            case 'text':
-                return this.data.text;
-            default:
-                return undefined;
-        }
-    };
-    UIKitTextarea_Model.prototype.setData = function (property, data) {
-        switch (property) {
-            case 'text':
-                this.data.text = data;
-                return true;
-            default:
-                return false;
-        }
-    };
-    return UIKitTextarea_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitTextarea);
+    return Toggle_Thumb;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Toggle_Thumb);
 
 
 /***/ }),
@@ -12193,117 +12375,14 @@ var UIKitTextarea_Model = /** @class */ (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__uikit_toggle_thumb_index__ = __webpack_require__(59);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-/* tslint:disable */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__ = __webpack_require__(2);
 
 
 
-var UIKitToggle = /** @class */ (function (_super) {
-    __extends(UIKitToggle, _super);
-    function UIKitToggle(element) {
-        var _this = _super.call(this, element) || this;
-        if (!_this.element.hasClass('uikit-toggle')) {
-            throw new ReferenceError('Элемент не является переключателем uikit');
-        }
-        _this.init();
-        return _this;
-    }
-    UIKitToggle.prototype.init = function () {
-        var _this = this;
-        this.type = 'horizontal';
-        this.typesList = ['horizontal', 'vertical'];
-        if (this.element.attr('type') !== undefined) {
-            if (this.element.attr('type') !== '') {
-                if (this.typesList.indexOf(this.element.attr('type')) > -1) {
-                    this.type = this.element.attr('type');
-                }
-            }
-        }
-        var model = new UIKitToggle_Model();
-        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitMediator(model);
-        var isChecked = false;
-        if (this.element.attr('value') === 'true') {
-            isChecked = true;
-        }
-        else {
-            isChecked = false;
-        }
-        this.mediator.subscribe('model.checked', function (modelData) {
-            _this.element.attr('value', modelData.checked);
-            if (_this.checked) {
-                _this.element.addClass('checked');
-            }
-            else {
-                _this.element.removeClass('checked');
-            }
-        });
-        this.innerObjects.push(new __WEBPACK_IMPORTED_MODULE_2__uikit_toggle_thumb_index__["a" /* default */](this.element.find('.uikit-toggle-thumb'), this.mediator, this.type));
-        this.element.on('click', function () {
-            _this.checked = !_this.checked;
-        });
-        setTimeout(function () {
-            this.checked = isChecked;
-        }, 0);
-        _super.prototype.init.call(this);
-    };
-    Object.defineProperty(UIKitToggle.prototype, "checked", {
-        get: function () {
-            return this.mediator.getData('model.checked');
-        },
-        set: function (value) {
-            if (typeof value === 'boolean') {
-                this.mediator.setData('model.checked', value);
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return UIKitToggle;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-var UIKitToggle_Model = /** @class */ (function (_super) {
-    __extends(UIKitToggle_Model, _super);
-    function UIKitToggle_Model() {
-        return _super.call(this, {
-            ckecked: false,
-        }) || this;
-    }
-    UIKitToggle_Model.prototype.getData = function (property) {
-        switch (property) {
-            case "checked":
-                return this.data.checked;
-            default:
-                return undefined;
-        }
-    };
-    UIKitToggle_Model.prototype.setData = function (property, data) {
-        switch (property) {
-            case "checked":
-                if (typeof data === 'boolean') {
-                    this.data.checked = data;
-                    return true;
-                }
-                return false;
-            default:
-                return false;
-        }
-    };
-    return UIKitToggle_Model;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitModel));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitToggle);
-
+/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__["a" /* default */]);
 
 /***/ }),
 /* 58 */
@@ -12316,75 +12395,8 @@ var UIKitToggle_Model = /** @class */ (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-var UIKitToggle_Thumb = /** @class */ (function (_super) {
-    __extends(UIKitToggle_Thumb, _super);
-    function UIKitToggle_Thumb(element, mediator, type) {
-        var _this = _super.call(this, element, mediator, type) || this;
-        _this.init();
-        return _this;
-    }
-    UIKitToggle_Thumb.prototype.init = function () {
-        var _this = this;
-        this.mediator.subscribe('model.checked', function (modelData) {
-            if (modelData.checked) {
-                _this.element.addClass('checked');
-            }
-            else {
-                _this.element.removeClass('checked');
-            }
-        });
-    };
-    return UIKitToggle_Thumb;
-}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* default */].Core.UIKitElement));
-/* harmony default export */ __webpack_exports__["a"] = (UIKitToggle_Thumb);
-
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 61 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(62);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__ = __webpack_require__(2);
-
-
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 63 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(61);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_js__ = __webpack_require__(57);
 
 var UIKitSlider = __WEBPACK_IMPORTED_MODULE_0__index_js__["default"].Core.UIKitSlider;
 

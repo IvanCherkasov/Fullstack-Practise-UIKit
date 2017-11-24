@@ -208,5 +208,5 @@ const testsModule = {
 };
 
 module.exports = [
-    testsModule,
+    mainModule,
 ];

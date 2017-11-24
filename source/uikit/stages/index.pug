@@ -1,0 +1,5 @@
+include ./stages-track/index.pug
+
+mixin addUIKitStage(id, stages, stage, orientation, invert)
+	div.uikit.uikit-stages(id=id, stages=stages, stage=stage, data-type=orientation, invert=invert)
+		+addUIKitStages_Track()

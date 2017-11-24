@@ -61,9 +61,6 @@ div.uikit.uikit-style-lightblue,
   --ok-color-1: #4eb7a8;
   --error-color-1: #e75735;
 }
-.uikit-theme-aqua .epta {
-  color: #444;
-}
 .uikit-slider {
   position: relative;
   width: auto;
@@ -796,29 +793,29 @@ textarea.uikit-textarea:not(.resizeble) {
   width: 18px;
   height: 18px;
 }
-.uikit-toggle-thumb.horizontal {
+.horizontal .uikit-toggle-thumb {
   height: 20px;
   align-items: center;
 }
-.uikit-toggle-thumb.horizontal .circle {
+.horizontal .uikit-toggle-thumb .circle {
   transform: translateX(-50%);
 }
-.uikit-toggle-thumb.vertical {
+.vertical .uikit-toggle-thumb {
   width: 20px;
   justify-content: center;
 }
-.uikit-toggle-thumb.vertical .circle {
+.vertical .uikit-toggle-thumb .circle {
   transform: translateY(-50%);
 }
-.uikit-toggle-thumb.horizontal.checked {
+.horizontal .uikit-toggle-thumb.checked {
   left: 100%;
 }
-.uikit-toggle-thumb.horizontal:not(.checked) {
+.horizontal .uikit-toggle-thumb:not(.checked) {
   left: 0;
 }
-.uikit-toggle-thumb.vertical.checked {
+.vertical .uikit-toggle-thumb.checked {
   top: 0;
 }
-.uikit-toggle-thumb.vertical:not(.checked) {
+.vertical .uikit-toggle-thumb:not(.checked) {
   top: 100%;
 }

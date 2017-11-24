@@ -1,2 +1,4 @@
 import './index.styl';
-import './uikit/bundle.ts';
+import UIKit from './uikit/bundle.ts';
+
+export default UIKit;

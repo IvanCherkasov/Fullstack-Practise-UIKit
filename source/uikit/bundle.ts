@@ -1,22 +1,22 @@
-import Base from './uikit-core/index';
-import UIKitSlider from './uikit-slider/index';
-import UIKitButton from  './uikit-button/index';
-import UIKitRadialProgress from './uikit-radial-progress/index';
-import UIKitArrowButton from './uikit-arrow-button/index';
-import UIKitStages from './uikit-stages/index';
-import UIKitInputText from './uikit-input-text/index';
-import UIKitTextarea from './uikit-textarea/index';
-import UIKitToggle from './uikit-toggle/index';
+import * as Base from './uikit-core/index';
+import Slider from './slider/index';
+import Button from  './button/index';
+import RadialProgress from './radial-progress/index';
+import ArrowButton from './arrow-button/index';
+import Stages from './stages/index';
+import InputText from './input-text/index';
+import Textarea from './textarea/index';
+import Toggle from './toggle/index';
 const Core = Base.Core;
 
 export default {
     Core,
-    UIKitSlider,
-    UIKitButton,
-    UIKitRadialProgress,
-    UIKitArrowButton,
-    UIKitStages,
-    UIKitInputText,
-    UIKitTextarea,
-    UIKitToggle,
+    Slider,
+    Button,
+    RadialProgress,
+    ArrowButton,
+    Stages,
+    InputText,
+    Textarea,
+    Toggle,
 };

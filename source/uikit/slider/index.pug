@@ -1,0 +1,9 @@
+include ./slider-track/index.pug
+include ./slider-rule/index.pug
+include ./slider-input/index.pug
+
+mixin addUIKit_Slider(id, type, minimum, maximum, value, ruleEnabled, ruleSegments)
+	div.uikit.uikit-slider(id=id, maximum=maximum, minimum=minimum, value=value, data-type=type)
+		+addUIKitSlider_Track()
+		+addUIKitSlider_Rule(ruleEnabled, ruleSegments)
+		+addUIKitSlider_Input()

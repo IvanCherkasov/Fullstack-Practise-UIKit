@@ -1,0 +1,7 @@
+include ./button-caption/index.pug
+include ./button-effect/index.pug
+
+mixin addUIKitButton(caption, id)
+	div.uikit.uikit-button(id=id, caption=caption)
+		+addUIKitButton_Caption()
+		+addUIKitButton_Effect()
