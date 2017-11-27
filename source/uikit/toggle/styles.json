@@ -1,0 +1,121 @@
+{
+    "block": [
+        {
+            "selector": ".uikit-toggle",
+            "properties": [
+                "background-color",
+                "transition"
+            ],
+            "block": [
+                {
+                    "selector": ".left-dummy",
+                    "properties": [
+                        "width",
+                        "height",
+                        "background-color",
+                        "border-radius",
+                        "transition"
+                    ]
+                },
+                {
+                    "selector": ".right-dummy",
+                    "properties": [
+                        "width",
+                        "height",
+                        "background-color",
+                        "border-radius",
+                        "transition"
+                    ]
+                },
+                {
+                    "selector": ".text-left",
+                    "properties": [
+                        "color",
+                        "font-family",
+                        "font-size",
+                        "font-weight",
+                        "transition"
+                    ]
+                },
+                {
+                    "selector": ".text-right",
+                    "properties": [
+                        "color",
+                        "font-family",
+                        "font-size",
+                        "font-weight",
+                        "transition"
+                    ]
+                }
+            ]
+        },
+        {
+            "selector": ".uikit-toggle.vertical",
+            "properties": [
+                "height",
+                "width"
+            ],
+            "block": [
+                {
+                    "selector": ".left-dummy",
+                    "properties": [
+                        "top"
+                    ]
+                },
+                {
+                    "selector": ".right-dummy",
+                    "properties": [
+                        "bottom"
+                    ]
+                }
+            ]
+        },
+        {
+            "selector": ".uikit-toggle.horizontal",
+            "properties": [
+                "height",
+                "width"
+            ],
+            "block": [
+                {
+                    "selector": ".left-dummy",
+                    "properties": [
+                        "left"
+                    ]
+                },
+                {
+                    "selector": ".right-dummy",
+                    "properties": [
+                        "right"
+                    ]
+                },
+                {
+                    "selector": ".text-left",
+                    "properties": [
+                        "left",
+                        "height"
+                    ]
+                },
+                {
+                    "selector": ".text-right",
+                    "properties": [
+                        "right",
+                        "height"
+                    ]
+                }
+            ]
+        },
+        {
+            "selector": ".uikit-toggle.checked",
+            "properties": [
+                "background-color"
+            ]
+        },
+        {
+            "selector": ".uikit-toggle:not(.checked)",
+            "properties": [
+                "background-color"
+            ]
+        }
+    ]
+}

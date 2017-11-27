@@ -1,0 +1,79 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-toggle
+            background-color #4EB7A8
+            transition 0.2s
+
+            .left-dummy
+            .right-dummy
+                width 24px
+                height 24px
+                background-color #4EB7A8
+                border-radius 50%
+
+            .text-left
+            .text-right
+                color white
+                font-family Lato
+                font-weight bold
+                font-size 12px
+
+        &.uikit-toggle.vertical
+            height 36px
+            width 24px
+
+            .left-dummy
+                top -12px
+
+            .right-dummy
+                bottom -12px
+
+            .text-left
+                display none
+
+             .text-right
+                display none
+
+        &.uikit-toggle.horizontal
+            height 24px
+            width 36px
+
+            .left-dummy
+                left -12px
+
+            .right-dummy
+                right -12px
+
+            .text-left
+                left 0
+                height 24px
+
+            .text-right
+                right 0
+                height 24px
+
+        &.uikit-toggle.checked
+            background-color #4EB7A8
+
+            .left-dummy
+            .right-dummy
+                background-color #4EB7A8
+
+            .text-left
+                opacity 1
+
+            .text-right
+                opacity 0
+
+        &.uikit-toggle:not(.checked)
+            background-color #e5e5e5
+
+            .left-dummy
+            .right-dummy
+                background-color #e5e5e5
+
+            .text-left
+                opacity 0
+
+            .text-right
+                opacity 1
