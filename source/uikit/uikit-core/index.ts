@@ -1,5 +1,5 @@
-import './uikit-styles.styl';
 import $ from 'jquery';
+import themes from '../themes/load-all';
 
 export namespace Core {
 
@@ -185,9 +185,9 @@ export namespace Core {
         public set enabled(value: boolean) {
             this.storage.enabled = value;
             if (value) {
-                this.element.addClass('disabled');
-            } else {
                 this.element.removeClass('disabled');
+            } else {
+                this.element.addClass('disabled');
             }
             if (this.mediator) {
                 this.mediator.publish('element.enabled', value);
@@ -305,7 +305,42 @@ export namespace Core {
     }
 
     export class ThemeController {
+        private static themes: string[] = themes.list;
+        private static baseTheme: string = themes.baseTheme;
+        private static inited: boolean = false;
 
+        private static clearThemes() {
+            this.themes.map((themeName) => {
+                $('body').removeClass(themeName);
+            });
+        }
+
+        public static changeTheme(themeName: string) {
+            if (this.themes.indexOf(themeName) > -1) {
+                this.clearThemes();
+                $('body').addClass(themeName);
+            } else {
+                if (themeName === this.baseTheme) {
+                    this.clearThemes();
+                }
+            }
+
+        }
+
+        public static getAll(): string[] {
+            let outArray: string[] = [this.baseTheme];
+            this.themes.map((theme) => {
+                outArray.push(theme);
+            });
+            return outArray;
+        }
+
+        public static initialize() {
+            if (!this.inited) {
+                $('body').addClass(this.baseTheme);
+                this.inited = true;
+            }
+        }
     }
 
     export namespace Math {
@@ -314,3 +349,5 @@ export namespace Core {
         }
     }
 }
+
+Core.ThemeController.initialize();

@@ -1,3 +1,6 @@
 {
-    "list": ["uikit-theme-aqua", "uikit-theme-lightred"]
+    "baseTheme": "uikit-theme-aqua",
+    "list": [
+        "uikit-theme-sea"
+    ]
 }

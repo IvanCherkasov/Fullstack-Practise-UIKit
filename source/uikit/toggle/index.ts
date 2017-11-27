@@ -54,8 +54,7 @@ class Toggle extends  UIKit.Core.Element{
                 this.checked = !this.checked;
             });
 
-        const medaitorElementType = (type) => {
-            console.log(type);
+        const mediatorElementType = (type) => {
             if (type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
                 this.element.removeClass('vertical');
                 this.element.addClass('horizontal');
@@ -64,24 +63,24 @@ class Toggle extends  UIKit.Core.Element{
                 this.element.addClass('vertical');
             }
         };
-        this.mediator.subscribe('element.type', medaitorElementType);
+        this.mediator.subscribe('element.type', mediatorElementType);
 
-        setTimeout(function () {
-            this.checked = isChecked;
-        }, 0);
+        setTimeout(() => {
+                this.checked = isChecked;
+            },     0);
 
         super.initialize();
     }
 
     public get checked(): boolean {
-          return this.mediator.getData('model.checked');
-      }
+        return this.mediator.getData('model.checked');
+    }
 
-      public set checked(value: boolean) {
-          if (typeof value === 'boolean') {
-              this.mediator.setData('model.checked', value);
-          }
+    public set checked(value: boolean) {
+      if (typeof value === 'boolean') {
+          this.mediator.setData('model.checked', value);
       }
+    }
 }
 
 class Toggle_Model extends UIKit.Core.Model{

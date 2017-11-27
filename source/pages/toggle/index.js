@@ -1,21 +1,21 @@
 import UIKit from '../../index';
 
-console.log(UIKit);
-
 const toggle1 = new UIKit.Toggle($('#uikit-toggle-id-1'));
 const toggle2 = new UIKit.Toggle($('#uikit-toggle-id-2'));
 const toggle3 = new UIKit.Toggle($('#uikit-toggle-id-3'));
 const toggle4 = new UIKit.Toggle($('#uikit-toggle-id-4'));
 
-//var select = $('#style-select-id');
+const select = $('#style-select-id');
 
-/*UIKit.styles.forEach(function(item){
-	select.append($('<option>', {
-        value: item,
-        text : item
-    }));
-});*/
+UIKit.Core.ThemeController.getAll().map((theme) => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme,
+    });
+    select.append(option);
+    return theme;
+});
 
-/*select.on('change', function(){
-	UIKit.style = select.val();
-});*/
+select.on('change', () => {
+    UIKit.Core.ThemeController.changeTheme(select.val());
+});

@@ -1,5 +1,6 @@
-import UIKit from '../../index.js'
+import UIKit from '../../index';
 
-$('.uikit-textarea').each(function(){
-	var uikitTextarea = new UIKit.Core.UIKitTextarea($(this));
+const textAreas = [];
+$('.uikit-textarea').each((i, item) => {
+    textAreas.push(new UIKit.Textarea($(item)));
 });
