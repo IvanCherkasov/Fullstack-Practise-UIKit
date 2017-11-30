@@ -7,6 +7,7 @@ import Stages from './stages/index';
 import InputText from './input-text/index';
 import Textarea from './textarea/index';
 import Toggle from './toggle/index';
+import ProgressBar from './progress-bar/index';
 const Core = Base.Core;
 
 export default {
@@ -19,4 +20,5 @@ export default {
     InputText,
     Textarea,
     Toggle,
+    ProgressBar,
 };

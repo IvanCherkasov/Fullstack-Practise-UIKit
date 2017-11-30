@@ -96,6 +96,7 @@ var Core;
             'right',
             'top',
             'bottom',
+            'radial',
         ];
         Types.NO_TYPE = Types.types[0];
         Types.HORIZONTAL = Types.types[1];
@@ -104,6 +105,7 @@ var Core;
         Types.RIGHT = Types.types[4];
         Types.TOP = Types.types[5];
         Types.BOTTOM = Types.types[6];
+        Types.RADIAL = Types.types[7];
         return Types;
     }());
     Core.Types = Types;
@@ -10985,6 +10987,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_text_index__ = __webpack_require__(149);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__textarea_index__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__toggle_index__ = __webpack_require__(159);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__progress_bar_index__ = __webpack_require__(163);
+
 
 
 
@@ -11005,6 +11009,7 @@ var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* Core */];
     InputText: __WEBPACK_IMPORTED_MODULE_6__input_text_index__["a" /* default */],
     Textarea: __WEBPACK_IMPORTED_MODULE_7__textarea_index__["a" /* default */],
     Toggle: __WEBPACK_IMPORTED_MODULE_8__toggle_index__["a" /* default */],
+    ProgressBar: __WEBPACK_IMPORTED_MODULE_9__progress_bar_index__["a" /* default */],
 });
 
 
@@ -13492,6 +13497,252 @@ var Toggle_Thumb = /** @class */ (function (_super) {
 
 /***/ }),
 /* 162 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 163 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(164);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__progress_bar_track_index__ = __webpack_require__(165);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var ProgressBar = /** @class */ (function (_super) {
+    __extends(ProgressBar, _super);
+    function ProgressBar(element) {
+        var _this = _super.call(this, element) || this;
+        _this.storageValue = 0;
+        _this.initialize();
+        return _this;
+    }
+    ProgressBar.prototype.initialize = function () {
+        var _this = this;
+        var availableTypes = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL, __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL];
+        var type = this.element.attr('data-type');
+        this.type = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL;
+        if (availableTypes.indexOf(type) > -1) {
+            this.type = type;
+        }
+        var model = new ProgressBar_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        this.noRebuild = false;
+        this.components = {
+            track: new __WEBPACK_IMPORTED_MODULE_2__progress_bar_track_index__["a" /* default */](this.element.find('.uikit-progress-bar-track'), this.mediator, this.type),
+        };
+        var attrValue = Number(this.element.attr('data-value'));
+        this.value = attrValue;
+        var mediatorModelValue = function (modelData) {
+            _this.element.attr('data-value', modelData.value);
+        };
+        this.mediator.subscribe('model.value', mediatorModelValue);
+        _super.prototype.initialize.call(this);
+    };
+    Object.defineProperty(ProgressBar.prototype, "value", {
+        get: function () {
+            return this.storageValue;
+        },
+        set: function (value) {
+            this.mediator.setData('model.value', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ProgressBar;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var ProgressBar_Model = /** @class */ (function (_super) {
+    __extends(ProgressBar_Model, _super);
+    function ProgressBar_Model() {
+        return _super.call(this, {
+            value: 0,
+        }) || this;
+    }
+    ProgressBar_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'value':
+                return this.data.value;
+            default:
+                return undefined;
+        }
+    };
+    ProgressBar_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'value':
+                var value = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp(data, 0, 100);
+                this.data.value = value;
+                return true;
+            default:
+                return false;
+        }
+    };
+    return ProgressBar_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (ProgressBar);
+
+
+/***/ }),
+/* 164 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 165 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(166);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__progress_bar_caption_index__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__progress_bar_filler_index__ = __webpack_require__(169);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var ProgressBar_Track = /** @class */ (function (_super) {
+    __extends(ProgressBar_Track, _super);
+    function ProgressBar_Track(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
+        return _this;
+    }
+    ProgressBar_Track.prototype.initialize = function () {
+        this.components = {
+            caption: new __WEBPACK_IMPORTED_MODULE_2__progress_bar_caption_index__["a" /* default */](this.element.find('.uikit-progress-bar-caption'), this.mediator, this.type),
+            filler: new __WEBPACK_IMPORTED_MODULE_3__progress_bar_filler_index__["a" /* default */](this.element.find('.uikit-progress-bar-filler'), this.mediator, this.type),
+        };
+        _super.prototype.initialize.call(this);
+    };
+    return ProgressBar_Track;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (ProgressBar_Track);
+
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 167 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(168);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ProgressBar_Caption = /** @class */ (function (_super) {
+    __extends(ProgressBar_Caption, _super);
+    function ProgressBar_Caption(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
+        return _this;
+    }
+    ProgressBar_Caption.prototype.initialize = function () {
+        var _this = this;
+        var mediatorModelValue = function (modelData) {
+            _this.element.text(modelData.value + "%");
+        };
+        this.mediator.subscribe('model.value', mediatorModelValue);
+        _super.prototype.initialize.call(this);
+    };
+    return ProgressBar_Caption;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (ProgressBar_Caption);
+
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 169 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(170);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ProgressBar_Filler = /** @class */ (function (_super) {
+    __extends(ProgressBar_Filler, _super);
+    function ProgressBar_Filler(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
+        return _this;
+    }
+    ProgressBar_Filler.prototype.initialize = function () {
+        var _this = this;
+        var mediatorModelValue = function (modelData) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
+                _this.element.css('width', modelData.value + "%");
+            }
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
+                _this.element.css('height', modelData.value + "%");
+            }
+        };
+        this.mediator.subscribe('model.value', mediatorModelValue);
+        _super.prototype.initialize.call(this);
+    };
+    return ProgressBar_Filler;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (ProgressBar_Filler);
+
+
+/***/ }),
+/* 170 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

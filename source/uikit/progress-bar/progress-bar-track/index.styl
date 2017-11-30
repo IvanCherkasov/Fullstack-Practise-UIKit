@@ -1,0 +1,19 @@
+.uikit
+    &.uikit-progress-bar
+        .uikit-progress-bar-track
+            position relative
+            display flex
+            align-items center
+            background-color #e5e5e5
+            border-radius 5px
+            overflow hidden
+            height 100%
+            width 100%
+
+        &.horizontal
+            .uikit-progress-bar-track
+                flex-direction row
+
+        &.vertical
+            .uikit-progress-bar-track
+                flex-direction column-reverse

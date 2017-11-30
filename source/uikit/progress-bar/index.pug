@@ -1,0 +1,5 @@
+include ./progress-bar-track/index.pug
+
+mixin addUIKitProgressBar(id, value, type, captionEnabled)
+    div.uikit.uikit-progress-bar(id=id, data-value=value, data-type=type, data-caption-enabled=captionEnabled ? "true" : "false")
+        +addUIKitProgressBar_Track()

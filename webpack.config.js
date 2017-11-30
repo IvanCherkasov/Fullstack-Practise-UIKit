@@ -20,6 +20,7 @@ const mainModule = {
         'input-text': './pages/input-text/index',
         textarea: './pages/textarea/index',
         toggle: './pages/toggle/index',
+        'progress-bar': './pages/progress-bar/index',
     },
     output: {
         path: PATHS.build,
@@ -107,6 +108,11 @@ const mainModule = {
             template: `${PATHS.source}/pages/toggle/index.pug`,
             filename: `${PATHS.build}/toggle/index.html`,
             chunks: ['toggle'],
+        }),
+        new HtmlWebpackPlugin({
+            template: `${PATHS.source}/pages/progress-bar/index.pug`,
+            filename: `${PATHS.build}/progress-bar/index.html`,
+            chunks: ['progress-bar'],
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

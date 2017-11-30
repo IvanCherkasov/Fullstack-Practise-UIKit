@@ -1,0 +1,7 @@
+include ./progress-bar-caption/index.pug
+include ./progress-bar-filler/index.pug
+
+mixin addUIKitProgressBar_Track()
+    div.uikit-progress-bar-track
+        +addUIKitProgressBar_Filler()
+        +addUIKitProgressBar_Caption()

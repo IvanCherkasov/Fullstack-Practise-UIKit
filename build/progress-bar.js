@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 177);
+/******/ 	return __webpack_require__(__webpack_require__.s = 179);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -13754,7 +13754,9 @@ var ProgressBar_Filler = /** @class */ (function (_super) {
 /* 174 */,
 /* 175 */,
 /* 176 */,
-/* 177 */
+/* 177 */,
+/* 178 */,
+/* 179 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13762,9 +13764,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index__ = __webpack_require__(51);
 
 
-const textAreas = [];
-$('.uikit-textarea').each((i, item) => {
-    textAreas.push(new __WEBPACK_IMPORTED_MODULE_0__index__["default"].Textarea($(item)));
+const bar1 = new __WEBPACK_IMPORTED_MODULE_0__index__["default"].ProgressBar($('#uikit-progress-bar-1-h'));
+const bar2 = new __WEBPACK_IMPORTED_MODULE_0__index__["default"].ProgressBar($('#uikit-progress-bar-2-v'));
+const select = $('#styles-id');
+
+__WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.ThemeController.getAll().map(theme => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme
+    });
+    select.append(option);
+    return theme;
+});
+
+select.on('change', () => {
+    __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.ThemeController.changeTheme(select.val());
+});
+
+$('#uikit-submit-id-1').click(() => {
+    if (bar2.type === __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.Types.HORIZONTAL) {
+        bar2.type = __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.Types.VERTICAL;
+    } else if (bar2.type === __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.Types.VERTICAL) {
+        bar2.type = __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.Types.HORIZONTAL;
+    }
+});
+
+const input1 = $('#input-text-progress');
+input1.on('change', () => {
+    if (input1.val()) {
+        const value = parseInt(input1.val(), 10);
+        if (!Number.isNaN(value)) {
+            bar2.value = value;
+        }
+    }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 

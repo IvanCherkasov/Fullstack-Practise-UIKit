@@ -12,6 +12,7 @@ export namespace Core {
             'right',
             'top',
             'bottom',
+            'radial',
         ];
 
         public static readonly NO_TYPE: string = Types.types[0];
@@ -21,6 +22,7 @@ export namespace Core {
         public static readonly RIGHT: string = Types.types[4];
         public static readonly TOP: string = Types.types[5];
         public static readonly BOTTOM: string = Types.types[6];
+        public static readonly RADIAL: string = Types.types[7];
 
         public static contains(value: string): boolean {
             if (this.types.indexOf(value) > -1) {
