@@ -7,15 +7,13 @@
                 min-width 76px
                 margin-left 10px
 
-            .uikit-indicator.indicator-ok
+            .uikit-indicator.status-ok
                 background-color #4EB7A8
 
-            .uikit-indicator:not(.indicator-ok)
+            .uikit-indicator:not(.status-ok)
                 background-color #e75735
 
             .uikit-indicator::before
-                position absolute
-                content ""
                 width 7px
                 height 7px
                 border-radius 0 0 2px 0
@@ -25,8 +23,8 @@
                 left -3px
                 margin auto
 
-            .uikit-indicator:not(.indicator-ok)::before
+            .uikit-indicator:not(.status-ok)::before
                 background-color #e75735
 
-            .uikit-indicator.indicator-ok::before
+            .uikit-indicator.status-ok::before
                 background-color #4EB7A8

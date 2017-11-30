@@ -1,2 +1,2 @@
 mixin addUIKitArrowButton(id, enabled, orientation)
-	div.uikit.uikit-arrow-button(id=id, class=!enabled ? "disabled" : "", data-type=orientation, class=orientation)
+    div.uikit.uikit-arrow-button(id=id, data-enabled=enabled ? 'true' : 'false', data-type=orientation)

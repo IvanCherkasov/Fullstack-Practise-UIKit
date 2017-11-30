@@ -12,7 +12,7 @@ class Button extends UIKit.Core.Element{
 
     private components: IComponent;
 
-    constructor(element: any) {
+    constructor(element: JQuery) {
         super(element);
         this.initialize();
     }
@@ -24,11 +24,13 @@ class Button extends UIKit.Core.Element{
         this.components = {
             caption: new Button_Caption(
                 this.element.find('.uikit-button-caption'),
-                this.mediator),
+                this.mediator,
+                this.type),
 
             effect: new Button_Effect(
                 this.element.find('.uikit-button-effect'),
-                this.mediator),
+                this.mediator,
+                this.type),
         };
 
         this.element.on('click', (event) => {
@@ -44,7 +46,7 @@ class Button extends UIKit.Core.Element{
             this.mediator.publish('button.hover', false);
         });
 
-        this.caption = this.element.attr('caption');
+        this.caption = this.element.attr('data-caption');
 
         super.initialize();
     }

@@ -10,7 +10,7 @@ class Toggle extends  UIKit.Core.Element{
 
     private components: IComponent;
 
-    constructor(element:any) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
@@ -20,9 +20,10 @@ class Toggle extends  UIKit.Core.Element{
 
     protected initialize() {
 
-        this.type = [UIKit.Core.Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [UIKit.Core.Types.ORIENTATION_VERTICAL];
+        this.type = UIKit.Core.Types.HORIZONTAL;
+        const type = this.element.attr('data-type');
+        if (type) {
+            this.type = type;
         }
 
         const model = new Toggle_Model();
@@ -54,11 +55,11 @@ class Toggle extends  UIKit.Core.Element{
                 this.checked = !this.checked;
             });
 
-        const mediatorElementType = (type) => {
-            if (type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+        const mediatorElementType = () => {
+            if (this.type === UIKit.Core.Types.HORIZONTAL) {
                 this.element.removeClass('vertical');
                 this.element.addClass('horizontal');
-            } else if (type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+            } else if (this.type === UIKit.Core.Types.VERTICAL) {
                 this.element.removeClass('horizontal');
                 this.element.addClass('vertical');
             }

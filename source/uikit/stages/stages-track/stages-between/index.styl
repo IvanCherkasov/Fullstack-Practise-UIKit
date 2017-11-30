@@ -1,15 +1,13 @@
-.uikit-stages-between
-	position absolute
-	
-.uikit-stages-between.horizontal
-	height 100%
-	display table-cell
+.uikit-stages
+	.uikit-stages-between
+		position absolute
 
-.uikit-stages-between.vertical
-	width 100%
-	display table-row
-	
-.uikit-stages-between.staged
-	background-color var(--color-1)
-	
-	
+	&.horizontal
+		.uikit-stages-between
+			height 100%
+			display table-cell
+
+	&.vertical
+		.uikit-stages-between
+			width 100%
+			display table-row

@@ -5,29 +5,20 @@ import * as UIKit from '../../uikit-core/index';
 
 class Stages_Track extends UIKit.Core.Component {
 
-    constructor(element, mediator, type, invert: boolean) {
-        super(element, mediator, type);
-        this.storage['invert'] = invert;
-        this.initialize();
+    constructor(
+        element: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string,
+        private storageInvert: boolean) {
+            super(element, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
-        if (this.storage.invert === true) {
-            if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
-                const addClassInvert = () => {
-                this.element.addClass('invert');
-                };
-                setTimeout(addClassInvert, 0);
-            }
-        }
 
-        // базовый
-        let typeClass = 'horizontal';
         let orientation = ['width', 'left'];
-
-        if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+        if (this.type === UIKit.Core.Types.VERTICAL) {
             orientation = ['height', 'top'];
-            typeClass = 'vertical';
         }
 
         const stages = this.mediator.getData('model.stages');
@@ -36,10 +27,7 @@ class Stages_Track extends UIKit.Core.Component {
         const captionDom = $('<div>').addClass('uikit-stage-caption');
         const betweenDom = $('<div>')
             .addClass('uikit-stages-between')
-            .addClass(typeClass)
             .css(orientation[0], percent + '%');
-
-
 
         let shift: number = 0;
         for (let i = 1; i <= stages - 1; i += 1) {
@@ -58,9 +46,8 @@ class Stages_Track extends UIKit.Core.Component {
 
         const mediatorSubscribeModelStageCallback = (modelData) => {
             let betweens = this.element.find('.uikit-stages-between');
-            if (this.storage.invert) {
+            if (this.storageInvert) {
                 betweens = $(betweens.get().reverse());
-                console.log(betweens);
             }
 
             const betweensEachMap = (item, i) => {

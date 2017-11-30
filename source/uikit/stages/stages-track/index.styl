@@ -1,19 +1,22 @@
-.uikit-stages-track
-	position relative
-	display flex
-	justify-content space-between
-	align-items center
-	background-color #e5e5e5
+.uikit-stages
+    .uikit-stages-track
+        position relative
+        display flex
+        justify-content space-between
+        align-items center
 
-.uikit-stages-track.horizontal
-	width inherit
-	height 5px
-	flex-direction row
-	
-.uikit-stages-track.vertical
-	height inherit
-	width 5px
-	flex-direction column
-	
-.uikit-stages-track.vertical.invert
-	flex-direction column-reverse	
+    &.horizontal
+        .uikit-stages-track
+            flex-direction row
+
+        &.invert
+            .uikit-stages-track
+                flex-direction row-reverse
+
+    &.vertical
+        .uikit-stages-track
+            flex-direction column
+
+        &.invert
+            .uikit-stages-track
+                flex-direction column-reverse

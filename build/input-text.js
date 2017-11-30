@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 84);
+/******/ 	return __webpack_require__(__webpack_require__.s = 168);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,49 +71,83 @@
 /* WEBPACK VAR INJECTION */(function(jQuery, global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Core; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__themes_load_all__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__themes_load_all__ = __webpack_require__(55);
 
 
 var Core;
 (function (Core) {
-    var Types;
-    (function (Types) {
-        Types[Types["ORIENTATION_HORIZONTAL"] = 1] = "ORIENTATION_HORIZONTAL";
-        Types[Types["ORIENTATION_VERTICAL"] = 2] = "ORIENTATION_VERTICAL";
-        Types[Types["DIRECTION_LEFT"] = 3] = "DIRECTION_LEFT";
-        Types[Types["DIRECTION_RIGHT"] = 4] = "DIRECTION_RIGHT";
-        Types[Types["DIRECTION_UP"] = 5] = "DIRECTION_UP";
-        Types[Types["DIRECTION_DOWN"] = 6] = "DIRECTION_DOWN";
-    })(Types = Core.Types || (Core.Types = {}));
+    var Types = /** @class */ (function () {
+        function Types() {
+        }
+        Types.contains = function (value) {
+            if (this.types.indexOf(value) > -1) {
+                return true;
+            }
+            return false;
+        };
+        Types.toArray = function () {
+            return Types.types.slice(); // clone
+        };
+        Types.types = [
+            '',
+            'horizontal',
+            'vertical',
+            'left',
+            'right',
+            'top',
+            'bottom',
+        ];
+        Types.NO_TYPE = Types.types[0];
+        Types.HORIZONTAL = Types.types[1];
+        Types.VERTICAL = Types.types[2];
+        Types.LEFT = Types.types[3];
+        Types.RIGHT = Types.types[4];
+        Types.TOP = Types.types[5];
+        Types.BOTTOM = Types.types[6];
+        return Types;
+    }());
+    Core.Types = Types;
+    var Variants = /** @class */ (function () {
+        function Variants() {
+        }
+        Variants.ERROR = 'error';
+        Variants.ACCEPT = 'accept';
+        return Variants;
+    }());
+    Core.Variants = Variants;
     var Element = /** @class */ (function () {
         function Element(element) {
             this.element = element;
-            this.storage = {};
+            this.storageType = Types.NO_TYPE;
+            this.storageEnabled = true;
+            this.storageIsInited = false;
+            this.storageNoRebuild = true;
+            this.storageVariant = '';
             if (!this.element || this.element === null) {
                 throw ReferenceError('Передан пустой элемент');
             }
             if (!this.element.hasClass('uikit')) {
                 throw ReferenceError('Переданный элемент не является объектом uikit');
             }
-            this.storage = {
-                type: [-1],
-                enabled: true,
-                isInited: false,
-                noRebuild: true,
-            };
             this.original = this.element.clone();
             if (this.element.attr('data-enabled') === 'false') {
                 this.enabled = false;
             }
         }
         Element.prototype.acceptType = function () {
+            var _this = this;
+            this.element.attr('data-type', this.storageType);
+            Types.toArray().map(function (item) {
+                _this.element.removeClass(item);
+            });
+            this.element.addClass(this.storageType);
             if (this.mediator) {
-                this.mediator.publish('element.type', this.type);
+                this.mediator.publish('element.type');
             }
         };
         Element.prototype.rebuild = function () {
             var _this = this;
-            this.storage.isInited = false;
+            this.storageIsInited = false;
             var parent = this.element.parent();
             var spawned = false;
             var attributes = [];
@@ -161,34 +195,46 @@ var Core;
             });
         };
         Element.prototype.initialize = function () {
-            this.storage.isInited = true;
-            if (this.storage.type !== [-1]) {
+            var enabled = true;
+            if (this.element.attr('data-enabled') === 'false') {
+                enabled = false;
+            }
+            this.enabled = enabled;
+            var variant = this.element.attr('data-variant');
+            if (variant) {
+                this.variant = variant;
+            }
+            this.storageIsInited = true;
+            if (this.storageType !== Types.NO_TYPE) {
                 this.acceptType();
             }
         };
         Object.defineProperty(Element.prototype, "noRebuild", {
             get: function () {
-                return this.storage.noRebuild;
+                return this.storageNoRebuild;
             },
             set: function (value) {
-                this.storage.noRebuild = value;
+                this.storageNoRebuild = value;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(Element.prototype, "type", {
             get: function () {
-                return this.storage.type;
+                return this.storageType;
             },
-            set: function (type) {
-                if (type !== this.storage.type) {
-                    this.storage.type = type;
-                    if (this.storage.isInited) {
-                        if (this.noRebuild) {
-                            this.acceptType();
-                        }
-                        else {
-                            this.rebuild();
+            set: function (value) {
+                if (Types.contains(value)) {
+                    if (value !== this.storageType) {
+                        this.storageType = value;
+                        if (this.storageIsInited) {
+                            if (this.noRebuild) {
+                                this.acceptType();
+                            }
+                            else {
+                                this.element.attr('data-type', this.storageType);
+                                this.rebuild();
+                            }
                         }
                     }
                 }
@@ -198,18 +244,34 @@ var Core;
         });
         Object.defineProperty(Element.prototype, "enabled", {
             get: function () {
-                return this.storage.enabled;
+                return this.storageEnabled;
             },
             set: function (value) {
-                this.storage.enabled = value;
+                this.element.attr('data-enabled', "" + value);
+                this.storageEnabled = value;
                 if (value) {
-                    this.element.addClass('disabled');
+                    this.element.removeClass('disabled');
                 }
                 else {
-                    this.element.removeClass('disabled');
+                    this.element.addClass('disabled');
                 }
                 if (this.mediator) {
                     this.mediator.publish('element.enabled', value);
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Element.prototype, "variant", {
+            get: function () {
+                return this.storageVariant;
+            },
+            set: function (value) {
+                if (value) {
+                    this.element.removeClass(this.storageVariant);
+                    this.storageVariant = value;
+                    this.element.attr('data-variant', value);
+                    this.element.addClass(value);
                 }
             },
             enumerable: true,
@@ -222,25 +284,27 @@ var Core;
         function Component(element, mediator, type) {
             this.element = element;
             this.mediator = mediator;
-            this.storage = {};
+            this.storageType = Types.NO_TYPE;
+            this.storageEnabled = true;
             if (!element || element === null) {
                 throw ReferenceError('Передан пустой компонент');
             }
-            this.storage = {
-                type: [-1],
-            };
-            if (type) {
-                this.storage.type = type;
-            }
+            this.storageType = type;
         }
         Component.prototype.initialize = function () {
+            var enabled = true;
+            if (this.element.attr('data-enabled') === 'false') {
+                enabled = false;
+            }
+            this.enabled = enabled;
         };
         Object.defineProperty(Component.prototype, "enabled", {
             get: function () {
-                return this.storage.enabled;
+                return this.storageEnabled;
             },
             set: function (value) {
-                this.storage.enabled = value;
+                this.element.attr('data-enabled', "" + value);
+                this.storageEnabled = value;
                 if (value) {
                     this.element.removeClass('disabled');
                 }
@@ -256,7 +320,7 @@ var Core;
         });
         Object.defineProperty(Component.prototype, "type", {
             get: function () {
-                return this.storage.type;
+                return this.storageType;
             },
             enumerable: true,
             configurable: true
@@ -404,7 +468,8 @@ var Core;
             }
         };
         ThemeController.getAll = function () {
-            var outArray = [this.baseTheme];
+            var outArray = [];
+            outArray.push(this.baseTheme);
             this.themes.map(function (theme) {
                 outArray.push(theme);
             });
@@ -432,7 +497,7 @@ var Core;
 })(Core || (Core = {}));
 Core.ThemeController.initialize();
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(11)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1), __webpack_require__(54)))
 
 /***/ }),
 /* 1 */
@@ -10269,16 +10334,58 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./uikit-theme-aqua/index.js": 14,
-	"./uikit-theme-aqua/input-text/index.js": 17,
-	"./uikit-theme-aqua/input-text/indicator/index.js": 5,
-	"./uikit-theme-aqua/input-text/indicator/indicator-caption/index.js": 6,
-	"./uikit-theme-aqua/input-text/input/index.js": 7,
-	"./uikit-theme-aqua/toggle/index.js": 3,
-	"./uikit-theme-aqua/toggle/toggle-thumb/index.js": 4,
-	"./uikit-theme-sea/index.js": 22,
-	"./uikit-theme-sea/toggle/index.js": 8,
-	"./uikit-theme-sea/toggle/toggle-thumb/index.js": 9
+	"./uikit-theme-aqua/arrow-button/index.js": 3,
+	"./uikit-theme-aqua/button/button-caption/index.js": 4,
+	"./uikit-theme-aqua/button/button-effect/index.js": 5,
+	"./uikit-theme-aqua/button/index.js": 6,
+	"./uikit-theme-aqua/index.js": 61,
+	"./uikit-theme-aqua/input-text/index.js": 9,
+	"./uikit-theme-aqua/input-text/indicator/index.js": 10,
+	"./uikit-theme-aqua/input-text/indicator/indicator-caption/index.js": 11,
+	"./uikit-theme-aqua/input-text/input/index.js": 12,
+	"./uikit-theme-aqua/radial-progress/index.js": 81,
+	"./uikit-theme-aqua/radial-progress/radial-progress-caption/index.js": 26,
+	"./uikit-theme-aqua/slider/index.js": 13,
+	"./uikit-theme-aqua/slider/slider-input/index.js": 19,
+	"./uikit-theme-aqua/slider/slider-rule/index.js": 20,
+	"./uikit-theme-aqua/slider/slider-track/index.js": 14,
+	"./uikit-theme-aqua/slider/slider-track/slider-fill/index.js": 15,
+	"./uikit-theme-aqua/slider/slider-track/slider-fill/slider-filled/index.js": 16,
+	"./uikit-theme-aqua/slider/slider-track/slider-thumb/index.js": 17,
+	"./uikit-theme-aqua/slider/slider-track/slider-thumb/slider-upper/index.js": 18,
+	"./uikit-theme-aqua/stages/index.js": 21,
+	"./uikit-theme-aqua/stages/stages-track/index.js": 22,
+	"./uikit-theme-aqua/stages/stages-track/stages-between/index.js": 23,
+	"./uikit-theme-aqua/stages/stages-track/stages-stage/index.js": 24,
+	"./uikit-theme-aqua/stages/stages-track/stages-stage/stages-caption/index.js": 25,
+	"./uikit-theme-aqua/toggle/index.js": 7,
+	"./uikit-theme-aqua/toggle/toggle-thumb/index.js": 8,
+	"./uikit-theme-sea/arrow-button/index.js": 27,
+	"./uikit-theme-sea/button/button-caption/index.js": 28,
+	"./uikit-theme-sea/button/button-effect/index.js": 29,
+	"./uikit-theme-sea/button/index.js": 30,
+	"./uikit-theme-sea/index.js": 88,
+	"./uikit-theme-sea/input-text/index.js": 41,
+	"./uikit-theme-sea/input-text/indicator/index.js": 42,
+	"./uikit-theme-sea/input-text/indicator/indicator-caption/index.js": 43,
+	"./uikit-theme-sea/input-text/input/index.js": 44,
+	"./uikit-theme-sea/radial-progress/index.js": 108,
+	"./uikit-theme-sea/radial-progress/radial-progress-caption/index.js": 50,
+	"./uikit-theme-sea/slider/index.js": 33,
+	"./uikit-theme-sea/slider/slider-input/index.js": 39,
+	"./uikit-theme-sea/slider/slider-rule/index.js": 40,
+	"./uikit-theme-sea/slider/slider-track/index.js": 34,
+	"./uikit-theme-sea/slider/slider-track/slider-fill/index.js": 35,
+	"./uikit-theme-sea/slider/slider-track/slider-fill/slider-filled/index.js": 36,
+	"./uikit-theme-sea/slider/slider-track/slider-thumb/index.js": 37,
+	"./uikit-theme-sea/slider/slider-track/slider-thumb/slider-upper/index.js": 38,
+	"./uikit-theme-sea/stages/index.js": 45,
+	"./uikit-theme-sea/stages/stages-track/index.js": 46,
+	"./uikit-theme-sea/stages/stages-track/stages-between/index.js": 47,
+	"./uikit-theme-sea/stages/stages-track/stages-stage/index.js": 48,
+	"./uikit-theme-sea/stages/stages-track/stages-stage/stages-caption/index.js": 49,
+	"./uikit-theme-sea/toggle/index.js": 31,
+	"./uikit-theme-sea/toggle/toggle-thumb/index.js": 32
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -10302,10 +10409,8 @@ webpackContext.id = 2;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_thumb_index__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__index_styl__);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(57);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
 /***/ }),
@@ -10314,7 +10419,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
@@ -10324,10 +10429,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(59);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_caption_index__ = __webpack_require__(6);
-
 
 
 /***/ }),
@@ -10336,8 +10439,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(60);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_caption_index__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_effect_index__ = __webpack_require__(5);
+
+
 
 
 /***/ }),
@@ -10346,8 +10453,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_thumb_index__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl__ = __webpack_require__(63);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__index_styl__);
+
 
 
 /***/ }),
@@ -10356,10 +10465,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_thumb_index__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__index_styl__);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
 /***/ }),
@@ -10368,8 +10475,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(64);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_index__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(12);
+
+
 
 
 /***/ }),
@@ -10377,15 +10488,503 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_caption_index__ = __webpack_require__(11);
+
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_track_index__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_input_index__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_rule_index__ = __webpack_require__(20);
+
+
+
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_fill_index__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_thumb_index__ = __webpack_require__(17);
+
+
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(70);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_filled_index__ = __webpack_require__(16);
+
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(72);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_upper_index__ = __webpack_require__(18);
+
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(73);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_track_index__ = __webpack_require__(22);
+
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_between_index__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_stage_index__ = __webpack_require__(24);
+
+
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(78);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(79);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_caption_index__ = __webpack_require__(25);
+
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(80);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(83);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(84);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(85);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(86);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(87);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_caption_index__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_effect_index__ = __webpack_require__(29);
+
+
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_thumb_index__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl__ = __webpack_require__(90);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__index_styl__);
+
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_track_index__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_input_index__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_rule_index__ = __webpack_require__(40);
+
+
+
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(92);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_fill_index__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_thumb_index__ = __webpack_require__(37);
+
+
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(93);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_filled_index__ = __webpack_require__(36);
+
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(94);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_upper_index__ = __webpack_require__(38);
+
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(98);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_index__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(44);
+
+
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_caption_index__ = __webpack_require__(43);
+
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(101);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(102);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(103);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_track_index__ = __webpack_require__(46);
+
+
+
+/***/ }),
+/* 46 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(104);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_between_index__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_stage_index__ = __webpack_require__(48);
+
+
+
+
+/***/ }),
+/* 47 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(105);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(106);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_caption_index__ = __webpack_require__(49);
+
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(107);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 50 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(110);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__ = __webpack_require__(53);
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__["a" /* default */]);
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 53 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_index__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_index__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__radial_progress_index__ = __webpack_require__(47);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__arrow_button_index__ = __webpack_require__(51);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stages_index__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_text_index__ = __webpack_require__(63);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__textarea_index__ = __webpack_require__(71);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__toggle_index__ = __webpack_require__(73);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_index__ = __webpack_require__(111);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_index__ = __webpack_require__(127);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__radial_progress_index__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__arrow_button_index__ = __webpack_require__(137);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stages_index__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_text_index__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__textarea_index__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__toggle_index__ = __webpack_require__(159);
 
 
 
@@ -10410,7 +11009,7 @@ var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* Core */];
 
 
 /***/ }),
-/* 11 */
+/* 54 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10435,11 +11034,11 @@ try {
 module.exports = g;
 
 /***/ }),
-/* 12 */
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json__ = __webpack_require__(56);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__themes_conf_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
 
 
@@ -10455,102 +11054,384 @@ __webpack_require__(2)(`./${base}/index.js`);
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0__themes_conf_json__);
 
 /***/ }),
-/* 13 */
+/* 56 */
 /***/ (function(module, exports) {
 
 module.exports = {"baseTheme":"uikit-theme-aqua","list":["uikit-theme-sea"]}
 
 /***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_index__ = __webpack_require__(3);
-
-
-/***/ }),
-/* 15 */
+/* 57 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 16 */
+/* 58 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 17 */
+/* 59 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_index__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_text_index__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_index__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__arrow_button_index__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__button_index__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stages_index__ = __webpack_require__(21);
+
+
+
+
+
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 73 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 79 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 81 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(82);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indicator_index__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(7);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__radial_progress_caption_index__ = __webpack_require__(26);
 
 
 
 /***/ }),
-/* 18 */
+/* 82 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 19 */
+/* 83 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 20 */
+/* 84 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 21 */
+/* 85 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 22 */
+/* 86 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 88 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_index__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle_index__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__slider_index__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__arrow_button_index__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button_index__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__input_text_index__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stages_index__ = __webpack_require__(45);
+
+
+
+
+
 
 
 /***/ }),
-/* 23 */
+/* 89 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 24 */
+/* 90 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 25 */
+/* 91 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 103 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 106 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 108 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(26);
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(109);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__radial_progress_caption_index__ = __webpack_require__(50);
+
+
+
+/***/ }),
+/* 109 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 110 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 111 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_input_index__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_track_index__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__slider_rule_index__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_input_index__ = __webpack_require__(113);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_track_index__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__slider_rule_index__ = __webpack_require__(125);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10578,9 +11459,10 @@ var Slider = /** @class */ (function (_super) {
     }
     Slider.prototype.initialize = function () {
         var _this = this;
-        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
+        var type = this.element.attr('data-type');
+        this.type = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL;
+        if (type) {
+            this.type = type;
         }
         var middleWare = [];
         var model = new Slider_Model();
@@ -10596,6 +11478,7 @@ var Slider = /** @class */ (function (_super) {
         this.mediator.subscribe('model.maximum', function (modelData) {
             _this.element.attr('maximum', modelData.maximum);
         });
+        this.noRebuild = false;
         this.components = {
             input: new __WEBPACK_IMPORTED_MODULE_2__slider_input_index__["a" /* default */](this.element.find('.uikit-slider-input'), this.mediator, this.type),
             track: new __WEBPACK_IMPORTED_MODULE_3__slider_track_index__["a" /* default */](this.element.find('.uikit-slider-track'), this.mediator, this.type),
@@ -10633,7 +11516,7 @@ var Slider_Model = /** @class */ (function (_super) {
             case 'maximum':
                 return this.data.maximum;
             case 'coordinateSystem':
-                return this.data.coordinateSystem;
+                return this.data.cs;
             default:
                 return undefined;
         }
@@ -10664,17 +11547,17 @@ var Slider_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 26 */
+/* 112 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 27 */
+/* 113 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(114);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10729,21 +11612,21 @@ var Slider_Input = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 28 */
+/* 114 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 29 */
+/* 115 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(30);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(116);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_fill_index__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_thumb_index__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_fill_index__ = __webpack_require__(117);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__slider_thumb_index__ = __webpack_require__(121);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10783,11 +11666,11 @@ var Slider_Track = /** @class */ (function (_super) {
                 var maximum = _this.mediator.getData('model.maximum');
                 var position = 0;
                 var percent = 0;
-                if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+                if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                     position = event.pageX - coordinateSystem.xMin;
                     percent = (100 / (coordinateSystem.width)) * position;
                 }
-                else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                     position = event.pageY - coordinateSystem.yMin;
                     percent = (100 / (coordinateSystem.height)) * position;
                     percent = 100 - percent;
@@ -10811,11 +11694,11 @@ var Slider_Track = /** @class */ (function (_super) {
             var maximum = _this.mediator.getData('model.maximum');
             var position = 0;
             var percent = 0;
-            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 position = event.pageX - coordinateSystem.xMin;
                 percent = (100 / (coordinateSystem.width)) * position;
             }
-            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 position = event.pageY - coordinateSystem.yMin;
                 percent = (100 / (coordinateSystem.height)) * position;
                 percent = 100 - percent;
@@ -10837,20 +11720,20 @@ var Slider_Track = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 30 */
+/* 116 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 31 */
+/* 117 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(118);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_filled_index__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_filled_index__ = __webpack_require__(119);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10883,17 +11766,17 @@ var Slider_Fill = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 32 */
+/* 118 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 33 */
+/* 119 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(120);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -10921,11 +11804,11 @@ var Slider_Filled = /** @class */ (function (_super) {
         var moveFilled = function (position) {
             var percent = 0;
             var coordinateSystem = _this.mediator.getData('model.coordinateSystem');
-            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 percent = (100 / coordinateSystem.width) * position;
                 _this.element.css('width', clamp(percent, 0, 100) + '%');
             }
-            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 percent = (100 / coordinateSystem.height) * position;
                 _this.element.css('height', (clamp(percent, 0, 100)) + '%');
             }
@@ -10937,10 +11820,10 @@ var Slider_Filled = /** @class */ (function (_super) {
             var percent = Math.abs(modelData.value - minimum) / (maximum - minimum);
             percent *= 100;
             var position = 0;
-            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 position = Math.round(((percent * (coordinateSystem.width)) / 100));
             }
-            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 position = Math.round(((percent * (coordinateSystem.height)) / 100));
             }
             moveFilled(position);
@@ -10954,20 +11837,20 @@ var Slider_Filled = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 34 */
+/* 120 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 35 */
+/* 121 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(36);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(122);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_upper_index__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__slider_upper_index__ = __webpack_require__(123);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10985,9 +11868,9 @@ var Slider_Thumb = /** @class */ (function (_super) {
     __extends(Slider_Thumb, _super);
     function Slider_Thumb(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
+        _this.storageIsDrag = false;
+        _this.storageIsHover = false;
         _this.clamp = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Math.clamp;
-        _this.storage['isDrag'] = false;
-        _this.storage['isHover'] = false;
         _this.initialize();
         return _this;
     }
@@ -10997,11 +11880,11 @@ var Slider_Thumb = /** @class */ (function (_super) {
             upper: new __WEBPACK_IMPORTED_MODULE_2__slider_upper_index__["a" /* default */](this.element.find('.uikit-slider-thumb-upper'), this.mediator, this.type),
         };
         this.element.on('mouseenter.uikit.slider.thumb', function () {
-            _this.storage.isHover = true;
+            _this.storageIsHover = true;
             _this.mediator.publish('thumb.hover', true);
         });
         this.element.on('mouseleave.uikit.slider.thumb', function () {
-            _this.storage.isHover = false;
+            _this.storageIsHover = false;
             _this.mediator.publish('thumb.hover', false);
         });
         var mediatorSubscribeModelValue = function (modelData) {
@@ -11009,11 +11892,11 @@ var Slider_Thumb = /** @class */ (function (_super) {
             var minimum = _this.mediator.getData('model.minimum');
             var maximum = _this.mediator.getData('model.maximum');
             var percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
-            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 var position = Math.round(((percent * (coordinateSystem.width)) / 100));
                 _this.moveThumb(position);
             }
-            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 var position = Math.round(((percent * (coordinateSystem.height)) / 100));
                 _this.moveThumb(position);
             }
@@ -11030,10 +11913,10 @@ var Slider_Thumb = /** @class */ (function (_super) {
         var minimum = this.mediator.getData('model.minimum');
         var maximum = this.mediator.getData('model.maximum');
         var percent = 0;
-        if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+        if (this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
             percent = (100 / coordinateSystem.width) * position;
         }
-        else if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+        else if (this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
             percent = (100 / coordinateSystem.height) * position;
             percent = 100 - percent;
         }
@@ -11043,14 +11926,14 @@ var Slider_Thumb = /** @class */ (function (_super) {
     Slider_Thumb.prototype.moveThumb = function (position) {
         if (position >= 0) {
             var coordinateSystem = this.mediator.getData('model.coordinateSystem');
-            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 var percent = (100 / coordinateSystem.width) * (position);
                 var maximum = (100 / coordinateSystem.xMax) *
                     (coordinateSystem.xMax - (this.element.width() / 2));
                 var minimum = (100 / coordinateSystem.width) * this.element.width();
                 this.element.css('left', this.clamp(percent, -minimum, maximum) + '%');
             }
-            else if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 var percent = (100 / coordinateSystem.height) * (position);
                 var maximum = (100 / coordinateSystem.yMax) *
                     (coordinateSystem.yMax + (this.element.width()));
@@ -11061,17 +11944,17 @@ var Slider_Thumb = /** @class */ (function (_super) {
     };
     Slider_Thumb.prototype.startDrag = function () {
         var _this = this;
-        this.storage.isDrag = true;
+        this.storageIsDrag = true;
         var coordinateSystem = this.mediator.getData('model.coordinateSystem');
         var documentMousemove = function (event) {
-            if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 var position = event.pageX - coordinateSystem.xMin;
                 var value = _this.calculateValue(position);
                 if (value !== _this.mediator.getData('model.value')) {
                     _this.mediator.setData('model.value', value);
                 }
             }
-            else if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 var position = event.pageY - coordinateSystem.yMin;
                 var value = _this.calculateValue(position);
                 if (value !== _this.mediator.getData('model.value')) {
@@ -11083,7 +11966,7 @@ var Slider_Thumb = /** @class */ (function (_super) {
         var documentMouseup = function () {
             $(document).off('mousemove.uikit.slider.thumb');
             $(document).off('mouseup.uikit.slider.thumb');
-            _this.storage.isDrag = false;
+            _this.storageIsDrag = false;
         };
         $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
     };
@@ -11094,17 +11977,17 @@ var Slider_Thumb = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 36 */
+/* 122 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 37 */
+/* 123 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(124);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11121,8 +12004,8 @@ var __extends = (this && this.__extends) || (function () {
 
 var Slider_Upper = /** @class */ (function (_super) {
     __extends(Slider_Upper, _super);
-    function Slider_Upper(dom, mediator, type) {
-        var _this = _super.call(this, dom, mediator, type) || this;
+    function Slider_Upper(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
@@ -11160,17 +12043,17 @@ var Slider_Upper = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 38 */
+/* 124 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 39 */
+/* 125 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(40);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(126);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11189,13 +12072,14 @@ var Slider_Rule = /** @class */ (function (_super) {
     __extends(Slider_Rule, _super);
     function Slider_Rule(element, mediator, type) {
         var _this = _super.call(this, element, mediator, type) || this;
-        _this.storage['segments'] = _this.element.attr('segments');
+        _this.storageSegments = 0;
+        _this.storageSegments = Number(_this.element.attr('segments'));
         _this.initialize();
-        if (_this.storage.segments !== 0) {
+        if (_this.storageSegments !== 0) {
             var values = _this.getValues();
             if (values) {
                 var isHorizontal = true;
-                if (_this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+                if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                     isHorizontal = false;
                 }
                 _this.build(values, isHorizontal);
@@ -11207,13 +12091,13 @@ var Slider_Rule = /** @class */ (function (_super) {
         _super.prototype.initialize.call(this);
     };
     Slider_Rule.prototype.getValues = function () {
-        if (this.storage.segments > 0) {
+        if (this.storageSegments > 0) {
             var minimum = this.mediator.getData('model.minimum');
             var maximum = this.mediator.getData('model.maximum');
-            var crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storage.segments - 1));
+            var crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storageSegments - 1));
             var values = [];
             var buf = minimum;
-            for (var i = 0; i < this.storage.segments; i += 1) {
+            for (var i = 0; i < this.storageSegments; i += 1) {
                 values.push(Math.round(buf));
                 buf += crat;
             }
@@ -11267,6 +12151,7 @@ var Slider_Rule = /** @class */ (function (_super) {
                 _this.mediator.setData('model.value', value);
             });
         };
+        divs.map(divEach);
     };
     return Slider_Rule;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
@@ -11275,21 +12160,21 @@ var Slider_Rule = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 40 */
+/* 126 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 41 */
+/* 127 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(128);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_caption_index__ = __webpack_require__(43);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button_effect_index__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_caption_index__ = __webpack_require__(129);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button_effect_index__ = __webpack_require__(131);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11316,8 +12201,8 @@ var Button = /** @class */ (function (_super) {
         var model = new Button_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         this.components = {
-            caption: new __WEBPACK_IMPORTED_MODULE_2__button_caption_index__["a" /* default */](this.element.find('.uikit-button-caption'), this.mediator),
-            effect: new __WEBPACK_IMPORTED_MODULE_3__button_effect_index__["a" /* default */](this.element.find('.uikit-button-effect'), this.mediator),
+            caption: new __WEBPACK_IMPORTED_MODULE_2__button_caption_index__["a" /* default */](this.element.find('.uikit-button-caption'), this.mediator, this.type),
+            effect: new __WEBPACK_IMPORTED_MODULE_3__button_effect_index__["a" /* default */](this.element.find('.uikit-button-effect'), this.mediator, this.type),
         };
         this.element.on('click', function (event) {
             _this.mediator.publish('button.click', event);
@@ -11329,7 +12214,7 @@ var Button = /** @class */ (function (_super) {
         this.element.on('mouseleave', function () {
             _this.mediator.publish('button.hover', false);
         });
-        this.caption = this.element.attr('caption');
+        this.caption = this.element.attr('data-caption');
         _super.prototype.initialize.call(this);
     };
     Object.defineProperty(Button.prototype, "caption", {
@@ -11352,17 +12237,17 @@ var Button_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 42 */
+/* 128 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 43 */
+/* 129 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(130);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11379,8 +12264,8 @@ var __extends = (this && this.__extends) || (function () {
 
 var Button_Caption = /** @class */ (function (_super) {
     __extends(Button_Caption, _super);
-    function Button_Caption(element, mediator) {
-        var _this = _super.call(this, element, mediator) || this;
+    function Button_Caption(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
@@ -11397,17 +12282,17 @@ var Button_Caption = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 44 */
+/* 130 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 45 */
+/* 131 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(46);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(132);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11424,8 +12309,8 @@ var __extends = (this && this.__extends) || (function () {
 
 var Button_Effect = /** @class */ (function (_super) {
     __extends(Button_Effect, _super);
-    function Button_Effect(element, mediator) {
-        var _this = _super.call(this, element, mediator) || this;
+    function Button_Effect(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
@@ -11454,20 +12339,20 @@ var Button_Effect = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 46 */
+/* 132 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 47 */
+/* 133 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(134);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__ = __webpack_require__(135);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11495,19 +12380,19 @@ var RadialProgress = /** @class */ (function (_super) {
         var _this = this;
         var model = new RadialProgress_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
-        this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
-        this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+        this.mediator.setData('model.minimum', Number(this.element.attr('data-minimum')));
+        this.mediator.setData('model.maximum', Number(this.element.attr('data-maximum')));
         this.mediator.subscribe('model.value', function (modelData) {
-            _this.element.attr('value', modelData.value);
+            _this.element.attr('data-value', modelData.value);
         });
         this.mediator.subscribe('model.minimum', function (modelData) {
-            _this.element.attr('minimum', modelData.minimum);
+            _this.element.attr('data-minimum', modelData.minimum);
         });
         this.mediator.subscribe('model.maximum', function (modelData) {
-            _this.element.attr('maximum', modelData.maximum);
+            _this.element.attr('data-maximum', modelData.maximum);
         });
         this.components = {
-            caption: new __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.mediator),
+            caption: new __WEBPACK_IMPORTED_MODULE_2__radial_progress_caption_index__["a" /* default */](this.element.find('.uikit-radial-progress-caption'), this.mediator, this.type),
         };
         var mediatorSubscribeModelValue = function (modelData) {
             var itemRight = _this.element.find('.progress-right');
@@ -11531,7 +12416,7 @@ var RadialProgress = /** @class */ (function (_super) {
         this.element.on('selectstart', function () {
             return false;
         });
-        this.value = Number(this.element.attr('value'));
+        this.value = Number(this.element.attr('data-value'));
         _super.prototype.initialize.call(this);
     };
     Object.defineProperty(RadialProgress.prototype, "value", {
@@ -11589,17 +12474,17 @@ var RadialProgress_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 48 */
+/* 134 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 49 */
+/* 135 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(50);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(136);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11616,8 +12501,8 @@ var __extends = (this && this.__extends) || (function () {
 
 var RadialProgress_Caption = /** @class */ (function (_super) {
     __extends(RadialProgress_Caption, _super);
-    function RadialProgress_Caption(dom, mediator) {
-        var _this = _super.call(this, dom, mediator) || this;
+    function RadialProgress_Caption(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
@@ -11629,7 +12514,7 @@ var RadialProgress_Caption = /** @class */ (function (_super) {
         this.mediator.subscribe('model.value', function (modelData) {
             print(modelData.value);
         });
-        this.initialize();
+        _super.prototype.initialize.call(this);
     };
     return RadialProgress_Caption;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
@@ -11637,17 +12522,17 @@ var RadialProgress_Caption = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 50 */
+/* 136 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 51 */
+/* 137 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(52);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(138);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -11666,31 +12551,50 @@ var ArrowButton = /** @class */ (function (_super) {
     __extends(ArrowButton, _super);
     function ArrowButton(element) {
         var _this = _super.call(this, element) || this;
+        _this.clickCallbacks = [];
         _this.initialize();
         return _this;
     }
     ArrowButton.prototype.initialize = function () {
         var _this = this;
         // применение типа отложено до инициализации (super.initialize())
-        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_LEFT];
-        if (this.element.attr('data-type').toLowerCase() === 'right') {
-            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_RIGHT];
+        this.type = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.LEFT;
+        var type = this.element.attr('data-type');
+        if (type) {
+            this.type = type;
         }
         var model = new ArrowButton_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
-        var midiatorElementType = function (type) {
-            if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_LEFT) > -1) {
-                _this.element.removeClass('right');
-                _this.element.addClass('left');
+        /*
+                const midiatorElementType = () => {
+                    if (this.type === UIKit.Core.Types.LEFT) {
+                        // remove - Так как стоит noRebuild === true
+                        this.element.removeClass(UIKit.Core.Types.RIGHT);
+                        this.element.addClass(UIKit.Core.Types.LEFT);
+        
+                    } else if (this.type === UIKit.Core.Types.RIGHT) {
+        
+                        this.element.removeClass(UIKit.Core.Types.LEFT);
+                        this.element.addClass(UIKit.Core.Types.RIGHT);
+                    }
+                };
+                this.mediator.subscribe('element.type', midiatorElementType);*/
+        this.element.on('click.uikit.arrow-button.custom', function (event) {
+            if (_this.enabled) {
+                _this.clickCallbacks.map(function (item) {
+                    item(event);
+                });
             }
-            else if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.DIRECTION_RIGHT) > -1) {
-                _this.element.removeClass('left');
-                _this.element.addClass('right');
-            }
-        };
-        this.mediator.subscribe('element.type', midiatorElementType);
+        });
         _super.prototype.initialize.call(this);
     };
+    Object.defineProperty(ArrowButton.prototype, "click", {
+        set: function (foo) {
+            this.clickCallbacks.push(foo);
+        },
+        enumerable: true,
+        configurable: true
+    });
     return ArrowButton;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
 var ArrowButton_Model = /** @class */ (function (_super) {
@@ -11704,20 +12608,20 @@ var ArrowButton_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 52 */
+/* 138 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 53 */
+/* 139 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(140);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_track_index__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_track_index__ = __webpack_require__(141);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -11735,6 +12639,7 @@ var Stages = /** @class */ (function (_super) {
     __extends(Stages, _super);
     function Stages(element) {
         var _this = _super.call(this, element) || this;
+        _this.storageInvert = false;
         if (!_this.element.hasClass('uikit-stages')) {
             throw new ReferenceError('Элемент не является stages');
         }
@@ -11743,25 +12648,22 @@ var Stages = /** @class */ (function (_super) {
     }
     Stages.prototype.initialize = function () {
         var _this = this;
-        this.storage = {
-            invert: false,
-        };
-        if (this.element.attr('invert') !== undefined) {
-            if (this.element.attr('invert') !== '') {
-                var isTrueSet = (this.element.attr('invert') === 'true');
-                if (isTrueSet) {
-                    this.storage.invert = true;
-                }
-            }
+        this.type = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL;
+        var type = this.element.attr('data-type');
+        if (type) {
+            this.type = type;
         }
-        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
+        this.storageInvert = (this.element.attr('data-invert') === 'true');
+        if (this.storageInvert) {
+            this.element.addClass('invert');
+        }
+        else {
+            this.element.removeClass('invert');
         }
         var model = new Stages_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
-        var stages = Number(this.element.attr('stages'));
-        var stage = Number(this.element.attr('stage'));
+        var stages = Number(this.element.attr('data-stages'));
+        var stage = Number(this.element.attr('data-stage'));
         this.mediator.setData('model.stages', stages);
         if (stage < 1) {
             stage = 1;
@@ -11770,16 +12672,22 @@ var Stages = /** @class */ (function (_super) {
             stage = stages;
         }
         var mediatorSubscribeModelStage = function (modelData) {
-            _this.element.attr('stage', modelData.stage);
+            _this.element.attr('data-stage', modelData.stage);
         };
         var mediatorSubscribeModelStages = function (modelData) {
-            _this.element.attr('stage', modelData.stage);
+            _this.element.attr('data-stage', modelData.stage);
         };
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
         this.mediator.subscribe('model.stages', mediatorSubscribeModelStages);
         this.components = {
-            track: new __WEBPACK_IMPORTED_MODULE_2__stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.type, this.invert),
+            track: new __WEBPACK_IMPORTED_MODULE_2__stages_track_index__["a" /* default */](this.element.find('.uikit-stages-track'), this.mediator, this.type, this.storageInvert),
         };
+        this.noRebuild = false;
+        var mediatorStagesInvertDirection = function () {
+            _this.element.attr('data-invert', "" + !_this.storageInvert);
+            _this.rebuild();
+        };
+        this.mediator.subscribe('stages.invertDirection', mediatorStagesInvertDirection);
         setTimeout(function () {
             _this.mediator.setData('model.stage', stage);
         }, 0);
@@ -11801,19 +12709,9 @@ var Stages = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Stages.prototype, "invert", {
-        get: function () {
-            return this.storage.invert;
-        },
-        set: function (value) {
-            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
-                this.storage.invert = value;
-                this.rebuild();
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
+    Stages.prototype.invertDirection = function () {
+        this.mediator.publish('stages.invertDirection');
+    };
     return Stages;
 }(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
 var Stages_Model = /** @class */ (function (_super) {
@@ -11856,20 +12754,20 @@ var Stages_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 54 */
+/* 140 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 55 */
+/* 141 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(56);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(142);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_stage_index__ = __webpack_require__(57);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_between_index__ = __webpack_require__(61);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stages_stage_index__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stages_between_index__ = __webpack_require__(147);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -11887,28 +12785,17 @@ var __extends = (this && this.__extends) || (function () {
 
 var Stages_Track = /** @class */ (function (_super) {
     __extends(Stages_Track, _super);
-    function Stages_Track(element, mediator, type, invert) {
+    function Stages_Track(element, mediator, type, storageInvert) {
         var _this = _super.call(this, element, mediator, type) || this;
-        _this.storage['invert'] = invert;
+        _this.storageInvert = storageInvert;
         _this.initialize();
         return _this;
     }
     Stages_Track.prototype.initialize = function () {
         var _this = this;
-        if (this.storage.invert === true) {
-            if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
-                var addClassInvert = function () {
-                    _this.element.addClass('invert');
-                };
-                setTimeout(addClassInvert, 0);
-            }
-        }
-        // базовый
-        var typeClass = 'horizontal';
         var orientation = ['width', 'left'];
-        if (this.type.indexOf(__WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+        if (this.type === __WEBPACK_IMPORTED_MODULE_3__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
             orientation = ['height', 'top'];
-            typeClass = 'vertical';
         }
         var stages = this.mediator.getData('model.stages');
         var percent = 100 / (stages - 1);
@@ -11916,7 +12803,6 @@ var Stages_Track = /** @class */ (function (_super) {
         var captionDom = $('<div>').addClass('uikit-stage-caption');
         var betweenDom = $('<div>')
             .addClass('uikit-stages-between')
-            .addClass(typeClass)
             .css(orientation[0], percent + '%');
         var shift = 0;
         for (var i = 1; i <= stages - 1; i += 1) {
@@ -11932,9 +12818,8 @@ var Stages_Track = /** @class */ (function (_super) {
         }
         var mediatorSubscribeModelStageCallback = function (modelData) {
             var betweens = _this.element.find('.uikit-stages-between');
-            if (_this.storage.invert) {
+            if (_this.storageInvert) {
                 betweens = $(betweens.get().reverse());
-                console.log(betweens);
             }
             var betweensEachMap = function (item, i) {
                 if (i < (modelData.stage - 1)) {
@@ -11965,71 +12850,71 @@ var Stages_Track = /** @class */ (function (_super) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 56 */
+/* 142 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 57 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(144);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stage_caption_index__ = __webpack_require__(59);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stage_caption_index__ = __webpack_require__(145);
 
 
 
 
 /***/ }),
-/* 58 */
+/* 144 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 59 */
+/* 145 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-
-
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 61 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(62);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(146);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 
 
 
 /***/ }),
-/* 62 */
+/* 146 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 63 */
+/* 147 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(64);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+
+
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 149 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(150);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(65);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__indicator_index__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_index__ = __webpack_require__(151);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__indicator_index__ = __webpack_require__(153);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12058,10 +12943,10 @@ var InputText = /** @class */ (function (_super) {
         var model = new InputText_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         this.components = {
-            input: new __WEBPACK_IMPORTED_MODULE_2__input_index__["a" /* default */](this.element.find('input'), this.mediator),
-            indicator: new __WEBPACK_IMPORTED_MODULE_3__indicator_index__["a" /* default */](this.element.find('.uikit-indicator'), this.mediator),
+            input: new __WEBPACK_IMPORTED_MODULE_2__input_index__["a" /* default */](this.element.find('input'), this.mediator, this.type),
+            indicator: new __WEBPACK_IMPORTED_MODULE_3__indicator_index__["a" /* default */](this.element.find('.uikit-indicator'), this.mediator, this.type),
         };
-        if (this.element.attr('indicator') === 'true') {
+        if (this.element.attr('data-indicator') === 'true') {
             this.indicator.enabled = true;
         }
         else {
@@ -12083,8 +12968,10 @@ var InputText = /** @class */ (function (_super) {
     Object.defineProperty(InputText.prototype, "indicator", {
         get: function () {
             var mediator = this.mediator;
+            var element = this.element;
             return {
                 set enabled(value) {
+                    element.attr('data-indicator', "" + value);
                     mediator.publish('indicator.enabled', value);
                 },
                 set status(value) {
@@ -12130,17 +13017,17 @@ var InputText_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 64 */
+/* 150 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 65 */
+/* 151 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(66);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12157,21 +13044,19 @@ var __extends = (this && this.__extends) || (function () {
 
 var InputText_Input = /** @class */ (function (_super) {
     __extends(InputText_Input, _super);
-    function InputText_Input(element, mediator) {
-        var _this = _super.call(this, element, mediator) || this;
+    function InputText_Input(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.storageCaption = '';
         _this.initialize();
         return _this;
     }
     InputText_Input.prototype.initialize = function () {
         var _this = this;
-        this.storage = {
-            caption: '',
-        };
-        this.storage.caption = this.element.attr('caption');
+        this.storageCaption = this.element.attr('caption');
         var focusInCallback = function () {
             var value = _this.element.val();
             if (typeof value === 'string') {
-                if (value === _this.storage.caption) {
+                if (value === _this.storageCaption) {
                     _this.element.val('');
                 }
             }
@@ -12181,7 +13066,7 @@ var InputText_Input = /** @class */ (function (_super) {
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    _this.element.val(_this.storage.caption);
+                    _this.element.val(_this.storageCaption);
                 }
             }
         };
@@ -12201,20 +13086,20 @@ var InputText_Input = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 66 */
+/* 152 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 67 */
+/* 153 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(68);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(154);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__ = __webpack_require__(155);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12230,22 +13115,22 @@ var __extends = (this && this.__extends) || (function () {
 
 var InputText_Indicator = /** @class */ (function (_super) {
     __extends(InputText_Indicator, _super);
-    function InputText_Indicator(element, mediator) {
-        var _this = _super.call(this, element, mediator) || this;
+    function InputText_Indicator(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
     InputText_Indicator.prototype.initialize = function () {
         var _this = this;
         this.components = {
-            caption: new __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.mediator),
+            caption: new __WEBPACK_IMPORTED_MODULE_2__indicator_caption_index__["a" /* default */](this.element.find('.uikit-indicator-caption'), this.mediator, this.type),
         };
         var meditorSubscribeIndicatorStatus = function (value) {
             if (value) {
-                _this.element.addClass('indicator-ok');
+                _this.element.addClass('status-ok');
             }
             else {
-                _this.element.removeClass('indicator-ok');
+                _this.element.removeClass('status-ok');
             }
         };
         var meditorSubscribeIndicatorEnabled = function (value) {
@@ -12270,17 +13155,17 @@ var InputText_Indicator = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 68 */
+/* 154 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 69 */
+/* 155 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(70);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(156);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12297,8 +13182,8 @@ var __extends = (this && this.__extends) || (function () {
 
 var InputText_Caption = /** @class */ (function (_super) {
     __extends(InputText_Caption, _super);
-    function InputText_Caption(element, mediator) {
-        var _this = _super.call(this, element, mediator) || this;
+    function InputText_Caption(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
         _this.initialize();
         return _this;
     }
@@ -12321,17 +13206,17 @@ var InputText_Caption = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 70 */
+/* 156 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 71 */
+/* 157 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(72);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12350,6 +13235,7 @@ var Textarea = /** @class */ (function (_super) {
     __extends(Textarea, _super);
     function Textarea(element) {
         var _this = _super.call(this, element) || this;
+        _this.storageCaption = '';
         if (!_this.element.hasClass('uikit-textarea')) {
             throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
         }
@@ -12358,13 +13244,13 @@ var Textarea = /** @class */ (function (_super) {
     }
     Textarea.prototype.initialize = function () {
         var _this = this;
-        this.caption = this.element.attr('caption');
+        this.storageCaption = this.element.attr('caption');
         var model = new Textarea_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
         var focusInCallback = function () {
             var value = _this.element.val();
             if (typeof value === 'string') {
-                if (value === _this.caption) {
+                if (value === _this.storageCaption) {
                     _this.element.val('');
                 }
             }
@@ -12374,7 +13260,7 @@ var Textarea = /** @class */ (function (_super) {
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    _this.element.val(_this.caption);
+                    _this.element.val(_this.storageCaption);
                 }
             }
         };
@@ -12425,20 +13311,20 @@ var Textarea_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 72 */
+/* 158 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 73 */
+/* 159 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(74);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(160);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__toggle_thumb_index__ = __webpack_require__(75);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__toggle_thumb_index__ = __webpack_require__(161);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12464,9 +13350,10 @@ var Toggle = /** @class */ (function (_super) {
     }
     Toggle.prototype.initialize = function () {
         var _this = this;
-        this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL];
+        this.type = __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL;
+        var type = this.element.attr('data-type');
+        if (type) {
+            this.type = type;
         }
         var model = new Toggle_Model();
         this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
@@ -12492,12 +13379,12 @@ var Toggle = /** @class */ (function (_super) {
         this.element.on('click', function () {
             _this.checked = !_this.checked;
         });
-        var mediatorElementType = function (type) {
-            if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_HORIZONTAL) > -1) {
+        var mediatorElementType = function () {
+            if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.HORIZONTAL) {
                 _this.element.removeClass('vertical');
                 _this.element.addClass('horizontal');
             }
-            else if (type.indexOf(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.ORIENTATION_VERTICAL) > -1) {
+            else if (_this.type === __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Types.VERTICAL) {
                 _this.element.removeClass('horizontal');
                 _this.element.addClass('vertical');
             }
@@ -12555,17 +13442,17 @@ var Toggle_Model = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 74 */
+/* 160 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 75 */
+/* 161 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(76);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(162);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
 var __extends = (this && this.__extends) || (function () {
@@ -12604,43 +13491,23 @@ var Toggle_Thumb = /** @class */ (function (_super) {
 
 
 /***/ }),
-/* 76 */
+/* 162 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 77 */
+/* 163 */,
+/* 164 */,
+/* 165 */,
+/* 166 */,
+/* 167 */,
+/* 168 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(78);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__ = __webpack_require__(10);
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_1__uikit_bundle_ts__["a" /* default */]);
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index__ = __webpack_require__(77);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index__ = __webpack_require__(51);
 
 
 const inputs = [];
@@ -12659,6 +13526,21 @@ $('#checkbox-id-1').on('change', event => {
     } else {
         inputs[inputs.length - 1].indicator.enabled = false;
     }
+});
+
+const select = $('#styles-id');
+
+__WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.ThemeController.getAll().map(theme => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme
+    });
+    select.append(option);
+    return theme;
+});
+
+select.on('change', () => {
+    __WEBPACK_IMPORTED_MODULE_0__index__["default"].Core.ThemeController.changeTheme(select.val());
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 

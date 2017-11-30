@@ -17,3 +17,18 @@ $('#checkbox-id-1').on('change', (event) => {
         inputs[inputs.length - 1].indicator.enabled = false;
     }
 });
+
+const select = $('#styles-id');
+
+UIKit.Core.ThemeController.getAll().map((theme) => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme,
+    });
+    select.append(option);
+    return theme;
+});
+
+select.on('change', () => {
+    UIKit.Core.ThemeController.changeTheme(select.val());
+});

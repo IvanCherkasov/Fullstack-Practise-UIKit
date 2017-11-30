@@ -1,32 +1,25 @@
 .uikit-slider-thumb
-	position absolute
-	height inherit
-	left 0
-	display flex
-	justify-content center
-	top 0
-	bottom 0
+    position absolute
+    height inherit
+    left 0
+    display flex
+    justify-content center
+    top 0
+    bottom 0
 
-	.circle
-		position absolute
-		width 21px
-		height 21px
-		background-color var(--color-1)
-		border-radius 50%
-		left -10.5px
-				
-.uikit-slider-thumb.horizontal
-	top 0
-	bottom 0
-	height inherit
-	width 0
-	
-.uikit-slider-thumb.vertical
-	left 0
-	right 0
-	width inherit
-	height 0
+    .circle
+        position absolute
 
-	.circle
-		left 0
-		top -10.5px
+.uikit-slider.horizontal
+    .uikit-slider-thumb
+        top 0
+        bottom 0
+        height inherit
+        width 0
+
+.uikit-slider.vertical
+    .uikit-slider-thumb
+        left 0
+        right 0
+        width inherit
+        height 0

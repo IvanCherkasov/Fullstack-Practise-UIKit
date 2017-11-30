@@ -6,30 +6,31 @@
     <title>UIKit - Input-text</title>
   <link href="../style.css" rel="stylesheet"></head>
   <body>
-    <div><a href="../">Back</a></div><br>
+    <div><a href="../">Back</a></div><br><span>styles</span>
+    <select id="styles-id"></select><br>
     <div style="width: 100px;">
       <input class="uikit-input-text" type="text">
     </div><br>
     <div style="width: 400px;">
-      <div class="uikit uikit-input-text" indicator="true">
+      <div class="uikit uikit-input-text" data-indicator="true">
         <input value="Email address..." caption="Email address...">
-        <div class="uikit-indicator">
+        <div class="uikit-indicator" data-enabled="false">
           <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
         </div>
       </div>
     </div><br>
     <div style="width: 400px;">
-      <div class="uikit uikit-input-text" indicator="true">
+      <div class="uikit uikit-input-text" data-indicator="true">
         <input value="Email address..." caption="Email address...">
-        <div class="uikit-indicator">
+        <div class="uikit-indicator" data-enabled="false">
           <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
         </div>
       </div>
     </div><br>
     <div style="width: 400px;">
-      <div class="uikit uikit-input-text" indicator="false">
+      <div class="uikit uikit-input-text" data-indicator="false">
         <input value="Email address..." caption="Email address...">
-        <div class="uikit-indicator disabled">
+        <div class="uikit-indicator" data-enabled="true">
           <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
         </div>
       </div>

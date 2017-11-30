@@ -14,7 +14,7 @@ class Slider extends UIKit.Core.Element {
 
     private components: IComponents;
 
-    constructor(element) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-slider')) {
             throw new ReferenceError('Элемент не является слайдером');
@@ -24,9 +24,10 @@ class Slider extends UIKit.Core.Element {
 
     protected initialize(): void {
 
-        this.type = [UIKit.Core.Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [UIKit.Core.Types.ORIENTATION_VERTICAL];
+        const type: string = this.element.attr('data-type');
+        this.type = UIKit.Core.Types.HORIZONTAL;
+        if (type) {
+            this.type = type;
         }
 
         const middleWare = [];
@@ -47,6 +48,7 @@ class Slider extends UIKit.Core.Element {
             this.element.attr('maximum', modelData.maximum);
         });
 
+        this.noRebuild = false;
 
         this.components = {
             input: new Slider_Input(
@@ -104,7 +106,7 @@ class Slider_Model extends UIKit.Core.Model {
             case 'maximum':
                 return this.data.maximum;
             case 'coordinateSystem':
-                return this.data.coordinateSystem;
+                return this.data.cs;
             default:
                 return undefined;
         }

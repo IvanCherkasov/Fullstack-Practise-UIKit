@@ -3,21 +3,20 @@ import * as UIKit from '../../uikit-core/index';
 
 class InputText_Input extends UIKit.Core.Component {
 
-    constructor(element, mediator) {
-        super(element, mediator);
+    private storageCaption: string = '';
+
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
+        super(element, mediator, type);
         this.initialize();
     }
 
     protected initialize() {
-        this.storage = {
-            caption: '',
-        };
-        this.storage.caption = this.element.attr('caption');
+        this.storageCaption = this.element.attr('caption');
 
         const focusInCallback = () => {
             const value = this.element.val();
             if (typeof value === 'string') {
-                if (value === this.storage.caption) {
+                if (value === this.storageCaption) {
                     this.element.val('');
                 }
             }
@@ -28,7 +27,7 @@ class InputText_Input extends UIKit.Core.Component {
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    this.element.val(this.storage.caption);
+                    this.element.val(this.storageCaption);
                 }
             }
         };

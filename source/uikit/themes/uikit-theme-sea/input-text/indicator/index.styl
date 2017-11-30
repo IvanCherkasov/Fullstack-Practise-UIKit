@@ -1,0 +1,30 @@
+.uikit-theme-sea
+    .uikit
+        &.uikit-input-text
+            .uikit-indicator
+                height 28px
+                border-radius 3px
+                min-width 76px
+                margin-left 10px
+
+            .uikit-indicator.status-ok
+                background-color #1dc47c
+
+            .uikit-indicator:not(.status-ok)
+                background-color #c22a18
+
+            .uikit-indicator::before
+                width 7px
+                height 7px
+                border-radius 0 0 2px 0
+                transform rotate(135deg)
+                bottom 0
+                top 0
+                left -3px
+                margin auto
+
+            .uikit-indicator:not(.status-ok)::before
+                background-color #c22a18
+
+            .uikit-indicator.status-ok::before
+                background-color #1dc47c

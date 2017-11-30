@@ -2,8 +2,8 @@ import './index.styl';
 import * as UIKit from '../../uikit-core/index';
 
 class RadialProgress_Caption extends UIKit.Core.Component {
-    constructor(dom, mediator) {
-        super(dom, mediator);
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
+        super(element, mediator, type);
         this.initialize();
     }
 
@@ -16,7 +16,7 @@ class RadialProgress_Caption extends UIKit.Core.Component {
             print(modelData.value);
         });
 
-        this.initialize();
+        super.initialize();
     }
 }
 

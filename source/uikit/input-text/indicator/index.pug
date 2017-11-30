@@ -1,5 +1,5 @@
 include ./indicator-caption/index.pug
 
 mixin addUIKitInputText_Indicator(enabled, okText, errorText)
-	div.uikit-indicator(class=!enabled ? "disabled" : "")
+	div.uikit-indicator(data-enabled=!enabled ? "true" : "false")
 		+addUIKitInputText_Caption(okText, errorText)

@@ -1,30 +1,30 @@
-import UIKit from '../../index.js'
-var UIKitSlider = UIKit.Core.UIKitSlider;
+import UIKit from '../../index';
 
-var sliderHor 	 = 	new UIKitSlider($('#uikit-slider-id'));
-var sliderHorhor = 	new UIKitSlider($('#uikit-slider-id-hor'));
-var sliderVer 	 = 	new UIKitSlider($('#uikit-slider-id-vertical'));
-var sliderVerT 	 = 	new UIKitSlider($('#uikit-slider-id-verticalt'));
-var sliderVerTh  = 	new UIKitSlider($('#uikit-slider-id-verticalth'));
-var select = $('#slider-styles-id');
+const sliderHor = new UIKit.Slider($('#uikit-slider-id'));
+const sliderHorhor = new UIKit.Slider($('#uikit-slider-id-hor'));
+const sliderVer = new UIKit.Slider($('#uikit-slider-id-vertical'));
+const sliderVerT = new UIKit.Slider($('#uikit-slider-id-verticalt'));
+const sliderVerTh = new UIKit.Slider($('#uikit-slider-id-verticalth'));
 
-$('#slider-change-btn-id').on('click', function(){
-	if (sliderVer.type === 'horizontal'){
-		sliderVer.type = 'vertical';
-	} else if (sliderVer.type === 'vertical'){
-		sliderVer.type = 'horizontal';
-	}
+const select = $('#slider-styles-id');
+
+UIKit.Core.ThemeController.getAll().map((theme) => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme,
+    });
+    select.append(option);
+    return theme;
 });
 
-UIKit.styles.forEach(function(item){
-	select.append($('<option>', { 
-        value: item,
-        text : item 
-    }));
+select.on('change', () => {
+    UIKit.Core.ThemeController.changeTheme(select.val());
 });
 
-select.on('change', function(){
-	UIKit.style = select.val();
+$('#slider-change-btn-id').click(() => {
+    if (sliderVer.type === UIKit.Core.Types.HORIZONTAL) {
+        sliderVer.type = UIKit.Core.Types.VERTICAL;
+    } else if (sliderVer.type === UIKit.Core.Types.VERTICAL) {
+        sliderVer.type = UIKit.Core.Types.HORIZONTAL;
+    }
 });
-
-sliderHorhor.style = 'uikit-style-lightred';

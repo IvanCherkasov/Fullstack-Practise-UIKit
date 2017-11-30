@@ -3,9 +3,9 @@ import * as UIKit from '../uikit-core/index';
 
 class Textarea extends UIKit.Core.Element {
 
-    private caption: string;
+    private storageCaption: string = '';
 
-    constructor(element: any) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-textarea')) {
             throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
@@ -14,14 +14,14 @@ class Textarea extends UIKit.Core.Element {
     }
 
     protected initialize() {
-        this.caption = this.element.attr('caption');
+        this.storageCaption = this.element.attr('caption');
         const model = new Textarea_Model();
         this.mediator = new UIKit.Core.Mediator(model);
 
         const focusInCallback = () => {
             const value = this.element.val();
             if (typeof value === 'string') {
-                if (value === this.caption) {
+                if (value === this.storageCaption) {
                 this.element.val('');
                 }
             }
@@ -32,7 +32,7 @@ class Textarea extends UIKit.Core.Element {
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    this.element.val(this.caption);
+                    this.element.val(this.storageCaption);
                 }
             }
         };

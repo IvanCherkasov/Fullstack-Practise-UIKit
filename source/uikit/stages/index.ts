@@ -8,9 +8,10 @@ interface IComponents {
 
 class Stages extends UIKit.Core.Element {
 
+    private storageInvert: boolean = false;
     private components: IComponents;
 
-    constructor(element) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-stages')) {
             throw new ReferenceError('Элемент не является stages');
@@ -19,28 +20,24 @@ class Stages extends UIKit.Core.Element {
     }
 
     protected initialize(): void {
-        this.storage = {
-            invert: false,
-        };
 
-        if (this.element.attr('invert') !== undefined) {
-            if (this.element.attr('invert') !== '') {
-                const isTrueSet = (this.element.attr('invert') === 'true');
-                if (isTrueSet) {
-                    this.storage.invert = true;
-                }
-            }
+        this.type = UIKit.Core.Types.HORIZONTAL;
+        const type: string = this.element.attr('data-type');
+        if (type) {
+            this.type = type;
         }
 
-        this.type = [UIKit.Core.Types.ORIENTATION_HORIZONTAL];
-        if (this.element.attr('data-type').toLowerCase() === 'vertical') {
-            this.type = [UIKit.Core.Types.ORIENTATION_VERTICAL];
+        this.storageInvert = (this.element.attr('data-invert') === 'true');
+        if (this.storageInvert) {
+            this.element.addClass('invert');
+        } else {
+            this.element.removeClass('invert');
         }
 
         const model = new Stages_Model();
         this.mediator = new UIKit.Core.Mediator(model);
-        const stages = Number(this.element.attr('stages'));
-        let stage = Number(this.element.attr('stage'));
+        const stages = Number(this.element.attr('data-stages'));
+        let stage = Number(this.element.attr('data-stage'));
         this.mediator.setData('model.stages', stages);
 
         if (stage < 1) {
@@ -52,11 +49,11 @@ class Stages extends UIKit.Core.Element {
         }
 
         const mediatorSubscribeModelStage = (modelData) => {
-            this.element.attr('stage', modelData.stage);
+            this.element.attr('data-stage', modelData.stage);
         };
 
         const mediatorSubscribeModelStages = (modelData) => {
-            this.element.attr('stage', modelData.stage);
+            this.element.attr('data-stage', modelData.stage);
         };
 
         this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
@@ -67,8 +64,15 @@ class Stages extends UIKit.Core.Element {
                 this.element.find('.uikit-stages-track'),
                 this.mediator,
                 this.type,
-                this.invert),
+                this.storageInvert),
         };
+
+        this.noRebuild = false;
+        const mediatorStagesInvertDirection = () => {
+            this.element.attr('data-invert', `${!this.storageInvert}`);
+            this.rebuild();
+        };
+        this.mediator.subscribe('stages.invertDirection', mediatorStagesInvertDirection);
 
         setTimeout(
             () => {
@@ -95,15 +99,8 @@ class Stages extends UIKit.Core.Element {
         this.mediator.setData('model.stage', value);
     }
 
-    public get invert(): boolean {
-        return this.storage.invert;
-    }
-
-    public set invert(value: boolean) {
-        if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
-            this.storage.invert = value;
-            this.rebuild();
-        }
+    public invertDirection() {
+        this.mediator.publish('stages.invertDirection');
     }
 }
 

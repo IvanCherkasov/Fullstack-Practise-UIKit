@@ -12,7 +12,7 @@ class InputText extends UIKit.Core.Element {
 
     private components: IComponents;
 
-    constructor(element) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-input-text')) {
             throw new ReferenceError('Элемент не является полем ввода UIKit');
@@ -27,13 +27,15 @@ class InputText extends UIKit.Core.Element {
         this.components = {
             input: new InputText_Input(
                 this.element.find('input'),
-                this.mediator),
+                this.mediator,
+                this.type),
             indicator: new InputText_Indicator(
                 this.element.find('.uikit-indicator'),
-                this.mediator),
+                this.mediator,
+                this.type),
         };
 
-        if (this.element.attr('indicator') === 'true') {
+        if (this.element.attr('data-indicator') === 'true') {
             this.indicator.enabled = true;
         } else {
             this.indicator.enabled = false;
@@ -53,8 +55,10 @@ class InputText extends UIKit.Core.Element {
 
     get indicator(): any {
         const mediator = this.mediator;
+        const element = this.element;
         return {
             set enabled(value: boolean) {
+                element.attr('data-indicator', `${value}`);
                 mediator.publish('indicator.enabled', value);
             },
             set status(value: boolean) {

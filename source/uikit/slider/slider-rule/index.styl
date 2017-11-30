@@ -1,36 +1,23 @@
 .uikit-slider-rule
-	position relative
-	display flex
-	justify-content space-between
-	cursor default
-	align-items center
-		
-	div.rule-item
-		position absolute
-		
-		div
-			font-family Lato
-			font-size 11px
-			color #d1d1d1
-			font-weight bold
-			cursor pointer
-			
-		div:hover
-			color var(--color-1)
-		
-	div.rule-item:first-child, div.rule-item:last-child
-		position relative
-		
-.uikit-slider-rule.horizontal
-	flex-direction row
-	margin-top 3px
-		
-.uikit-slider-rule.vertical
-	flex-direction column
-	margin-left 3px
-	
-	div.rule-item:first-child
-		line-height 7px
-		
-	div.rule-item:last-child
-		line-height 7px
+    position relative
+    display flex
+    justify-content space-between
+    cursor default
+    align-items center
+
+    div.rule-item
+        position absolute
+
+        div
+            cursor pointer
+
+    div.rule-item:first-child, div.rule-item:last-child
+        position relative
+
+.uikit-slider.horizontal
+    .uikit-slider-rule
+        flex-direction row
+
+.uikit-slider.vertical
+    .uikit-slider-rule
+        flex-direction column

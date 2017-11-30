@@ -11,8 +11,9 @@ interface IComponents {
 class Slider_Track extends UIKit.Core.Component {
 
     private components: IComponents;
+    private storage: {[key: string]: any};
 
-    constructor(element, mediator, type) {
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
         super(element, mediator, type);
         this.storage = {
             isDrag: false,
@@ -43,10 +44,10 @@ class Slider_Track extends UIKit.Core.Component {
                     const maximum = this.mediator.getData('model.maximum');
                     let position: number = 0;
                     let percent: number = 0;
-                    if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+                    if (this.type === UIKit.Core.Types.HORIZONTAL) {
                         position = event.pageX - coordinateSystem.xMin;
                         percent = (100 / (coordinateSystem.width)) * position;
-                    } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+                    } else if (this.type === UIKit.Core.Types.VERTICAL) {
                         position = event.pageY - coordinateSystem.yMin;
                         percent = (100 / (coordinateSystem.height)) * position;
                         percent = 100 - percent;
@@ -71,10 +72,10 @@ class Slider_Track extends UIKit.Core.Component {
             const maximum = this.mediator.getData('model.maximum');
             let position = 0;
             let percent = 0 ;
-            if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (this.type === UIKit.Core.Types.HORIZONTAL) {
                 position = event.pageX - coordinateSystem.xMin;
                 percent = (100 / (coordinateSystem.width)) * position;
-            } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+            } else if (this.type === UIKit.Core.Types.VERTICAL) {
                 position = event.pageY - coordinateSystem.yMin;
                 percent = (100 / (coordinateSystem.height)) * position;
                 percent = 100 - percent;

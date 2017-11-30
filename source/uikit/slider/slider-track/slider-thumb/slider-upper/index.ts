@@ -2,8 +2,8 @@ import './index.styl';
 import * as UIKit from '../../../../uikit-core/index';
 
 class Slider_Upper extends UIKit.Core.Component {
-    constructor(dom, mediator, type) {
-        super(dom, mediator, type);
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
+        super(element, mediator, type);
         this.initialize();
     }
 

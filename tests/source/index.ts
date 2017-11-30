@@ -1,63 +1,44 @@
-class TSlider {
-    public static readonly HORIZONTAL = 'horizontal';
-    public static readonly VERTICAL = 'vertical';
-}
 
-console.log(TSlider);
-console.log(TSlider.HORIZONTAL);
-console.log(TSlider.VERTICAL);
-console.log(TSlider['VERTICAL']);
-console.log(TSlider['HORIZONTAL']);
-console.log('по индексу ', TSlider[0]);
-console.log(Object.keys(TSlider));
-console.log(Object.keys(TSlider).length);
+console.log(0o01);
+console.log(0o02);
+console.log(0o03);
 
-export class List<T> {
+console.log(0o0100);
+console.log(0o0200);
+console.log(0o0300);
 
-    private items: T[];
-    constructor() {
-        this.items = [];
-    }
+console.log(0o010000);
+console.log(0o020000);
+console.log(0o030000);
 
-    add(item: T) {
-        this.items.push(item);
-    }
-
-    get (index: number) {
-        return this.items[index];
-    }
-}
-
-let comp: List<string> = new List<string>();
-comp.add('hello');
-comp.add('world');
-console.log(comp);
-console.log(comp.get(0));
-
-enum Types {
-    ORIENTATION_HORIZONTAL = 2,
-    ORIENTATION_VERTICAL,
-    DIRECTION_LEFT,
-    DIRECTION_RIGHT,
-    DIRECTION_UP,
-    DIRECTION_DOWN,
-}
-
-const t1 = Types.DIRECTION_DOWN | Types.ORIENTATION_HORIZONTAL;
-const t2 = Types.ORIENTATION_HORIZONTAL;
-const t3 = Types.ORIENTATION_HORIZONTAL | Types.DIRECTION_RIGHT;
-
-// console.log(t1 & Types.DIRECTION_DOWN);
-// console.log(t1 & Types.ORIENTATION_HORIZONTAL);
-if (t2 & Types.DIRECTION_LEFT) {
-    console.log(t2 & Types.DIRECTION_LEFT, true);
+if (0o01 & 0o0100) {
+    console.log('0o01 & 0o0100', true);
 } else {
-    console.log(t2 & Types.DIRECTION_LEFT, false);
+    console.log('0o01 & 0o0100', false);
 }
 
-if (t1 & Types.DIRECTION_LEFT) {
-    console.log(t1 & Types.DIRECTION_LEFT, true);
-} else {
-    console.log(t1 & Types.DIRECTION_LEFT, false);
-}
-// console.log(t3 & t2);
+/*
+console.log(0o01000000);
+console.log(0o02000000);
+console.log(0o03000000);
+
+console.log(0o0100000000);
+console.log(0o0200000000);
+console.log(0o0300000000);
+
+console.log(0o010000000000);
+console.log(0o020000000000);
+console.log(0o030000000000);
+
+console.log(0o01000000000000);
+console.log(0o02000000000000);
+console.log(0o03000000000000);
+
+console.log(0o0100000000000000);
+console.log(0o0200000000000000);
+console.log(0o0300000000000000);
+
+console.log(0o010000000000000000);
+console.log(0o020000000000000000);
+console.log(0o030000000000000000);
+*/

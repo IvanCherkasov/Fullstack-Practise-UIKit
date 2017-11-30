@@ -1,21 +1,20 @@
-import UIKit from '../../index.js'
+import UIKit from '../../index';
 
-import '../../uikit/uikit-core/index.ts'
+const btnKit = new UIKit.Button($('#uikit-button-id'));
+const btnKit2 = new UIKit.Button($('#uikit-button-id-2'));
+const btnKit3 = new UIKit.Button($('#uikit-button-id-3'));
+const btnKit4 = new UIKit.Button($('#uikit-button-id-4'));
+const select = $('#style-select-id');
 
-var btnKit = new UIKit.Core.UIKitButton($('#uikit-button-id'));
-var btnKit2 = new UIKit.Core.UIKitButton($('#uikit-button-id-2'));
-var btnKit3 = new UIKit.Core.UIKitButton($('#uikit-button-id-3'));
-var select = $('#style-select-id');
-
-UIKit.styles.forEach(function(item){
-	select.append($('<option>', { 
-        value: item,
-        text : item 
-    }));
+UIKit.Core.ThemeController.getAll().map((theme) => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme,
+    });
+    select.append(option);
+    return theme;
 });
 
-select.on('change', function(){
-	UIKit.style = select.val();
+select.on('change', () => {
+    UIKit.Core.ThemeController.changeTheme(select.val());
 });
-
-btnKit2.style = 'uikit-style-lightred';

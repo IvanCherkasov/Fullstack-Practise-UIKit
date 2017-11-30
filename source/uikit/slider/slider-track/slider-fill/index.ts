@@ -10,7 +10,7 @@ class Slider_Fill extends UIKit.Core.Component {
 
     private components: IComponents;
 
-    constructor (element, mediator, type) {
+    constructor (element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
         super(element, mediator, type);
         this.initialize();
     }

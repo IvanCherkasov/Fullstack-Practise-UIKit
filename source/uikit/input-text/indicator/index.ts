@@ -10,8 +10,8 @@ class InputText_Indicator extends UIKit.Core.Component {
 
     private components: IComponents;
 
-    constructor(element, mediator) {
-        super(element, mediator);
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
+        super(element, mediator, type);
         this.initialize();
     }
 
@@ -20,14 +20,15 @@ class InputText_Indicator extends UIKit.Core.Component {
         this.components = {
             caption: new InputText_Caption(
             this.element.find('.uikit-indicator-caption'),
-            this.mediator),
+            this.mediator,
+            this.type),
         };
 
         const meditorSubscribeIndicatorStatus = (value) => {
             if (value) {
-                this.element.addClass('indicator-ok');
+                this.element.addClass('status-ok');
             } else {
-                this.element.removeClass('indicator-ok');
+                this.element.removeClass('status-ok');
             }
         };
 

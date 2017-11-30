@@ -3,20 +3,52 @@ import themes from '../themes/load-all';
 
 export namespace Core {
 
-    export enum Types {
-        ORIENTATION_HORIZONTAL = 1,
-        ORIENTATION_VERTICAL,
-        DIRECTION_LEFT,
-        DIRECTION_RIGHT,
-        DIRECTION_UP,
-        DIRECTION_DOWN,
+    export class Types {
+        private static readonly types: string[] = [
+            '',
+            'horizontal',
+            'vertical',
+            'left',
+            'right',
+            'top',
+            'bottom',
+        ];
+
+        public static readonly NO_TYPE: string = Types.types[0];
+        public static readonly HORIZONTAL: string = Types.types[1];
+        public static readonly VERTICAL: string = Types.types[2];
+        public static readonly LEFT: string = Types.types[3];
+        public static readonly RIGHT: string = Types.types[4];
+        public static readonly TOP: string = Types.types[5];
+        public static readonly BOTTOM: string = Types.types[6];
+
+        public static contains(value: string): boolean {
+            if (this.types.indexOf(value) > -1) {
+                return true;
+            }
+            return false;
+        }
+
+        public static toArray(): string[] {
+            return Types.types.slice(); // clone
+        }
+    }
+
+    export class Variants {
+        public static readonly ERROR: string = 'error';
+        public static readonly ACCEPT: string = 'accept';
     }
 
     export class Element {
 
-        protected storage: {[key: string]: any} = {};
         protected mediator: Mediator;
         protected original: JQuery;
+
+        private storageType: string = Types.NO_TYPE;
+        private storageEnabled: boolean = true;
+        private storageIsInited: boolean = false;
+        private storageNoRebuild: boolean = true;
+        private storageVariant: string = '';
 
         constructor(protected element: JQuery) {
             if (!this.element || this.element === null) {
@@ -27,13 +59,6 @@ export namespace Core {
                     'Переданный элемент не является объектом uikit');
             }
 
-            this.storage = {
-                type: [-1],
-                enabled: true,
-                isInited: false,
-                noRebuild: true,
-            };
-
             this.original = this.element.clone();
             if (this.element.attr('data-enabled') === 'false') {
                 this.enabled = false;
@@ -41,17 +66,22 @@ export namespace Core {
         }
 
         private acceptType() {
+            this.element.attr('data-type', this.storageType);
+            Types.toArray().map((item) => {
+                this.element.removeClass(item);
+            });
+            this.element.addClass(this.storageType);
             if (this.mediator) {
-                this.mediator.publish('element.type', this.type);
+                this.mediator.publish('element.type');
             }
         }
 
         protected rebuild() {
-            this.storage.isInited = false;
+            this.storageIsInited = false;
             const parent: JQuery = this.element.parent();
             let spawned: boolean = false;
 
-            let attributes = [];
+            const attributes = [];
             const elementEachCallback = (item) => {
                 $.each(item.attributes, function () {
                     if (this.specified) {
@@ -105,85 +135,113 @@ export namespace Core {
         }
 
         protected initialize(): void {
-            this.storage.isInited = true;
-            if (this.storage.type !== [-1]) {
+            let enabled = true;
+            if (this.element.attr('data-enabled') === 'false') {
+                enabled = false;
+            }
+            this.enabled = enabled;
+
+            const variant = this.element.attr('data-variant');
+            if (variant) {
+                this.variant = variant;
+            }
+
+            this.storageIsInited = true;
+            if (this.storageType !== Types.NO_TYPE) {
                 this.acceptType();
             }
         }
 
         protected get noRebuild(): boolean {
-            return this.storage.noRebuild;
+            return this.storageNoRebuild;
         }
 
         protected set noRebuild(value: boolean) {
-            this.storage.noRebuild = value;
+            this.storageNoRebuild = value;
         }
 
-        public set type(type: number[]) {
-            if (type !== this.storage.type) {
-                this.storage.type = type;
-                if (this.storage.isInited) {
-                    if (this.noRebuild) {
-                        this.acceptType();
-                    } else {
-                        this.rebuild();
+        public get type(): string {
+            return this.storageType;
+        }
+
+        public set type(value: string) {
+            if (Types.contains(value)) {
+                if (value !== this.storageType) {
+                    this.storageType = value;
+                    if (this.storageIsInited) {
+                        if (this.noRebuild) {
+                            this.acceptType();
+                        } else {
+                            this.element.attr('data-type', this.storageType);
+                            this.rebuild();
+                        }
                     }
                 }
             }
         }
 
-        public get type(): number[] {
-            return this.storage.type;
-        }
-
         public get enabled(): boolean {
-            return this.storage.enabled;
+            return this.storageEnabled;
         }
 
         public set enabled(value: boolean) {
-            this.storage.enabled = value;
+            this.element.attr('data-enabled', `${value}`);
+            this.storageEnabled = value;
             if (value) {
-                this.element.addClass('disabled');
-            } else {
                 this.element.removeClass('disabled');
+            } else {
+                this.element.addClass('disabled');
             }
             if (this.mediator) {
                 this.mediator.publish('element.enabled', value);
+            }
+        }
+
+        public get variant(): string {
+            return this.storageVariant;
+        }
+
+        public set variant(value: string) {
+            if (value) {
+                this.element.removeClass(this.storageVariant);
+                this.storageVariant = value;
+                this.element.attr('data-variant', value);
+                this.element.addClass(value);
             }
         }
     }
 
     export class Component {
 
-        protected storage: {[key: string]: any} = {};
+        private storageType: string = Types.NO_TYPE;
+        private storageEnabled: boolean = true;
 
         constructor(
             protected element: JQuery,
             protected mediator: Mediator,
-            type?: number[]) {
+            type: string) {
 
                 if (!element || element === null) {
                     throw ReferenceError('Передан пустой компонент');
                 }
-
-                this.storage = {
-                    type: [-1],
-                };
-
-                if (type) {
-                    this.storage.type = type;
-                }
+                this.storageType = type;
         }
 
         protected initialize(): void {
+            let enabled = true;
+            if (this.element.attr('data-enabled') === 'false') {
+                enabled = false;
+            }
+            this.enabled = enabled;
         }
 
         public get enabled(): boolean {
-            return this.storage.enabled;
+            return this.storageEnabled;
         }
 
         public set enabled(value: boolean) {
-            this.storage.enabled = value;
+            this.element.attr('data-enabled', `${value}`);
+            this.storageEnabled = value;
             if (value) {
                 this.element.removeClass('disabled');
             } else {
@@ -194,8 +252,8 @@ export namespace Core {
             }
         }
 
-        public get type(): number[] {
-            return this.storage.type;
+        public get type(): string {
+            return this.storageType;
         }
     }
 
@@ -324,11 +382,11 @@ export namespace Core {
                     this.clearThemes();
                 }
             }
-
         }
 
         public static getAll(): string[] {
-            let outArray: string[] = [this.baseTheme];
+            const outArray: string[] = [];
+            outArray.push(this.baseTheme);
             this.themes.map((theme) => {
                 outArray.push(theme);
             });

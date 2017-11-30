@@ -8,13 +8,14 @@ interface IComponents {
 
 class Slider_Thumb extends UIKit.Core.Component {
 
+    private storageIsDrag: boolean = false;
+    private storageIsHover: boolean = false;
+
     private components: IComponents;
     private clamp = UIKit.Core.Math.clamp;
 
-    constructor(element, mediator, type) {
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
         super(element, mediator, type);
-        this.storage['isDrag'] = false;
-        this.storage['isHover'] = false;
         this.initialize();
     }
 
@@ -28,12 +29,12 @@ class Slider_Thumb extends UIKit.Core.Component {
         };
 
         this.element.on('mouseenter.uikit.slider.thumb', () => {
-            this.storage.isHover = true;
+            this.storageIsHover = true;
             this.mediator.publish('thumb.hover', true);
         });
 
         this.element.on('mouseleave.uikit.slider.thumb', () => {
-            this.storage.isHover = false;
+            this.storageIsHover = false;
             this.mediator.publish('thumb.hover', false);
         });
 
@@ -42,10 +43,10 @@ class Slider_Thumb extends UIKit.Core.Component {
             const minimum = this.mediator.getData('model.minimum');
             const maximum = this.mediator.getData('model.maximum');
             const percent = Math.abs(modelData.value - minimum) / (maximum - minimum) * 100;
-            if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (this.type === UIKit.Core.Types.HORIZONTAL) {
                 const position = Math.round(((percent * (coordinateSystem.width)) / 100));
                 this.moveThumb(position);
-            } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+            } else if (this.type === UIKit.Core.Types.VERTICAL) {
                 const position = Math.round(((percent * (coordinateSystem.height)) / 100));
                 this.moveThumb(position);
             }
@@ -66,9 +67,9 @@ class Slider_Thumb extends UIKit.Core.Component {
         const maximum: number = this.mediator.getData('model.maximum');
         let percent: number = 0;
 
-        if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+        if (this.type === UIKit.Core.Types.HORIZONTAL) {
             percent = (100 / coordinateSystem.width) * position;
-        } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+        } else if (this.type === UIKit.Core.Types.VERTICAL) {
             percent = (100 / coordinateSystem.height) * position;
             percent = 100 - percent;
         }
@@ -79,13 +80,13 @@ class Slider_Thumb extends UIKit.Core.Component {
     private moveThumb(position) {
         if (position >= 0) {
             const coordinateSystem = this.mediator.getData('model.coordinateSystem');
-            if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (this.type === UIKit.Core.Types.HORIZONTAL) {
                 const percent = (100 / coordinateSystem.width) * (position);
                 const maximum = (100 / coordinateSystem.xMax) *
                 (coordinateSystem.xMax - (this.element.width() / 2));
                 const minimum = (100 / coordinateSystem.width) * this.element.width();
                 this.element.css('left', this.clamp(percent, -minimum, maximum) + '%');
-            } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+            } else if (this.type === UIKit.Core.Types.VERTICAL) {
                 const percent = (100 / coordinateSystem.height) * (position);
                 const maximum = (100 / coordinateSystem.yMax) *
                 (coordinateSystem.yMax + (this.element.width()));
@@ -96,16 +97,16 @@ class Slider_Thumb extends UIKit.Core.Component {
     }
 
     private startDrag() {
-        this.storage.isDrag = true;
+        this.storageIsDrag = true;
         const coordinateSystem = this.mediator.getData('model.coordinateSystem');
         const documentMousemove = (event) => {
-            if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_HORIZONTAL) > -1) {
+            if (this.type === UIKit.Core.Types.HORIZONTAL) {
                 const position = event.pageX - coordinateSystem.xMin;
                 const value = this.calculateValue(position);
                 if (value !== this.mediator.getData('model.value')) {
                     this.mediator.setData('model.value', value);
                 }
-            } else if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+            } else if (this.type === UIKit.Core.Types.VERTICAL) {
                 const position = event.pageY - coordinateSystem.yMin;
                 const value = this.calculateValue(position);
                 if (value !== this.mediator.getData('model.value')) {
@@ -117,7 +118,7 @@ class Slider_Thumb extends UIKit.Core.Component {
         const documentMouseup = () => {
             $(document).off('mousemove.uikit.slider.thumb');
             $(document).off('mouseup.uikit.slider.thumb');
-            this.storage.isDrag = false;
+            this.storageIsDrag = false;
         };
         $(document).on('mouseup.uikit.slider.thumb', documentMouseup);
     }

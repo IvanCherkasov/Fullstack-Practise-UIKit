@@ -3,8 +3,8 @@ import * as UIKit from '../../uikit-core/index';
 
 class Button_Caption extends UIKit.Core.Component{
 
-    constructor(element: JQuery, mediator) {
-        super(element, mediator);
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
+        super(element, mediator, type);
         this.initialize();
     }
 

@@ -10,7 +10,7 @@ class RadialProgress extends UIKit.Core.Element {
 
     private components: IComponent;
 
-    constructor(element) {
+    constructor(element: JQuery) {
         super(element);
         if (!this.element.hasClass('uikit-radial-progress')) {
             throw new ReferenceError('Элемент не является радиальным прогресс баром');
@@ -23,28 +23,29 @@ class RadialProgress extends UIKit.Core.Element {
         this.mediator = new UIKit.Core.Mediator(model);
         this.mediator.setData(
             'model.minimum',
-            Number(this.element.attr('minimum')));
+            Number(this.element.attr('data-minimum')));
         this.mediator.setData(
             'model.maximum',
-            Number(this.element.attr('maximum')));
+            Number(this.element.attr('data-maximum')));
 
         this.mediator.subscribe('model.value', (modelData) => {
-            this.element.attr('value', modelData.value);
+            this.element.attr('data-value', modelData.value);
         });
 
         this.mediator.subscribe('model.minimum', (modelData) => {
-            this.element.attr('minimum', modelData.minimum);
+            this.element.attr('data-minimum', modelData.minimum);
         });
 
         this.mediator.subscribe('model.maximum', (modelData) => {
-            this.element.attr('maximum', modelData.maximum);
+            this.element.attr('data-maximum', modelData.maximum);
         });
 
 
         this.components = {
             caption: new RadialProgress_Caption(
                 this.element.find('.uikit-radial-progress-caption'),
-                this.mediator),
+                this.mediator,
+                this.type),
         };
 
         const mediatorSubscribeModelValue = (modelData) => {
@@ -71,7 +72,7 @@ class RadialProgress extends UIKit.Core.Element {
             return false;
         });
 
-        this.value = Number(this.element.attr('value'));
+        this.value = Number(this.element.attr('data-value'));
 
         super.initialize();
     }

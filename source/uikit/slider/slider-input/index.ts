@@ -2,7 +2,7 @@ import './index.styl';
 import * as UIKit from '../../uikit-core/index';
 
 class Slider_Input extends UIKit.Core.Component {
-    constructor(element, mediator, type?) {
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
         super(element, mediator, type);
         this.initialize();
     }

@@ -3,17 +3,19 @@ import * as UIKit from '../../uikit-core/index';
 
 class Slider_Rule extends UIKit.Core.Component {
 
-    constructor(element, mediator, type?) {
+    private storageSegments: number = 0;
+
+    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
         super(element, mediator, type);
-        this.storage['segments'] = this.element.attr('segments');
+        this.storageSegments = Number(this.element.attr('segments'));
 
         this.initialize();
 
-        if (this.storage.segments !== 0) {
+        if (this.storageSegments !== 0) {
             const values = this.getValues();
             if (values) {
                 let isHorizontal = true;
-                if (this.type.indexOf(UIKit.Core.Types.ORIENTATION_VERTICAL) > -1) {
+                if (this.type === UIKit.Core.Types.VERTICAL) {
                     isHorizontal = false;
                 }
                 this.build(values, isHorizontal);
@@ -26,13 +28,13 @@ class Slider_Rule extends UIKit.Core.Component {
     }
 
     private getValues() {
-        if (this.storage.segments > 0) {
+        if (this.storageSegments > 0) {
             const minimum = this.mediator.getData('model.minimum');
             const maximum = this.mediator.getData('model.maximum');
-            const crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storage.segments - 1));
-            let values: number[] = [];
+            const crat = ((Math.abs(minimum) + Math.abs(maximum)) / (this.storageSegments - 1));
+            const values = [];
             let buf = minimum;
-            for (let i = 0; i < this.storage.segments; i += 1) {
+            for (let i = 0; i < this.storageSegments; i += 1) {
                 values.push(Math.round(buf));
                 buf += crat;
             }
@@ -47,7 +49,7 @@ class Slider_Rule extends UIKit.Core.Component {
         const minimum = this.mediator.getData('model.minimum');
         const maximum = this.mediator.getData('model.maximum');
 
-        let divs = [];
+        const divs = [];
         let shiftType = '';
 
         if (isHorizontal) {
@@ -92,6 +94,7 @@ class Slider_Rule extends UIKit.Core.Component {
                 this.mediator.setData('model.value', value);
             });
         };
+        divs.map(divEach);
     }
 }
 

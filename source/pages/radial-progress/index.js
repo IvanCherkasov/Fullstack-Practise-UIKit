@@ -1,31 +1,31 @@
-import UIKit from '../../index.js'
+import UIKit from '../../index';
 
-var progressBar1 = new UIKit.Core.UIKitRadialProgress($('#uikit-radial-progress-id-1'));
-var progressBar2 = new UIKit.Core.UIKitRadialProgress($('#uikit-radial-progress-id-2'));
-var progressBar3 = new UIKit.Core.UIKitRadialProgress($('#uikit-radial-progress-id-3'));
-var select = $('#radial-progress-id-1');
-var input = $('#radial-progress-input');
+const progressBar1 = new UIKit.RadialProgress($('#uikit-radial-progress-id-1'));
+const progressBar2 = new UIKit.RadialProgress($('#uikit-radial-progress-id-2'));
+const progressBar3 = new UIKit.RadialProgress($('#uikit-radial-progress-id-3'));
+const select = $('#radial-progress-id-1');
+const input = $('#radial-progress-input');
 
-UIKit.styles.forEach(function(item){
-	select.append($('<option>', { 
-        value: item,
-        text : item 
-    }));
+UIKit.Core.ThemeController.getAll().map((theme) => {
+    const option = $('<option>', {
+        value: theme,
+        text: theme,
+    });
+    select.append(option);
+    return theme;
 });
 
-select.on('change', function(){
-	UIKit.style = select.val();
+select.on('change', () => {
+    UIKit.Core.ThemeController.changeTheme(select.val());
 });
 
-input.on('change', function(){
-	if (input.val()){
-		var val = parseInt(input.val(), 10);
-		if (val !== NaN){
-			if (val !== progressBar1.value){
-				progressBar1.value = val;
-			}
-		}
-	}
+input.on('change', () => {
+    if (input.val()) {
+        const val = parseInt(input.val(), 10);
+        if (!Number.isNaN(val)) {
+            if (val !== progressBar1.value) {
+                progressBar1.value = val;
+            }
+        }
+    }
 });
-
-progressBar2.style = 'uikit-style-lightred';
