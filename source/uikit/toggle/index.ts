@@ -42,6 +42,7 @@ class Toggle extends  UIKit.Core.Element{
                 } else {
                     this.element.removeClass('checked');
                 }
+                this.mediator.publish('checked', this, undefined, modelData.checked);
             });
 
         this.components = {

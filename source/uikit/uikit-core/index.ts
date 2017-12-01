@@ -211,6 +211,10 @@ export namespace Core {
                 this.element.addClass(value);
             }
         }
+
+        public on(channel: string, callback: Function) {
+            this.mediator.subscribe(channel, callback);
+        }
     }
 
     export class Component {

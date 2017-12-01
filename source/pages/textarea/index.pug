@@ -5,21 +5,21 @@ html(lang='ru')
 	head
 		meta(charset="utf-8")
 		meta(viewport="width=device-width")
-		title UIKit - Stages
+		title UIKit - Textarea
 	body
 		a(href='../') Back
 		br
 		div(style='width: 200px; height: 100px;')
-			+addUIKitTextarea('Textarea text...', 1, 3, false)
+			+addUIKitTextarea('id-1' ,'Textarea text...', 1, 3, false)
 		br
 		div(style='width: 400px; height: 300px;')
 			div(style='display: flex; flex-direction: column; height: 100%;')
 				+addUIKitInputText('Login...')
 				+addUIKitInputText('Email address...')
-				+addUIKitTextarea('Textarea text...', 1, 3, true)
+				+addUIKitTextarea('id-2', 'Textarea text...', 1, 3, true)
 		br
 		div(style='width: 400px; height: 300px;')
 			div(style='display: flex; flex-direction: column; height: 100%;')
 				+addUIKitInputText('Login...')
 				+addUIKitInputText('Email address...')
-				+addUIKitTextarea('Textarea text...', 1, 3, false)
+				+addUIKitTextarea('id-3', 'Textarea text...', 1, 3, false)

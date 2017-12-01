@@ -35,6 +35,7 @@ class Button extends UIKit.Core.Element{
 
         this.element.on('click', (event) => {
             this.mediator.publish('button.click', event);
+            this.mediator.publish('click', this, event);
             event.stopPropagation();
         });
 

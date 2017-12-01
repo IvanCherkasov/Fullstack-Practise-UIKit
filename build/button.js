@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 172);
+/******/ 	return __webpack_require__(__webpack_require__.s = 178);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10988,6 +10988,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__textarea_index__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__toggle_index__ = __webpack_require__(159);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__progress_bar_index__ = __webpack_require__(163);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__tickbox_index__ = __webpack_require__(171);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__form_index__ = __webpack_require__(175);
+
+
 
 
 
@@ -11010,6 +11014,8 @@ var Core = __WEBPACK_IMPORTED_MODULE_0__uikit_core_index__["a" /* Core */];
     Textarea: __WEBPACK_IMPORTED_MODULE_7__textarea_index__["a" /* default */],
     Toggle: __WEBPACK_IMPORTED_MODULE_8__toggle_index__["a" /* default */],
     ProgressBar: __WEBPACK_IMPORTED_MODULE_9__progress_bar_index__["a" /* default */],
+    Tickbox: __WEBPACK_IMPORTED_MODULE_10__tickbox_index__["a" /* default */],
+    Form: __WEBPACK_IMPORTED_MODULE_11__form_index__["default"],
 });
 
 
@@ -13748,8 +13754,188 @@ var ProgressBar_Filler = /** @class */ (function (_super) {
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 171 */,
+/* 171 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(172);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tickbox_inner_index__ = __webpack_require__(173);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Tickbox = /** @class */ (function (_super) {
+    __extends(Tickbox, _super);
+    function Tickbox(element) {
+        var _this = _super.call(this, element) || this;
+        _this.initialize();
+        return _this;
+    }
+    Tickbox.prototype.initialize = function () {
+        var _this = this;
+        var model = new Tickbox_Model();
+        this.mediator = new __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Mediator(model);
+        this.components = {
+            inner: new __WEBPACK_IMPORTED_MODULE_2__tickbox_inner_index__["a" /* default */](this.element.find('.uikit-tickbox-inner'), this.mediator, this.type),
+        };
+        var mediatorModelChecked = function (modelData) {
+            _this.element.attr('data-checked', "" + modelData.checked);
+        };
+        this.mediator.subscribe('model.checked', mediatorModelChecked);
+        this.checked = (this.element.attr('data-checked') === 'true');
+        _super.prototype.initialize.call(this);
+    };
+    Object.defineProperty(Tickbox.prototype, "checked", {
+        get: function () {
+            return this.mediator.getData('model.checked');
+        },
+        set: function (value) {
+            this.mediator.setData('model.checked', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Tickbox;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+var Tickbox_Model = /** @class */ (function (_super) {
+    __extends(Tickbox_Model, _super);
+    function Tickbox_Model() {
+        return _super.call(this, {
+            checked: false,
+        }) || this;
+    }
+    Tickbox_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'checked':
+                return this.data.checked;
+            default:
+                return undefined;
+        }
+    };
+    Tickbox_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'checked':
+                if (typeof data === 'boolean') {
+                    this.data.checked = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return Tickbox_Model;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Model));
+/* harmony default export */ __webpack_exports__["a"] = (Tickbox);
+
+
+/***/ }),
 /* 172 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 173 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(174);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Tickbox_Inner = /** @class */ (function (_super) {
+    __extends(Tickbox_Inner, _super);
+    function Tickbox_Inner(element, mediator, type) {
+        var _this = _super.call(this, element, mediator, type) || this;
+        _this.initialize();
+        return _this;
+    }
+    Tickbox_Inner.prototype.initialize = function () {
+        var mediatorModelChecked = function (modelData) {
+            // подпись на изменение model.checked
+            // но ничего не делаем, так как внешний вид
+            // меняется через стили
+        };
+        this.mediator.subscribe('model.checked', mediatorModelChecked);
+        _super.prototype.initialize.call(this);
+    };
+    return Tickbox_Inner;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Component));
+/* harmony default export */ __webpack_exports__["a"] = (Tickbox_Inner);
+
+
+/***/ }),
+/* 174 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 175 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__uikit_core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Form = /** @class */ (function (_super) {
+    __extends(Form, _super);
+    function Form(element) {
+        var _this = _super.call(this, element) || this;
+        _this.initialize();
+        return _this;
+    }
+    Form.prototype.initialize = function () {
+        _super.prototype.initialize.call(this);
+    };
+    return Form;
+}(__WEBPACK_IMPORTED_MODULE_1__uikit_core_index__["a" /* Core */].Element));
+
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 177 */,
+/* 178 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

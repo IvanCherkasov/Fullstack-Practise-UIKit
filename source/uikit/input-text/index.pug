@@ -1,7 +1,7 @@
 include ./input/index.pug
 include ./indicator/index.pug
 
-mixin addUIKitInputText(caption, indicatorEnabled, okText, errorText)
-	div.uikit.uikit-input-text(data-indicator=indicatorEnabled ? "true" : "false")
+mixin addUIKitInputText(id, caption, indicatorEnabled, okText, errorText)
+	div.uikit.uikit-input-text(id=id, data-indicator=indicatorEnabled ? "true" : "false")
 		+addUIKitInputText_Input(caption)
 		+addUIKitInputText_Indicator(indicatorEnabled, okText, errorText)

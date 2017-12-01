@@ -10,31 +10,30 @@
     <select id="styles-id"></select><br>
     <div style="width: 100px;">
       <input class="uikit-input-text" type="text">
-    </div><br>
-    <div style="width: 400px;">
-      <div class="uikit uikit-input-text" data-indicator="true">
-        <input value="Email address..." caption="Email address...">
+    </div><br><br>
+    <div>Форма "сообщение"</div>
+    <form class="uikit uikit-form" name="my-form">
+      <div class="uikit uikit-input-text" id="form-ui-input-name-id" data-indicator="true">
+        <input value="Your Name" caption="Your Name">
         <div class="uikit-indicator" data-enabled="false">
           <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
         </div>
       </div>
-    </div><br>
-    <div style="width: 400px;">
-      <div class="uikit uikit-input-text" data-indicator="true">
-        <input value="Email address..." caption="Email address...">
+      <div class="uikit uikit-input-text" id="form-ui-input-email-id" data-indicator="true">
+        <input value="Your Email" caption="Your Email">
         <div class="uikit-indicator" data-enabled="false">
           <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
         </div>
       </div>
-    </div><br>
-    <div style="width: 400px;">
-      <div class="uikit uikit-input-text" data-indicator="false">
-        <input value="Email address..." caption="Email address...">
-        <div class="uikit-indicator" data-enabled="true">
-          <div class="uikit-indicator-caption" ok="thanks" error="error"></div>
+      <textarea class="uikit uikit-textarea" id="form-ui-textarea-id" cols="1" rows="3" caption="Your Message">Your Message</textarea>
+      <div style="height: 32px; display: flex; justify-content: flex-end;">
+        <div style="width: 118px; height: inherit;">
+          <div class="uikit uikit-button" id="form-ui-btn-id" data-caption="submit">
+            <div class="uikit-button-caption no-select">submit</div>
+            <div class="uikit-button-effect"></div>
+          </div>
         </div>
       </div>
-    </div><br>
-    <input type="checkbox" id="checkbox-id-1">
+    </form>
   <script type="text/javascript" src="../input-text.js"></script></body>
 </html>

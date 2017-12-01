@@ -21,6 +21,7 @@ const mainModule = {
         textarea: './pages/textarea/index',
         toggle: './pages/toggle/index',
         'progress-bar': './pages/progress-bar/index',
+        tickbox: './pages/tickbox/index',
     },
     output: {
         path: PATHS.build,
@@ -113,6 +114,11 @@ const mainModule = {
             template: `${PATHS.source}/pages/progress-bar/index.pug`,
             filename: `${PATHS.build}/progress-bar/index.html`,
             chunks: ['progress-bar'],
+        }),
+        new HtmlWebpackPlugin({
+            template: `${PATHS.source}/pages/tickbox/index.pug`,
+            filename: `${PATHS.build}/tickbox/index.html`,
+            chunks: ['tickbox'],
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

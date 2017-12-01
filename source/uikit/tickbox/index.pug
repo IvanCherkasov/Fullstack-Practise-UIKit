@@ -1,0 +1,5 @@
+include ./tickbox-inner/index.pug
+
+mixin addUIKitTickbox(id, checked)
+    div.uikit.uikit-tickbox(id=id, data-checked=checked ? "true" : "false")
+        +addUIKitTickbox_Inner()

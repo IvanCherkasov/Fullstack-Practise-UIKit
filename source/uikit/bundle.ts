@@ -8,6 +8,8 @@ import InputText from './input-text/index';
 import Textarea from './textarea/index';
 import Toggle from './toggle/index';
 import ProgressBar from './progress-bar/index';
+import Tickbox from './tickbox/index';
+import Form from './form/index';
 const Core = Base.Core;
 
 export default {
@@ -21,4 +23,6 @@ export default {
     Textarea,
     Toggle,
     ProgressBar,
+    Tickbox,
+    Form,
 };

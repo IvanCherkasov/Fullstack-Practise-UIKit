@@ -1,23 +1,5 @@
 import UIKit from '../../index';
 
-const inputs = [];
-$('.uikit-input-text').each((i, item) => {
-    try {
-        inputs.push(new UIKit.InputText($(item)));
-    } catch (e) {
-        console.error(e);
-    }
-});
-
-inputs[2].indicator.status = false;
-$('#checkbox-id-1').on('change', (event) => {
-    if ($(event.target).is(':checked')) {
-        inputs[inputs.length - 1].indicator.enabled = true;
-    } else {
-        inputs[inputs.length - 1].indicator.enabled = false;
-    }
-});
-
 const select = $('#styles-id');
 
 UIKit.Core.ThemeController.getAll().map((theme) => {
@@ -32,3 +14,9 @@ UIKit.Core.ThemeController.getAll().map((theme) => {
 select.on('change', () => {
     UIKit.Core.ThemeController.changeTheme(select.val());
 });
+
+const formElems = [];
+formElems.push(new UIKit.InputText($('#form-ui-input-name-id')));
+formElems.push(new UIKit.InputText($('#form-ui-input-email-id')));
+formElems.push(new UIKit.Textarea($('#form-ui-textarea-id')));
+formElems.push(new UIKit.Button($('#form-ui-btn-id')));
