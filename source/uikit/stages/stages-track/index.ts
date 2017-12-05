@@ -1,23 +1,24 @@
 import './index.styl';
 import './stages-stage/index';
 import './stages-between/index';
+import Stages from '../index';
 import * as UIKit from '../../uikit-core/index';
 
-class Stages_Track extends UIKit.Core.Component {
+class Stages_Track extends UIKit.Core.Element {
 
     constructor(
-        element: JQuery,
+        dom: JQuery,
         mediator: UIKit.Core.Mediator,
         type: string,
         private storageInvert: boolean) {
-            super(element, mediator, type);
+            super(dom, mediator, type);
             this.initialize();
     }
 
     protected initialize() {
 
         let orientation = ['width', 'left'];
-        if (this.type === UIKit.Core.Types.VERTICAL) {
+        if (this.type === Stages.TYPES.VERTICAL) {
             orientation = ['height', 'top'];
         }
 
@@ -33,7 +34,7 @@ class Stages_Track extends UIKit.Core.Component {
         for (let i = 1; i <= stages - 1; i += 1) {
             betweenDom.css(orientation[1], shift + '%');
             shift += percent;
-            this.element.append(betweenDom.clone());
+            this.dom.append(betweenDom.clone());
         }
 
         for (let i = 1; i <= stages; i += 1) {
@@ -41,11 +42,11 @@ class Stages_Track extends UIKit.Core.Component {
                 .append(
                     captionDom.clone()
                     .html('<span>' + i + '</span>'));
-            this.element.append(clone);
+            this.dom.append(clone);
         }
 
         const mediatorSubscribeModelStageCallback = (modelData) => {
-            let betweens = this.element.find('.uikit-stages-between');
+            let betweens = this.dom.find('.uikit-stages-between');
             if (this.storageInvert) {
                 betweens = $(betweens.get().reverse());
             }
@@ -66,7 +67,7 @@ class Stages_Track extends UIKit.Core.Component {
                     $(item).removeClass('staged');
                 }
             };
-            this.element.find('.uikit-stages-stage').toArray().map(
+            this.dom.find('.uikit-stages-stage').toArray().map(
                 stagesEachMap);
         };
 

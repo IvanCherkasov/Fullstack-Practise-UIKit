@@ -1,28 +1,33 @@
-import './index.styl';
+import './themes/index';
 import * as UIKit from '../uikit-core/index';
 import ProgressBar_Track from './progress-bar-track/index';
 
-interface IComponent {
+interface IElements {
     track: ProgressBar_Track;
 }
 
-class ProgressBar extends UIKit.Core.Element {
+class ProgressBar extends UIKit.Core.Component {
+
+    public static readonly TYPES = {
+        HORIZONTAL: 'horizontal',
+        VERTICAL: 'vertical',
+    };
 
     private storageValue: number = 0;
-    private components: IComponent;
+    private components: IElements;
 
-    constructor(element: JQuery) {
-        super(element);
+    constructor(dom: JQuery) {
+        super(dom);
         this.initialize();
     }
 
     protected initialize() {
-
-        const availableTypes = [UIKit.Core.Types.HORIZONTAL, UIKit.Core.Types.VERTICAL];
-        const type = this.element.attr('data-type');
-        this.type = UIKit.Core.Types.HORIZONTAL;
-        if (availableTypes.indexOf(type) > -1) {
+        this.types = new UIKit.Core.Types(ProgressBar.TYPES);
+        const type = this.dom.attr('data-type');
+        if (this.types.contains(type)) {
             this.type = type;
+        } else {
+            this.type = ProgressBar.TYPES.HORIZONTAL;
         }
 
         const model = new ProgressBar_Model();
@@ -32,17 +37,16 @@ class ProgressBar extends UIKit.Core.Element {
 
         this.components = {
             track: new ProgressBar_Track(
-                this.element.find('.uikit-progress-bar-track'),
+                this.dom.find('.uikit-progress-bar-track'),
                 this.mediator,
-                this.type,
-            ),
+                this.type),
         };
 
-        const attrValue: number = Number(this.element.attr('data-value'));
+        const attrValue: number = Number(this.dom.attr('data-value'));
         this.value = attrValue;
 
         const mediatorModelValue = (modelData) => {
-            this.element.attr('data-value', modelData.value);
+            this.dom.attr('data-value', modelData.value);
         };
         this.mediator.subscribe('model.value', mediatorModelValue);
 

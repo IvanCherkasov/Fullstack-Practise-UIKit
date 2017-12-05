@@ -1,0 +1,42 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-radial-progress
+            display flex
+            justify-content center
+            align-items center
+            width 100px
+            height 100px
+
+            .wrapper-right
+                width inherit
+                height inherit
+                position absolute
+                background-color transparent
+                clip rect(0px, 100px, 100px, 50px)
+
+                .progress-right
+                    position absolute
+                    width calc(100% - 10px)
+                    height calc(100% - 10px)
+                    border-radius 50%
+                    border 5px solid #4EB7A8
+                    background-color transparent
+                    clip rect(0px, 50px, 100px, 0px)
+                    transform rotate(0deg)
+
+            .wrapper-left
+                width inherit
+                height inherit
+                position absolute
+                background-color transparent
+                clip rect(0px, 50px, 100px, 0px)
+
+                .progress-left
+                    position absolute
+                    width calc(100% - 10px)
+                    height calc(100% - 10px)
+                    border-radius 50%
+                    border 5px solid #4EB7A8
+                    background-color transparent
+                    clip rect(0px, 50px, 100px, 0px)
+                    transform rotate(180deg)

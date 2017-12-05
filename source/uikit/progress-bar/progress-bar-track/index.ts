@@ -1,35 +1,36 @@
-import './index.styl';
 import * as UIKit from '../../uikit-core/index';
+import ProgressBar from '../index';
 import ProgressBar_Caption from './progress-bar-caption/index';
 import ProgressBar_Filler from './progress-bar-filler/index';
 
-interface IComponent {
+interface IElements {
     caption: ProgressBar_Caption;
     filler: ProgressBar_Filler;
 }
 
-class ProgressBar_Track extends UIKit.Core.Component {
+class ProgressBar_Track extends UIKit.Core.Element {
 
-    private components: IComponent;
+    private components: IElements;
 
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
 
         this.components = {
             caption: new ProgressBar_Caption(
-                this.element.find('.uikit-progress-bar-caption'),
+                this.dom.find('.uikit-progress-bar-caption'),
                 this.mediator,
-                this.type,
-            ),
+                this.type),
             filler: new ProgressBar_Filler(
-                this.element.find('.uikit-progress-bar-filler'),
+                this.dom.find('.uikit-progress-bar-filler'),
                 this.mediator,
-                this.type,
-            ),
+                this.type),
         };
 
         super.initialize();

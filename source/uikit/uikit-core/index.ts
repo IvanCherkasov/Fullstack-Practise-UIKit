@@ -1,38 +1,39 @@
 import $ from 'jquery';
-import themes from '../themes/load-all';
+import themes from '../themes.conf';
 
 export namespace Core {
 
     export class Types {
-        private static readonly types: string[] = [
-            '',
-            'horizontal',
-            'vertical',
-            'left',
-            'right',
-            'top',
-            'bottom',
-            'radial',
-        ];
+        private types: object;
+        constructor(TYPES: object) {
+            this.types = TYPES;
+        }
 
-        public static readonly NO_TYPE: string = Types.types[0];
-        public static readonly HORIZONTAL: string = Types.types[1];
-        public static readonly VERTICAL: string = Types.types[2];
-        public static readonly LEFT: string = Types.types[3];
-        public static readonly RIGHT: string = Types.types[4];
-        public static readonly TOP: string = Types.types[5];
-        public static readonly BOTTOM: string = Types.types[6];
-        public static readonly RADIAL: string = Types.types[7];
-
-        public static contains(value: string): boolean {
-            if (this.types.indexOf(value) > -1) {
+        public contains(key: string): boolean {
+            if (this.getValues().indexOf(key) > -1) {
                 return true;
             }
             return false;
         }
 
-        public static toArray(): string[] {
-            return Types.types.slice(); // clone
+        public getKeys(): string[] {
+            return Object.keys(this.types);
+        }
+
+        public getValues(): string[] {
+            const keys = Object.keys(this.types);
+            const values: string[] = [];
+            keys.map((key) => {
+                values.push(this.types[key]);
+            });
+            return values;
+        }
+
+        public get(key: string): string {
+            if (this.contains(key)) {
+                return this.types[key];
+            }
+            return '';
         }
     }
 
@@ -41,38 +42,39 @@ export namespace Core {
         public static readonly ACCEPT: string = 'accept';
     }
 
-    export class Element {
+    export class Component {
 
         protected mediator: Mediator;
         protected original: JQuery;
+        protected types: Types;
 
-        private storageType: string = Types.NO_TYPE;
+        private storageType: string = '';
         private storageEnabled: boolean = true;
         private storageIsInited: boolean = false;
         private storageNoRebuild: boolean = true;
         private storageVariant: string = '';
 
-        constructor(protected element: JQuery) {
-            if (!this.element || this.element === null) {
+        constructor(protected dom: JQuery) {
+            if (!this.dom || this.dom === null) {
                 throw ReferenceError('Передан пустой элемент');
             }
-            if (!this.element.hasClass('uikit')) {
+            if (!this.dom.hasClass('uikit')) {
                 throw ReferenceError(
                     'Переданный элемент не является объектом uikit');
             }
 
-            this.original = this.element.clone();
-            if (this.element.attr('data-enabled') === 'false') {
+            this.original = this.dom.clone();
+            if (this.dom.attr('data-enabled') === 'false') {
                 this.enabled = false;
             }
         }
 
         private acceptType() {
-            this.element.attr('data-type', this.storageType);
-            Types.toArray().map((item) => {
-                this.element.removeClass(item);
+            this.dom.attr('data-type', this.storageType);
+            this.types.getValues().map((value) => {
+                this.dom.removeClass(value);
             });
-            this.element.addClass(this.storageType);
+            this.dom.addClass(this.storageType);
             if (this.mediator) {
                 this.mediator.publish('element.type');
             }
@@ -80,7 +82,7 @@ export namespace Core {
 
         protected rebuild() {
             this.storageIsInited = false;
-            const parent: JQuery = this.element.parent();
+            const parent: JQuery = this.dom.parent();
             let spawned: boolean = false;
 
             const attributes = [];
@@ -94,29 +96,29 @@ export namespace Core {
                     }
                 });
             };
-            this.element.toArray().map(elementEachCallback);
+            this.dom.toArray().map(elementEachCallback);
 
             let index = -1;
             const parentChildrenFindEachCallback = (item, i) => {
-                if ($(item).is(this.element)) {
+                if ($(item).is(this.dom)) {
                     index = i;
                     return;
                 }
             };
             parent.children().toArray().map(parentChildrenFindEachCallback);
 
-            this.element.remove();
-            this.element = this.original.clone();
+            this.dom.remove();
+            this.dom = this.original.clone();
 
             attributes.map((attr) => {
                 if (attr.name !== 'class') {
-                    this.element.attr(attr.name, attr.value);
+                    this.dom.attr(attr.name, attr.value);
                 }
             });
 
             const parentChildrenPlaceEachCallback = (item, i) => {
                 if (i === index) {
-                    $(item).before(this.element);
+                    $(item).before(this.dom);
                     spawned = true;
                     return;
                 }
@@ -124,10 +126,10 @@ export namespace Core {
             parent.children().toArray().map(parentChildrenPlaceEachCallback);
 
             if (!spawned) {
-                parent.append(this.element);
+                parent.append(this.dom);
             }
 
-            this.element.ready(() => {
+            this.dom.ready(() => {
                 setTimeout(
                     () => {
                         this.initialize();
@@ -138,18 +140,18 @@ export namespace Core {
 
         protected initialize(): void {
             let enabled = true;
-            if (this.element.attr('data-enabled') === 'false') {
+            if (this.dom.attr('data-enabled') === 'false') {
                 enabled = false;
             }
             this.enabled = enabled;
 
-            const variant = this.element.attr('data-variant');
+            const variant = this.dom.attr('data-variant');
             if (variant) {
                 this.variant = variant;
             }
 
             this.storageIsInited = true;
-            if (this.storageType !== Types.NO_TYPE) {
+            if (this.storageType !== '') {
                 this.acceptType();
             }
         }
@@ -167,14 +169,14 @@ export namespace Core {
         }
 
         public set type(value: string) {
-            if (Types.contains(value)) {
+            if (this.types.contains(value)) {
                 if (value !== this.storageType) {
                     this.storageType = value;
                     if (this.storageIsInited) {
                         if (this.noRebuild) {
                             this.acceptType();
                         } else {
-                            this.element.attr('data-type', this.storageType);
+                            this.dom.attr('data-type', this.storageType);
                             this.rebuild();
                         }
                     }
@@ -187,12 +189,12 @@ export namespace Core {
         }
 
         public set enabled(value: boolean) {
-            this.element.attr('data-enabled', `${value}`);
+            this.dom.attr('data-enabled', `${value}`);
             this.storageEnabled = value;
             if (value) {
-                this.element.removeClass('disabled');
+                this.dom.removeClass('disabled');
             } else {
-                this.element.addClass('disabled');
+                this.dom.addClass('disabled');
             }
             if (this.mediator) {
                 this.mediator.publish('element.enabled', value);
@@ -205,10 +207,10 @@ export namespace Core {
 
         public set variant(value: string) {
             if (value) {
-                this.element.removeClass(this.storageVariant);
+                this.dom.removeClass(this.storageVariant);
                 this.storageVariant = value;
-                this.element.attr('data-variant', value);
-                this.element.addClass(value);
+                this.dom.attr('data-variant', value);
+                this.dom.addClass(value);
             }
         }
 
@@ -217,17 +219,17 @@ export namespace Core {
         }
     }
 
-    export class Component {
+    export class Element {
 
-        private storageType: string = Types.NO_TYPE;
+        private storageType: string = '';
         private storageEnabled: boolean = true;
 
         constructor(
-            protected element: JQuery,
+            protected dom: JQuery,
             protected mediator: Mediator,
             type: string) {
 
-                if (!element || element === null) {
+                if (!dom || dom === null) {
                     throw ReferenceError('Передан пустой компонент');
                 }
                 this.storageType = type;
@@ -235,7 +237,7 @@ export namespace Core {
 
         protected initialize(): void {
             let enabled = true;
-            if (this.element.attr('data-enabled') === 'false') {
+            if (this.dom.attr('data-enabled') === 'false') {
                 enabled = false;
             }
             this.enabled = enabled;
@@ -246,12 +248,12 @@ export namespace Core {
         }
 
         public set enabled(value: boolean) {
-            this.element.attr('data-enabled', `${value}`);
+            this.dom.attr('data-enabled', `${value}`);
             this.storageEnabled = value;
             if (value) {
-                this.element.removeClass('disabled');
+                this.dom.removeClass('disabled');
             } else {
-                this.element.addClass('disabled');
+                this.dom.addClass('disabled');
             }
             if (this.mediator) {
                 this.mediator.publish('element.enabled', value);
@@ -340,31 +342,31 @@ export namespace Core {
     }
 
     export class CoordinateSystem {
-        constructor(private element: JQuery) {
+        constructor(private dom: JQuery) {
         }
 
         public get xMin(): number {
-            return this.element.offset().left;
+            return this.dom.offset().left;
         }
 
         public get yMin(): number {
-            return this.element.offset().top;
+            return this.dom.offset().top;
         }
 
         public get xMax(): number {
-            return this.element.offset().left + this.element.width();
+            return this.dom.offset().left + this.dom.width();
         }
 
         public get yMax(): number {
-            return this.element.offset().top + this.element.height();
+            return this.dom.offset().top + this.dom.height();
         }
 
         public get width(): number {
-            return this.element.width();
+            return this.dom.width();
         }
 
         public get height(): number {
-            return this.element.height();
+            return this.dom.height();
         }
     }
 
@@ -411,6 +413,27 @@ export namespace Core {
         export function clamp(value: number, minimum: number, maximum: number) {
             return global.Math.min(global.Math.max(minimum, value), maximum);
         }
+    }
+
+    export class Utils {
+      static getProperties(obj: any): string[] {
+        const result = [];
+        for (const property in obj) {
+          if (obj.hasOwnProperty(property) && property[0] !== '_') {
+            result.push(property);
+          }
+        }
+        return result;
+      }
+      static getPropertiesAndValues(obj: any): {[key: string]: string} {
+          const result: {[key: string]: string} = {};
+          for (const property in obj) {
+            if (obj.hasOwnProperty(property) && property[0] !== '_') {
+              result[property] = obj[property];
+            }
+          }
+          return result;
+      }
     }
 }
 

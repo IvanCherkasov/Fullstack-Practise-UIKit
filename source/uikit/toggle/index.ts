@@ -1,18 +1,28 @@
-import './index.styl';
+import './themes/index';
 import * as UIKit from '../uikit-core/index';
 import Toggle_Thumb from './toggle-thumb/index';
 
-interface IComponent {
+class Types extends UIKit.Core.Types {
+    public static readonly HORIZONTAL: string = 'horizontal';
+    public static readonly VERTICAL: string = 'vertical';
+}
+
+interface IElements {
     thumb: Toggle_Thumb;
 }
 
-class Toggle extends  UIKit.Core.Element{
+class Toggle extends  UIKit.Core.Component{
 
-    private components: IComponent;
+    public static readonly TYPES = {
+        HORIZONTAL: 'horizontal',
+        VERTICAL: 'vertical',
+    };
 
-    constructor(element: JQuery) {
-        super(element);
-        if (!this.element.hasClass('uikit-toggle')) {
+    private components: IElements;
+
+    constructor(dom: JQuery) {
+        super(dom);
+        if (!this.dom.hasClass('uikit-toggle')) {
             throw new ReferenceError('Элемент не является переключателем uikit');
         }
         this.initialize();
@@ -20,49 +30,51 @@ class Toggle extends  UIKit.Core.Element{
 
     protected initialize() {
 
-        this.type = UIKit.Core.Types.HORIZONTAL;
-        const type = this.element.attr('data-type');
-        if (type) {
+        this.types = new UIKit.Core.Types(Toggle.TYPES);
+        const type = this.dom.attr('data-type');
+        if (this.types.contains(type)) {
             this.type = type;
+        } else {
+            this.type = Toggle.TYPES.HORIZONTAL;
         }
 
         const model = new Toggle_Model();
         this.mediator = new UIKit.Core.Mediator(model);
         let isChecked = false;
-        if (this.element.attr('value') === 'true') {
+        if (this.dom.attr('value') === 'true') {
           isChecked = true;
         } else {
           isChecked = false;
         }
 
         this.mediator.subscribe('model.checked', (modelData) => {
-                this.element.attr('value', modelData.checked);
+                this.dom.attr('value', modelData.checked);
                 if (this.checked) {
-                    this.element.addClass('checked');
+                    this.dom.addClass('checked');
                 } else {
-                    this.element.removeClass('checked');
+                    this.dom.removeClass('checked');
                 }
                 this.mediator.publish('checked', this, undefined, modelData.checked);
             });
 
         this.components = {
             thumb: new Toggle_Thumb(
-                    this.element.find('.uikit-toggle-thumb'),
+                    this.dom.find('.uikit-toggle-thumb'),
                     this.mediator,
                     this.type),
         };
 
-        this.element.on('click', () => {
+        this.dom.on('click', () => {
                 this.checked = !this.checked;
             });
 
         const mediatorElementType = () => {
-            if (this.type === UIKit.Core.Types.HORIZONTAL) {
-                this.element.removeClass('vertical');
-                this.element.addClass('horizontal');
-            } else if (this.type === UIKit.Core.Types.VERTICAL) {
-                this.element.removeClass('horizontal');
-                this.element.addClass('vertical');
+            if (this.type === Types.HORIZONTAL) {
+                this.dom.removeClass('vertical');
+                this.dom.addClass('horizontal');
+            } else if (this.type === Types.VERTICAL) {
+                this.dom.removeClass('horizontal');
+                this.dom.addClass('vertical');
             }
         };
         this.mediator.subscribe('element.type', mediatorElementType);

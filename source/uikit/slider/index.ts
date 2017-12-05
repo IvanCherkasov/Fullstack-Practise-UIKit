@@ -4,19 +4,29 @@ import Slider_Input from './slider-input/index';
 import Slider_Track from './slider-track/index';
 import Slider_Rule from './slider-rule/index';
 
-interface IComponents {
+class Types extends UIKit.Core.Types {
+    public static readonly HORIZONTAL: string = 'horizontal';
+    public static readonly VERTICAL: string = 'vertical';
+}
+
+interface IElements {
     input: Slider_Input;
     track: Slider_Track;
     rule: Slider_Rule;
 }
 
-class Slider extends UIKit.Core.Element {
+class Slider extends UIKit.Core.Component {
 
-    private components: IComponents;
+    public static readonly TYPES = {
+        HORIZONTAL: 'horizontal',
+        VERTICAL: 'vertical',
+    };
 
-    constructor(element: JQuery) {
-        super(element);
-        if (!this.element.hasClass('uikit-slider')) {
+    private elements: IElements;
+
+    constructor(dom: JQuery) {
+        super(dom);
+        if (!this.dom.hasClass('uikit-slider')) {
             throw new ReferenceError('Элемент не является слайдером');
         }
         this.initialize();
@@ -24,45 +34,48 @@ class Slider extends UIKit.Core.Element {
 
     protected initialize(): void {
 
-        const type: string = this.element.attr('data-type');
-        this.type = UIKit.Core.Types.HORIZONTAL;
-        if (type) {
+        this.types = new UIKit.Core.Types(Slider.TYPES);
+        const type = this.dom.attr('data-type');
+        console.log(`type = ${type}; contains: ${this.types.contains(type)}`);
+        if (this.types.contains(type)) {
             this.type = type;
+        } else {
+            this.type = Slider.TYPES.HORIZONTAL;
         }
 
         const middleWare = [];
         const model = new Slider_Model();
         this.mediator = new UIKit.Core.Mediator(model);
-        this.mediator.setData('model.minimum', Number(this.element.attr('minimum')));
-        this.mediator.setData('model.maximum', Number(this.element.attr('maximum')));
+        this.mediator.setData('model.minimum', Number(this.dom.attr('minimum')));
+        this.mediator.setData('model.maximum', Number(this.dom.attr('maximum')));
 
         this.mediator.subscribe('model.value', (modelData) => {
-            this.element.attr('value', modelData.value);
+            this.dom.attr('value', modelData.value);
         });
 
         this.mediator.subscribe('model.minimum', (modelData) => {
-            this.element.attr('minimum', modelData.minimum);
+            this.dom.attr('minimum', modelData.minimum);
         });
 
         this.mediator.subscribe('model.maximum', (modelData) => {
-            this.element.attr('maximum', modelData.maximum);
+            this.dom.attr('maximum', modelData.maximum);
         });
 
         this.noRebuild = false;
 
-        this.components = {
+        this.elements = {
             input: new Slider_Input(
-            this.element.find('.uikit-slider-input'),
+            this.dom.find('.uikit-slider-input'),
             this.mediator,
             this.type),
 
             track: new Slider_Track(
-            this.element.find('.uikit-slider-track'),
+            this.dom.find('.uikit-slider-track'),
             this.mediator,
             this.type),
 
             rule:  new Slider_Rule(
-            this.element.find('.uikit-slider-rule'),
+            this.dom.find('.uikit-slider-rule'),
             this.mediator,
             this.type),
         };
@@ -71,15 +84,15 @@ class Slider extends UIKit.Core.Element {
             () => {
                 this.mediator.setData(
                     'model.value',
-                    Number(this.element.attr('value')));
+                    Number(this.dom.attr('value')));
             },
             0);
 
-        this.element.on('dragstart', () => {
+        this.dom.on('dragstart', () => {
             return false;
         });
 
-        this.element.on('selectstart', () => {
+        this.dom.on('selectstart', () => {
             return false;
         });
 

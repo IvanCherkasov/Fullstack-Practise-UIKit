@@ -1,18 +1,21 @@
 import './index.styl';
 import * as UIKit from '../../../uikit-core/index';
 
-class InputText_Caption extends UIKit.Core.Component {
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+class InputText_Caption extends UIKit.Core.Element {
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
         const mediatorSubscribeIndicatorStatus = (value) => {
             if (value) {
-                this.element.text(this.element.attr('ok'));
+                this.dom.text(this.dom.attr('ok'));
             } else {
-                this.element.text(this.element.attr('error'));
+                this.dom.text(this.dom.attr('error'));
             }
         };
 

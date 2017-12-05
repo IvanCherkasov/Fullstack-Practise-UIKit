@@ -1,0 +1,75 @@
+.uikit-theme-sea
+    .uikit
+        &.uikit-arrow-button
+            position relative
+            width 42px
+            height 42px
+            background-color white
+            border 3px solid #255da9
+            border-radius 3px
+            cursor pointer
+            transition background-color 0.2s
+
+            &.right::before
+                content ""
+                position absolute
+                background-color #255da9
+                width 18px
+                height 4px
+                top 24px
+                left 14px
+                transform rotate(-45deg)
+                transition background-color 0.2s
+
+            &.right::after
+                content ""
+                position absolute
+                background-color #255da9
+                width 18px
+                height 4px
+                top 14px
+                left 14px
+                transform rotate(45deg)
+                transition background-color 0.2s
+
+            &.left
+                transform scale(-1, 1)
+
+            &.left::before
+                content ""
+                position absolute
+                background-color #255da9
+                width 18px
+                height 4px
+                top 24px
+                left 14px
+                transform rotate(-45deg)
+                transition background-color 0.2s
+
+            &.left::after
+                content ""
+                position absolute
+                background-color #255da9
+                width 18px
+                height 4px
+                top 14px
+                left 14px
+                transform rotate(45deg)
+                transition background-color 0.2s
+
+            &:not(.disabled):hover
+                background-color #255da9
+
+            &:not(.disabled):hover.uikit-arrow-button::after
+            &:not(.disabled):hover.uikit-arrow-button::before
+                background-color white
+
+            &.disabled
+                background-color #e4e4e4
+                border-color #e4e4e4
+                cursor default
+
+                &::after
+                &::before
+                    background-color white !important
+                    cursor default !important

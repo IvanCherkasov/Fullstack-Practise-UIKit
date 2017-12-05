@@ -1,47 +1,47 @@
 import './index.styl';
 import * as UIKit from '../uikit-core/index';
 
-class Textarea extends UIKit.Core.Element {
+class Textarea extends UIKit.Core.Component {
 
     private storageCaption: string = '';
 
-    constructor(element: JQuery) {
-        super(element);
-        if (!this.element.hasClass('uikit-textarea')) {
+    constructor(dom: JQuery) {
+        super(dom);
+        if (!this.dom.hasClass('uikit-textarea')) {
             throw new ReferenceError('Элемент не является многострочный полем ввода uikit');
         }
         this.initialize();
     }
 
     protected initialize() {
-        this.storageCaption = this.element.attr('caption');
+        this.storageCaption = this.dom.attr('caption');
         const model = new Textarea_Model();
         this.mediator = new UIKit.Core.Mediator(model);
 
         const focusInCallback = () => {
-            const value = this.element.val();
+            const value = this.dom.val();
             if (typeof value === 'string') {
                 if (value === this.storageCaption) {
-                this.element.val('');
+                this.dom.val('');
                 }
             }
         };
 
         const focusOutCallback = () => {
-            let value = this.element.val();
+            let value = this.dom.val();
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    this.element.val(this.storageCaption);
+                    this.dom.val(this.storageCaption);
                 }
             }
         };
 
-        this.element.focusin(focusInCallback);
-        this.element.focusout(focusOutCallback);
+        this.dom.focusin(focusInCallback);
+        this.dom.focusout(focusOutCallback);
 
         const mediatorSubscribeModelText = (modelData) => {
-            this.element.val(modelData.text);
+            this.dom.val(modelData.text);
         };
 
         this.mediator.subscribe('model.text', mediatorSubscribeModelText);

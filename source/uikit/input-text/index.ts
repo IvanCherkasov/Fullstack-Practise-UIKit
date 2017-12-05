@@ -3,18 +3,18 @@ import * as UIKit from '../uikit-core/index';
 import InputText_Input from './input/index';
 import InputText_Indicator from './indicator/index';
 
-interface IComponents {
+interface IElements {
     input: InputText_Input;
     indicator: InputText_Indicator;
 }
 
-class InputText extends UIKit.Core.Element {
+class InputText extends UIKit.Core.Component {
 
-    private components: IComponents;
+    private elements: IElements;
 
-    constructor(element: JQuery) {
-        super(element);
-        if (!this.element.hasClass('uikit-input-text')) {
+    constructor(dom: JQuery) {
+        super(dom);
+        if (!this.dom.hasClass('uikit-input-text')) {
             throw new ReferenceError('Элемент не является полем ввода UIKit');
         }
         this.initialize();
@@ -24,18 +24,18 @@ class InputText extends UIKit.Core.Element {
         const model = new InputText_Model();
         this.mediator = new UIKit.Core.Mediator(model);
 
-        this.components = {
+        this.elements = {
             input: new InputText_Input(
-                this.element.find('input'),
+                this.dom.find('input'),
                 this.mediator,
                 this.type),
             indicator: new InputText_Indicator(
-                this.element.find('.uikit-indicator'),
+                this.dom.find('.uikit-indicator'),
                 this.mediator,
                 this.type),
         };
 
-        if (this.element.attr('data-indicator') === 'true') {
+        if (this.dom.attr('data-indicator') === 'true') {
             this.indicator.enabled = true;
         } else {
             this.indicator.enabled = false;
@@ -55,7 +55,7 @@ class InputText extends UIKit.Core.Element {
 
     get indicator(): any {
         const mediator = this.mediator;
-        const element = this.element;
+        const element = this.dom;
         return {
             set enabled(value: boolean) {
                 element.attr('data-indicator', `${value}`);

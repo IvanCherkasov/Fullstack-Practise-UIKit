@@ -12,7 +12,7 @@ import Tickbox from './tickbox/index';
 import Form from './form/index';
 const Core = Base.Core;
 
-export default {
+const UIKit = {
     Core,
     Slider,
     Button,
@@ -26,3 +26,5 @@ export default {
     Tickbox,
     Form,
 };
+
+export default UIKit;

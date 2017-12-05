@@ -18,10 +18,10 @@ select.on('change', () => {
 });
 
 $('#uikit-submit-id-1').click(() => {
-    if (bar2.type === UIKit.Core.Types.HORIZONTAL) {
-        bar2.type = UIKit.Core.Types.VERTICAL;
-    } else if (bar2.type === UIKit.Core.Types.VERTICAL) {
-        bar2.type = UIKit.Core.Types.HORIZONTAL;
+    if (bar2.type === UIKit.ProgressBar.TYPES.HORIZONTAL) {
+        bar2.type = UIKit.ProgressBar.TYPES.VERTICAL;
+    } else if (bar2.type === UIKit.ProgressBar.TYPES.VERTICAL) {
+        bar2.type = UIKit.ProgressBar.TYPES.HORIZONTAL;
     }
 });
 

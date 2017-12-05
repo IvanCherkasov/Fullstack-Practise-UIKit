@@ -1,9 +1,9 @@
 import './index.styl';
 import * as UIKit from '../uikit-core/index';
 
-class Form extends UIKit.Core.Element {
-    constructor(element: JQuery) {
-        super(element);
+class Form extends UIKit.Core.Component {
+    constructor(dom: JQuery) {
+        super(dom);
         this.initialize();
     }
 
@@ -11,3 +11,5 @@ class Form extends UIKit.Core.Element {
         super.initialize();
     }
 }
+
+export default Form;

@@ -1,18 +1,21 @@
 import './index.styl';
 import * as UIKit from '../../../../uikit-core/index';
 
-class Slider_Upper extends UIKit.Core.Component {
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+class Slider_Upper extends UIKit.Core.Element {
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
-        const div = this.element.find('div.no-select');
+        const div = this.dom.find('div.no-select');
         let timerId: NodeJS.Timer;
 
         const disable = () => {
-            this.element.removeClass('show');
+            this.dom.removeClass('show');
         };
 
         const print = (value) => {
@@ -21,7 +24,7 @@ class Slider_Upper extends UIKit.Core.Component {
 
         const show = () => {
             clearTimeout(timerId);
-            this.element.addClass('show');
+            this.dom.addClass('show');
             timerId = setTimeout(disable, 1000);
         };
 

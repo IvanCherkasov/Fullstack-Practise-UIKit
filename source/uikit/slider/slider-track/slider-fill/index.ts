@@ -2,24 +2,27 @@ import './index.styl';
 import * as UIKit from '../../../uikit-core/index';
 import Slider_Filled from './slider-filled/index';
 
-interface IComponents {
+interface IElements {
     filled: Slider_Filled;
 }
 
-class Slider_Fill extends UIKit.Core.Component {
+class Slider_Fill extends UIKit.Core.Element {
 
-    private components: IComponents;
+    private elements: IElements;
 
-    constructor (element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+    constructor (
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
 
-        this.components = {
+        this.elements = {
             filled: new Slider_Filled(
-            this.element.find('.uikit-slider-filled'),
+            this.dom.find('.uikit-slider-filled'),
             this.mediator,
             this.type),
         };

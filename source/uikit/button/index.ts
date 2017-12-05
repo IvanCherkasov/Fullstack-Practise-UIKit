@@ -1,19 +1,19 @@
-import './index.styl';
+import './themes/index';
 import * as UIKit from '../uikit-core/index';
 import Button_Caption from './button-caption/index';
 import Button_Effect from './button-effect/index';
 
-interface IComponent {
+interface IElements {
     caption: Button_Caption;
     effect: Button_Effect;
 }
 
-class Button extends UIKit.Core.Element{
+class Button extends UIKit.Core.Component{
 
-    private components: IComponent;
+    private elements: IElements;
 
-    constructor(element: JQuery) {
-        super(element);
+    constructor(dom: JQuery) {
+        super(dom);
         this.initialize();
     }
 
@@ -21,33 +21,33 @@ class Button extends UIKit.Core.Element{
         const model = new Button_Model();
         this.mediator = new UIKit.Core.Mediator(model);
 
-        this.components = {
+        this.elements = {
             caption: new Button_Caption(
-                this.element.find('.uikit-button-caption'),
+                this.dom.find('.uikit-button-caption'),
                 this.mediator,
                 this.type),
 
             effect: new Button_Effect(
-                this.element.find('.uikit-button-effect'),
+                this.dom.find('.uikit-button-effect'),
                 this.mediator,
                 this.type),
         };
 
-        this.element.on('click', (event) => {
+        this.dom.on('click', (event) => {
             this.mediator.publish('button.click', event);
             this.mediator.publish('click', this, event);
             event.stopPropagation();
         });
 
-        this.element.on('mouseenter', () => {
+        this.dom.on('mouseenter', () => {
             this.mediator.publish('button.hover', true);
         });
 
-        this.element.on('mouseleave', () => {
+        this.dom.on('mouseleave', () => {
             this.mediator.publish('button.hover', false);
         });
 
-        this.caption = this.element.attr('data-caption');
+        this.caption = this.dom.attr('data-caption');
 
         super.initialize();
     }

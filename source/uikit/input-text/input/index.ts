@@ -1,43 +1,46 @@
 import './index.styl';
 import * as UIKit from '../../uikit-core/index';
 
-class InputText_Input extends UIKit.Core.Component {
+class InputText_Input extends UIKit.Core.Element {
 
     private storageCaption: string = '';
 
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
-        this.storageCaption = this.element.attr('caption');
+        this.storageCaption = this.dom.attr('caption');
 
         const focusInCallback = () => {
-            const value = this.element.val();
+            const value = this.dom.val();
             if (typeof value === 'string') {
                 if (value === this.storageCaption) {
-                    this.element.val('');
+                    this.dom.val('');
                 }
             }
         };
 
         const focusOutCallback = () => {
-            let value = this.element.val();
+            let value = this.dom.val();
             if (typeof value === 'string') {
                 value = value.trim();
                 if (value === '') {
-                    this.element.val(this.storageCaption);
+                    this.dom.val(this.storageCaption);
                 }
             }
         };
 
-        this.element.focusin(focusInCallback);
-        this.element.focusout(focusOutCallback);
+        this.dom.focusin(focusInCallback);
+        this.dom.focusout(focusOutCallback);
 
         const mediatorSubscribeModelText = (modelData) => {
-            if (modelData.text !== this.element.val()) {
-                this.element.val(modelData.text);
+            if (modelData.text !== this.dom.val()) {
+                this.dom.val(modelData.text);
             }
         };
 

@@ -2,15 +2,15 @@ import './index.styl';
 import * as UIKit from '../uikit-core/index';
 import Tickbox_Inner from './tickbox-inner/index';
 
-interface IComponent {
+interface IElements {
     inner: Tickbox_Inner;
 }
 
-class Tickbox extends UIKit.Core.Element {
-    private components: IComponent;
+class Tickbox extends UIKit.Core.Component {
+    private components: IElements;
 
-    constructor(element: JQuery) {
-        super(element);
+    constructor(dom: JQuery) {
+        super(dom);
         this.initialize();
     }
 
@@ -20,18 +20,17 @@ class Tickbox extends UIKit.Core.Element {
 
         this.components = {
             inner: new Tickbox_Inner(
-                this.element.find('.uikit-tickbox-inner'),
+                this.dom.find('.uikit-tickbox-inner'),
                 this.mediator,
-                this.type,
-            ),
+                this.type),
         };
 
         const mediatorModelChecked = (modelData) => {
-            this.element.attr('data-checked', `${modelData.checked}`);
+            this.dom.attr('data-checked', `${modelData.checked}`);
         };
         this.mediator.subscribe('model.checked', mediatorModelChecked);
 
-        this.checked = (this.element.attr('data-checked') === 'true');
+        this.checked = (this.dom.attr('data-checked') === 'true');
         super.initialize();
     }
 

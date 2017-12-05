@@ -29,10 +29,10 @@ input2.on('change', () => {
 });
 
 submit1.on('click', () => {
-    if (stages2.type === UIKit.Core.Types.HORIZONTAL) {
-        stages2.type = UIKit.Core.Types.VERTICAL;
-    } else if (stages2.type === UIKit.Core.Types.VERTICAL) {
-        stages2.type = UIKit.Core.Types.HORIZONTAL;
+    if (stages2.type === UIKit.Stages.TYPES.HORIZONTAL) {
+        stages2.type = UIKit.Stages.TYPES.VERTICAL;
+    } else if (stages2.type === UIKit.Stages.TYPES.VERTICAL) {
+        stages2.type = UIKit.Stages.TYPES.HORIZONTAL;
     }
 });
 

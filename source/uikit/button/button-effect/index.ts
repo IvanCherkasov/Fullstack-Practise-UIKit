@@ -1,11 +1,13 @@
-import './index.styl';
 import * as UIKit from '../../uikit-core/index';
 
-class Button_Effect extends UIKit.Core.Component{
+class Button_Effect extends UIKit.Core.Element{
 
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+    constructor(
+        element: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(element, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
@@ -14,14 +16,14 @@ class Button_Effect extends UIKit.Core.Component{
             const offset = target.offset();
             const x = event.pageX - offset.left;
             const y = event.pageY - offset.top;
-            this.element.removeClass('animate');
+            this.dom.removeClass('animate');
             const size = Math.max(target.outerWidth(), target.outerHeight());
-            this.element
+            this.dom
                 .css('top', y - size / 2)
                 .css('left', x  - size / 2)
                 .css('width', size)
                 .css('height', size);
-            this.element.addClass('animate');
+            this.dom.addClass('animate');
         });
         super.initialize();
     }

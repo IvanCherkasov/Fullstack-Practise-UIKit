@@ -12,16 +12,9 @@ const mainModule = {
     context: PATHS.source,
     entry: {
         main: './index',
-        slider: './pages/slider/index',
-        button: './pages/button/index',
-        'radial-progress': './pages/radial-progress/index',
+        uikit: './uikit/bundle',
         'arrow-button': './pages/arrow-button/index',
-        stages: './pages/stages/index',
-        'input-text': './pages/input-text/index',
-        textarea: './pages/textarea/index',
-        toggle: './pages/toggle/index',
-        'progress-bar': './pages/progress-bar/index',
-        tickbox: './pages/tickbox/index',
+        button: './pages/button/index',
     },
     output: {
         path: PATHS.build,
@@ -29,6 +22,9 @@ const mainModule = {
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.json'],
+        alias: {
+            uikit: path.resolve(__dirname, './source/uikit/bundle.ts'),
+        },
     },
     module: {
         loaders: [{
@@ -36,7 +32,7 @@ const mainModule = {
             loader: 'babel-loader',
         }, {
             test: /\.(ts|tsx)$/,
-            loader: 'ts-loader',
+            loader: 'awesome-typescript-loader',
         }, {
             test: /\.pug$/,
             loader: 'pug-loader',
@@ -68,63 +64,69 @@ const mainModule = {
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/index.pug`,
             filename: `${PATHS.build}/index.html`,
-            chunks: ['main'],
+            chunks: ['main', 'uikit'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/slider/index.pug`,
             filename: `${PATHS.build}/slider/index.html`,
-            chunks: ['slider'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/button/index.pug`,
             filename: `${PATHS.build}/button/index.html`,
-            chunks: ['button'],
+            chunks: ['main', 'uikit', 'button'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/radial-progress/index.pug`,
             filename: `${PATHS.build}/radial-progress/index.html`,
-            chunks: ['radial-progress'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/arrow-button/index.pug`,
             filename: `${PATHS.build}/arrow-button/index.html`,
-            chunks: ['arrow-button'],
+            chunks: ['main', 'uikit', 'arrow-button'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/stages/index.pug`,
             filename: `${PATHS.build}/stages/index.html`,
-            chunks: ['stages'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/input-text/index.pug`,
             filename: `${PATHS.build}/input-text/index.html`,
-            chunks: ['input-text'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/textarea/index.pug`,
             filename: `${PATHS.build}/textarea/index.html`,
-            chunks: ['textarea'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/toggle/index.pug`,
             filename: `${PATHS.build}/toggle/index.html`,
-            chunks: ['toggle'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/progress-bar/index.pug`,
             filename: `${PATHS.build}/progress-bar/index.html`,
-            chunks: ['progress-bar'],
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/tickbox/index.pug`,
             filename: `${PATHS.build}/tickbox/index.html`,
-            chunks: ['tickbox'],
+            chunks: ['main'],
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
         }),
-        new ExtractTextPlugin('style.css'),
+        new ExtractTextPlugin({
+            filename: '[name].style.css', // [name] - chunk name
+            allChunks: true,
+        }),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'uikit',
+        }),
     ],
     resolveLoader: {
         alias: {

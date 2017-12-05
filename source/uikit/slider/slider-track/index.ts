@@ -1,37 +1,41 @@
 import './index.styl';
 import * as UIKit from '../../uikit-core/index';
+import Slider from '../index';
 import Slider_Fill from './slider-fill/index';
 import Slider_Thumb from './slider-thumb/index';
 
-interface IComponents {
+interface IElements {
     fill: Slider_Fill;
     thumb: Slider_Thumb;
 }
 
-class Slider_Track extends UIKit.Core.Component {
+class Slider_Track extends UIKit.Core.Element {
 
-    private components: IComponents;
+    private components: IElements;
     private storage: {[key: string]: any};
 
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.storage = {
-            isDrag: false,
-        };
-        this.initialize();
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.storage = {
+                isDrag: false,
+            };
+            this.initialize();
     }
 
     protected initialize() {
-        this.mediator.setData('model.coordinateSystem', this.element);
+        this.mediator.setData('model.coordinateSystem', this.dom);
 
         this.components = {
             fill: new Slider_Fill(
-            this.element.find('.uikit-slider-fill'),
+            this.dom.find('.uikit-slider-fill'),
             this.mediator,
             this.type),
 
             thumb: new Slider_Thumb(
-            this.element.find('.uikit-slider-thumb'),
+            this.dom.find('.uikit-slider-thumb'),
             this.mediator,
             this.type),
         };
@@ -44,10 +48,10 @@ class Slider_Track extends UIKit.Core.Component {
                     const maximum = this.mediator.getData('model.maximum');
                     let position: number = 0;
                     let percent: number = 0;
-                    if (this.type === UIKit.Core.Types.HORIZONTAL) {
+                    if (this.type === Slider.TYPES.HORIZONTAL) {
                         position = event.pageX - coordinateSystem.xMin;
                         percent = (100 / (coordinateSystem.width)) * position;
-                    } else if (this.type === UIKit.Core.Types.VERTICAL) {
+                    } else if (this.type === Slider.TYPES.VERTICAL) {
                         position = event.pageY - coordinateSystem.yMin;
                         percent = (100 / (coordinateSystem.height)) * position;
                         percent = 100 - percent;
@@ -72,10 +76,10 @@ class Slider_Track extends UIKit.Core.Component {
             const maximum = this.mediator.getData('model.maximum');
             let position = 0;
             let percent = 0 ;
-            if (this.type === UIKit.Core.Types.HORIZONTAL) {
+            if (this.type === Slider.TYPES.HORIZONTAL) {
                 position = event.pageX - coordinateSystem.xMin;
                 percent = (100 / (coordinateSystem.width)) * position;
-            } else if (this.type === UIKit.Core.Types.VERTICAL) {
+            } else if (this.type === Slider.TYPES.VERTICAL) {
                 position = event.pageY - coordinateSystem.yMin;
                 percent = (100 / (coordinateSystem.height)) * position;
                 percent = 100 - percent;
@@ -84,9 +88,9 @@ class Slider_Track extends UIKit.Core.Component {
             this.mediator.setData('model.value', value);
             startDrag();
         };
-        this.element.on('mousedown.uikit.slider.track', elementMousedown);
+        this.dom.on('mousedown.uikit.slider.track', elementMousedown);
 
-        this.element.on('mouseenter.uikit.slider.track', () => {
+        this.dom.on('mouseenter.uikit.slider.track', () => {
             this.mediator.publish('track.hover', true);
         });
 

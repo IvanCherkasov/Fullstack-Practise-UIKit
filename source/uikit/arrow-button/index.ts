@@ -1,42 +1,35 @@
-import './index.styl';
+import './themes/index';
 import * as UIKit from '../uikit-core/index';
 
-class ArrowButton extends UIKit.Core.Element{
+class ArrowButton extends UIKit.Core.Component{
+
+    public static readonly TYPES = {
+        LEFT: 'left',
+        RIGHT: 'right',
+    };
 
     private clickCallbacks: Function[] = [];
 
-    constructor(element: JQuery) {
-        super(element);
+    constructor(dom: JQuery) {
+        super(dom);
         this.initialize();
     }
 
     protected initialize() {
 
         // применение типа отложено до инициализации (super.initialize())
-        this.type = UIKit.Core.Types.LEFT;
-        const type: string = this.element.attr('data-type');
-        if (type) {
+        this.types = new UIKit.Core.Types(ArrowButton.TYPES);
+        const type = this.dom.attr('data-type');
+        if (this.types.contains(type)) {
             this.type = type;
+        } else {
+            this.type = ''; // no type default
         }
 
         const model = new ArrowButton_Model();
         this.mediator = new UIKit.Core.Mediator(model);
-/*
-        const midiatorElementType = () => {
-            if (this.type === UIKit.Core.Types.LEFT) {
-                // remove - Так как стоит noRebuild === true
-                this.element.removeClass(UIKit.Core.Types.RIGHT);
-                this.element.addClass(UIKit.Core.Types.LEFT);
 
-            } else if (this.type === UIKit.Core.Types.RIGHT) {
-
-                this.element.removeClass(UIKit.Core.Types.LEFT);
-                this.element.addClass(UIKit.Core.Types.RIGHT);
-            }
-        };
-        this.mediator.subscribe('element.type', midiatorElementType);*/
-
-        this.element.on('click.uikit.arrow-button.custom', (event) => {
+        this.dom.on('click.uikit.arrow-button.custom', (event) => {
             if (this.enabled) {
                 this.clickCallbacks.map((item) => {
                     item(event);

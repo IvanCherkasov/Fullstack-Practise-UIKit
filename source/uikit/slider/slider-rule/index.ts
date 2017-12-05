@@ -1,13 +1,17 @@
 import './index.styl';
 import * as UIKit from '../../uikit-core/index';
+import Slider from '../index';
 
-class Slider_Rule extends UIKit.Core.Component {
+class Slider_Rule extends UIKit.Core.Element {
 
     private storageSegments: number = 0;
 
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.storageSegments = Number(this.element.attr('segments'));
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.storageSegments = Number(this.dom.attr('segments'));
 
         this.initialize();
 
@@ -15,7 +19,7 @@ class Slider_Rule extends UIKit.Core.Component {
             const values = this.getValues();
             if (values) {
                 let isHorizontal = true;
-                if (this.type === UIKit.Core.Types.VERTICAL) {
+                if (this.type === Slider.TYPES.VERTICAL) {
                     isHorizontal = false;
                 }
                 this.build(values, isHorizontal);
@@ -54,16 +58,16 @@ class Slider_Rule extends UIKit.Core.Component {
 
         if (isHorizontal) {
             shiftType = 'left';
-            this.element.css('width', '100%');
+            this.dom.css('width', '100%');
         } else {
             shiftType = 'top';
-            this.element.css('height', '100%');
+            this.dom.css('height', '100%');
         }
 
         const elementRuleItemEach = (item) => {
             $(item).remove();
         };
-        this.element.find('div.rule-item').toArray().map(elementRuleItemEach);
+        this.dom.find('div.rule-item').toArray().map(elementRuleItemEach);
 
         for (let i = 0; i < values.length; i += 1) {
             const div = $('<div>')
@@ -88,7 +92,7 @@ class Slider_Rule extends UIKit.Core.Component {
         }
 
         const divEach = (item) => {
-            this.element.append(item);
+            this.dom.append(item);
             item.on('click', () => {
                 const value = Number(item.attr('value'));
                 this.mediator.setData('model.value', value);

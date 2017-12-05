@@ -4,10 +4,9 @@
     "target": "es5",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "./",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths":{
-      "~/*": [ "*" ]
+      "uikit": [ "source/uikit/bundle" ]
     }
   }
 }

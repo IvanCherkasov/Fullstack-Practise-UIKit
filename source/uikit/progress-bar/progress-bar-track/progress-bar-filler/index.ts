@@ -1,18 +1,21 @@
-import './index.styl';
+import ProgressBar from '../../index';
 import * as UIKit from '../../../uikit-core/index';
 
-class ProgressBar_Filler extends UIKit.Core.Component {
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+class ProgressBar_Filler extends UIKit.Core.Element {
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
         const mediatorModelValue = (modelData) => {
-            if (this.type === UIKit.Core.Types.HORIZONTAL) {
-                this.element.css('width', `${modelData.value}%`);
-            } else if (this.type === UIKit.Core.Types.VERTICAL) {
-                this.element.css('height', `${modelData.value}%`);
+            if (this.type === ProgressBar.TYPES.HORIZONTAL) {
+                this.dom.css('width', `${modelData.value}%`);
+            } else if (this.type === ProgressBar.TYPES.VERTICAL) {
+                this.dom.css('height', `${modelData.value}%`);
             }
         };
         this.mediator.subscribe('model.value', mediatorModelValue);

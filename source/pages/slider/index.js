@@ -22,9 +22,9 @@ select.on('change', () => {
 });
 
 $('#slider-change-btn-id').click(() => {
-    if (sliderVer.type === UIKit.Core.Types.HORIZONTAL) {
-        sliderVer.type = UIKit.Core.Types.VERTICAL;
-    } else if (sliderVer.type === UIKit.Core.Types.VERTICAL) {
-        sliderVer.type = UIKit.Core.Types.HORIZONTAL;
+    if (sliderVer.type === UIKit.Slider.TYPES.HORIZONTAL) {
+        sliderVer.type = UIKit.Slider.TYPES.VERTICAL;
+    } else if (sliderVer.type === UIKit.Slider.TYPES.VERTICAL) {
+        sliderVer.type = UIKit.Slider.TYPES.HORIZONTAL;
     }
 });

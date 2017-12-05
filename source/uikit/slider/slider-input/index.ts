@@ -1,28 +1,31 @@
 import './index.styl';
 import * as UIKit from '../../uikit-core/index';
 
-class Slider_Input extends UIKit.Core.Component {
-    constructor(element: JQuery, mediator: UIKit.Core.Mediator, type: string) {
-        super(element, mediator, type);
-        this.initialize();
+class Slider_Input extends UIKit.Core.Element {
+    constructor(
+        dom: JQuery,
+        mediator: UIKit.Core.Mediator,
+        type: string) {
+            super(dom, mediator, type);
+            this.initialize();
     }
 
     protected initialize() {
         const mediatorSubscribeModelValue = (modelData) => {
-            const val = parseInt((this.element.val()) as string, 10);
+            const val = parseInt((this.dom.val()) as string, 10);
             if (val !== NaN) {
-                this.element.val(modelData.value);
+                this.dom.val(modelData.value);
             } else {
                 if (modelData.value !== val) {
-                    this.element.val(modelData.value);
+                    this.dom.val(modelData.value);
                 }
             }
         };
         this.mediator.subscribe('model.value', mediatorSubscribeModelValue);
 
         const changeUikitSliderInputCallback = () => {
-            if (this.element.val()) {
-                const val = parseInt((this.element.val()) as string, 10);
+            if (this.dom.val()) {
+                const val = parseInt((this.dom.val()) as string, 10);
                 if (val !== NaN) {
                     if (val !== this.mediator.getData('model.value')) {
                         this.mediator.setData('model.value', val);
@@ -30,7 +33,7 @@ class Slider_Input extends UIKit.Core.Component {
                 }
             }
         };
-        this.element.on(
+        this.dom.on(
             'change.uikit.slider.input',
             changeUikitSliderInputCallback);
 
