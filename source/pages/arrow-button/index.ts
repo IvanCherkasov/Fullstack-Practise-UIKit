@@ -1,10 +1,7 @@
-import UIKit from 'uikit';
+import UIKit from '../../uikit/bundle';
 
-$('#uikit-arrow-button-id-4').on('click', () => {
-});
-
-const arrowButton1 = new UIKit.ArrowButton($('#uikit-arrow-button-id-1'));
-const arrowButton4 = new UIKit.ArrowButton($('#uikit-arrow-button-id-4'));
+const arrowButton1 = UIKit.ArrowButton.create($('#uikit-arrow-button-id-1'));
+const arrowButton4 = UIKit.ArrowButton.create($('#uikit-arrow-button-id-4'));
 const checkbox = $('#arrow-button-checkbox-id-4');
 const select = $('#style-select-id');
 

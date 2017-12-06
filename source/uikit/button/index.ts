@@ -3,6 +3,8 @@ import * as UIKit from '../uikit-core/index';
 import Button_Caption from './button-caption/index';
 import Button_Effect from './button-effect/index';
 
+// Заменить IsUIKit на добавление класса uikit если он не надйен.
+
 interface IElements {
     caption: Button_Caption;
     effect: Button_Effect;

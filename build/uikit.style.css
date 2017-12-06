@@ -368,7 +368,7 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.right::before {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-type="right"]::before {
   content: "";
   position: absolute;
   background-color: #4eb7a8;
@@ -379,7 +379,7 @@
   transform: rotate(-45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.right::after {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-type="right"]::after {
   content: "";
   position: absolute;
   background-color: #4eb7a8;
@@ -390,10 +390,10 @@
   transform: rotate(45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.left {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-type="left"] {
   transform: scale(-1, 1);
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.left::before {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-type="left"]::before {
   content: "";
   position: absolute;
   background-color: #4eb7a8;
@@ -404,7 +404,7 @@
   transform: rotate(-45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.left::after {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-type="left"]::after {
   content: "";
   position: absolute;
   background-color: #4eb7a8;
@@ -415,20 +415,20 @@
   transform: rotate(45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button:not(.disabled):hover {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="true"]:hover {
   background-color: #4eb7a8;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::after,
-.uikit-theme-aqua .uikit.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::before {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="true"]:hover.uikit-arrow-button::after,
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="true"]:hover.uikit-arrow-button::before {
   background-color: #fff;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.disabled {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="false"] {
   background-color: #e4e4e4;
   border-color: #e4e4e4;
   cursor: default;
 }
-.uikit-theme-aqua .uikit.uikit-arrow-button.disabled::after,
-.uikit-theme-aqua .uikit.uikit-arrow-button.disabled::before {
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="false"]::after,
+.uikit-theme-aqua .uikit.uikit-arrow-button[data-enabled="false"]::before {
   background-color: #fff !important;
   cursor: default !important;
 }
@@ -442,7 +442,7 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.right::before {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-type="right"]::before {
   content: "";
   position: absolute;
   background-color: #255da9;
@@ -453,7 +453,7 @@
   transform: rotate(-45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.right::after {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-type="right"]::after {
   content: "";
   position: absolute;
   background-color: #255da9;
@@ -464,10 +464,10 @@
   transform: rotate(45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.left {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-type="left"] {
   transform: scale(-1, 1);
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.left::before {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-type="left"]::before {
   content: "";
   position: absolute;
   background-color: #255da9;
@@ -478,7 +478,7 @@
   transform: rotate(-45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.left::after {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-type="left"]::after {
   content: "";
   position: absolute;
   background-color: #255da9;
@@ -489,20 +489,20 @@
   transform: rotate(45deg);
   transition: background-color 0.2s;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button:not(.disabled):hover {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="true"]:hover {
   background-color: #255da9;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::after,
-.uikit-theme-sea .uikit.uikit-arrow-button:not(.disabled):hover.uikit-arrow-button::before {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="true"]:hover.uikit-arrow-button::after,
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="true"]:hover.uikit-arrow-button::before {
   background-color: #fff;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.disabled {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="false"] {
   background-color: #e4e4e4;
   border-color: #e4e4e4;
   cursor: default;
 }
-.uikit-theme-sea .uikit.uikit-arrow-button.disabled::after,
-.uikit-theme-sea .uikit.uikit-arrow-button.disabled::before {
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="false"]::after,
+.uikit-theme-sea .uikit.uikit-arrow-button[data-enabled="false"]::before {
   background-color: #fff !important;
   cursor: default !important;
 }

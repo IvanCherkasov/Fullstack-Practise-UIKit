@@ -415,26 +415,6 @@ export namespace Core {
         }
     }
 
-    export class Utils {
-      static getProperties(obj: any): string[] {
-        const result = [];
-        for (const property in obj) {
-          if (obj.hasOwnProperty(property) && property[0] !== '_') {
-            result.push(property);
-          }
-        }
-        return result;
-      }
-      static getPropertiesAndValues(obj: any): {[key: string]: string} {
-          const result: {[key: string]: string} = {};
-          for (const property in obj) {
-            if (obj.hasOwnProperty(property) && property[0] !== '_') {
-              result[property] = obj[property];
-            }
-          }
-          return result;
-      }
-    }
 }
 
 Core.ThemeController.initialize();

@@ -1,53 +1,54 @@
 import './themes/index';
-import * as UIKit from '../uikit-core/index';
+import Component from '../core/component/index';
+import Mediator from '../core/mediator/index';
+import Model from '../core/model/index';
+import Types from '../core/types/index';
 
-class ArrowButton extends UIKit.Core.Component{
-
+class ArrowButton extends Component {
     public static readonly TYPES = {
         LEFT: 'left',
         RIGHT: 'right',
     };
 
-    private clickCallbacks: Function[] = [];
+    public static create(dom: JQuery): ArrowButton {
+        return new ArrowButton(dom);
+    }
 
     constructor(dom: JQuery) {
         super(dom);
-        this.initialize();
+        const model = new ArrowButton_Model();
+        this.mediator = new Mediator(model);
+        this.build();
+        this.isBuilded = true;
+        this.acceptType();
     }
 
-    protected initialize() {
-
-        // применение типа отложено до инициализации (super.initialize())
-        this.types = new UIKit.Core.Types(ArrowButton.TYPES);
+    private acceptType() {
+        this.availableTypes = new Types(ArrowButton.TYPES);
         const type = this.dom.attr('data-type');
-        if (this.types.contains(type)) {
+        if (this.availableTypes.contains(type)) {
             this.type = type;
         } else {
             this.type = ''; // no type default
         }
-
-        const model = new ArrowButton_Model();
-        this.mediator = new UIKit.Core.Mediator(model);
-
-        this.dom.on('click.uikit.arrow-button.custom', (event) => {
-            if (this.enabled) {
-                this.clickCallbacks.map((item) => {
-                    item(event);
-                });
-            }
-        });
-
-        super.initialize();
     }
 
-    public set click(foo: (event) => void) {
-        this.clickCallbacks.push(foo);
+    public build() {
+        this.dom.empty();
     }
 }
 
-class ArrowButton_Model extends UIKit.Core.Model{
+class ArrowButton_Model extends Model {
     constructor() {
         super();
+    }
+
+    public getData(property: string): any {
+        return undefined;
+    }
+
+    public setData(property: string, data: any): boolean {
+        return false;
     }
 }
 
