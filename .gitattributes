@@ -1,0 +1,8 @@
+*.txt -crlf
+*.ts -crlf
+*.styl -crlf
+*.js -crlf
+*.json -crlf
+*.css -crlf
+*.html -crlf
+*.pug -crlf
