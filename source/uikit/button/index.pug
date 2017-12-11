@@ -1,7 +1,2 @@
-include ./button-caption/index.pug
-include ./button-effect/index.pug
-
 mixin addUIKitButton(id, caption, variant)
-	div.uikit.uikit-button(id=id, data-caption=caption, data-variant=variant)
-		+addUIKitButton_Caption(caption)
-		+addUIKitButton_Effect()
+    div.uikit.uikit-button(id=id, data-caption=caption, data-variant=variant)

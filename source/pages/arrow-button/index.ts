@@ -1,4 +1,4 @@
-import UIKit from '../../uikit/bundle';
+import UIKit from 'uikit';
 
 const arrowButton1 = UIKit.ArrowButton.create($('#uikit-arrow-button-id-1'));
 const arrowButton4 = UIKit.ArrowButton.create($('#uikit-arrow-button-id-4'));

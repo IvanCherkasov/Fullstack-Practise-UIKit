@@ -1,20 +1,29 @@
-import * as UIKit from '../../uikit-core/index';
+import * as Core from '../../core/index';
 
-class Button_Caption extends UIKit.Core.Element{
-
+class Button_Caption extends Core.Element{
     constructor(
         dom: JQuery,
-        mediator: UIKit.Core.Mediator,
-        type: string) {
-            super(dom, mediator, type);
+        mediator: Core.Mediator,
+        type: string,
+        attributes: object) {
+            super(dom, mediator, type, attributes);
             this.initialize();
     }
 
-    protected initialize() {
+    private initialize () {
+        this.build();
+        this.isBuilded = true;
+        this.acceptEvents();
+    }
+
+    private acceptEvents() {
         this.mediator.subscribe('button.caption', (caption) => {
             this.dom.text(caption);
         });
-        super.initialize();
+    }
+
+    protected build() {
+        this.dom.empty();
     }
 }
 

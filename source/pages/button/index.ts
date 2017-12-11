@@ -1,9 +1,9 @@
 import UIKit from 'uikit';
 
-const btnKit = new UIKit.Button($('#uikit-button-id'));
-const btnKit2 = new UIKit.Button($('#uikit-button-id-2'));
-const btnKit3 = new UIKit.Button($('#uikit-button-id-3'));
-const btnKit4 = new UIKit.Button($('#uikit-button-id-4'));
+const btnKit = UIKit.Button.create($('#uikit-button-id'));
+const btnKit2 = UIKit.Button.create($('#uikit-button-id-2'));
+const btnKit3 = UIKit.Button.create($('#uikit-button-id-3'));
+const btnKit4 = UIKit.Button.create($('#uikit-button-id-4'));
 const select = $('#style-select-id');
 
 UIKit.Core.ThemeController.getAll().map((theme) => {

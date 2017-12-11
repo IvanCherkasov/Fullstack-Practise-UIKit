@@ -23,12 +23,21 @@ export abstract class Component {
         if (!this.dom || this.dom === null) {
             throw ReferenceError('Component is empty!');
         }
-        if (!Utils.isUikit(this.dom)) {
-            throw ReferenceError('Component is not UIKit object!');
-        }
+        Utils.isUikit(this.dom);
 
         if (this.dom.attr('data-enabled') === 'false') {
             this.enabled = false;
+        }
+    }
+
+    protected acceptType(types: object, defaultType: string) {
+        this.typeChangingNeedRebuild = false;
+        this.availableTypes = new Types(types);
+        const type = this.dom.attr('data-type');
+        if (this.availableTypes.contains(type)) {
+            this.type = type;
+        } else {
+            this.type = defaultType;
         }
     }
 
@@ -60,8 +69,10 @@ export abstract class Component {
         if (this.availableVariants.contains(value)) {
             if (value !== this.storageVariant) {
                 this.storageVariant = value;
-                this.dom.attr('data-variant', this.storageVariant);
-                this.mediator.publish('component.variantChanged');
+                if (this.isBuilded) {
+                    this.dom.attr('data-variant', this.storageVariant);
+                    this.mediator.publish('component.variantChanged');
+                }
             }
         }
     }

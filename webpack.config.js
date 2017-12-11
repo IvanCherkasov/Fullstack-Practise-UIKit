@@ -15,6 +15,7 @@ const mainModule = {
         uikit: './uikit/bundle',
         'arrow-button': './pages/arrow-button/index',
         button: './pages/button/index',
+        stages: './pages/stages/index',
     },
     output: {
         path: PATHS.build,
@@ -89,7 +90,7 @@ const mainModule = {
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/stages/index.pug`,
             filename: `${PATHS.build}/stages/index.html`,
-            chunks: ['main'],
+            chunks: ['main', 'uikit', 'stages'],
         }),
         new HtmlWebpackPlugin({
             template: `${PATHS.source}/pages/input-text/index.pug`,

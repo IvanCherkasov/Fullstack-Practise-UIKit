@@ -1,9 +1,9 @@
-import UIKit from '../../index';
+import UIKit from 'uikit';
 
-const stages1 = new UIKit.Stages($('#uikit-stages-id-1'));
-const stages2 = new UIKit.Stages($('#uikit-stages-id-2'));
-const stages3 = new UIKit.Stages($('#uikit-stages-id-3'));
-const stages4 = new UIKit.Stages($('#uikit-stages-id-4'));
+const stages1 = UIKit.Stages.create($('#uikit-stages-id-1'));
+const stages2 = UIKit.Stages.create($('#uikit-stages-id-2'));
+const stages3 = UIKit.Stages.create($('#uikit-stages-id-3'));
+const stages4 = UIKit.Stages.create($('#uikit-stages-id-4'));
 const input1 = $('#uikit-stages-input-id-1');
 const input2 = $('#uikit-stages-input-id-2');
 const select = $('#style-select-id');

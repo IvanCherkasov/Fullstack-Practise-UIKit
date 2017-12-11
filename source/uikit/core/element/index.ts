@@ -3,6 +3,9 @@ import Mediator from '../mediator/index';
 abstract class Element {
     private storageType: string = '';
 
+    protected abstract build();
+    protected isBuilded: boolean = false;
+
     public static create(dom: JQuery): Element {
         return undefined;
     }

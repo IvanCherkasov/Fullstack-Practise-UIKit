@@ -4,8 +4,10 @@
 	align-items center
 	justify-content center
 
-.uikit-stages.horizontal
-	flex-direction column
+.uikit-stages
+    &[data-type="horizontal"]
+	   flex-direction column
 
-.uikit-stages.vertical
-	flex-direction row
+.uikit-stages
+    &[data-type="vertical"]
+	   flex-direction row

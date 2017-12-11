@@ -5,18 +5,18 @@
         justify-content space-between
         align-items center
 
-    &.horizontal
+    &[data-type="horizontal"]
         .uikit-stages-track
             flex-direction row
 
-        &.invert
+        &[data-invert="true"]
             .uikit-stages-track
                 flex-direction row-reverse
 
-    &.vertical
+    &[data-type="vertical"]
         .uikit-stages-track
             flex-direction column
 
-        &.invert
+        &[data-invert="true"]
             .uikit-stages-track
                 flex-direction column-reverse

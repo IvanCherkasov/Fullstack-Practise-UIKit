@@ -1,17 +1,24 @@
-import * as UIKit from '../../uikit-core/index';
+import * as Core from '../../core/index';
 
-class Button_Effect extends UIKit.Core.Element{
+class Button_Effect extends Core.Element{
 
     constructor(
-        element: JQuery,
-        mediator: UIKit.Core.Mediator,
-        type: string) {
-            super(element, mediator, type);
+        dom: JQuery,
+        mediator: Core.Mediator,
+        type: string,
+        attributes: object) {
+            super(dom, mediator, type, attributes);
             this.initialize();
     }
 
-    protected initialize() {
-        this.mediator.subscribe('button.click', (event) => {
+    private initialize() {
+        this.build();
+        this.isBuilded = true;
+        this.acceptEvents();
+    }
+
+    private acceptEvents() {
+        const mediatorButtonClick = (event) => {
             const target = $(event.currentTarget);
             const offset = target.offset();
             const x = event.pageX - offset.left;
@@ -24,8 +31,12 @@ class Button_Effect extends UIKit.Core.Element{
                 .css('width', size)
                 .css('height', size);
             this.dom.addClass('animate');
-        });
-        super.initialize();
+        };
+        this.mediator.subscribe('button.click', mediatorButtonClick);
+    }
+
+    protected build() {
+        this.dom.empty();
     }
 }
 

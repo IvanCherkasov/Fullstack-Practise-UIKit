@@ -8,7 +8,7 @@ import ThemeController from './theme-controller/index';
 import Types from './types/index';
 import Utils from './utils/index';
 
-export default {
+export {
     Component,
     CoordinateSystem,
     Element,

@@ -1,4 +1,4 @@
-import * as Base from './uikit-core/index';
+import * as Core from './core/index';
 import Slider from './slider/index';
 import Button from  './button/index';
 import RadialProgress from './radial-progress/index';
@@ -10,9 +10,10 @@ import Toggle from './toggle/index';
 import ProgressBar from './progress-bar/index';
 import Tickbox from './tickbox/index';
 import Form from './form/index';
-const Core = Base.Core;
 
-const UIKit = {
+Core.ThemeController.initialize();
+
+export default {
     Core,
     Slider,
     Button,
@@ -26,5 +27,3 @@ const UIKit = {
     Tickbox,
     Form,
 };
-
-export default UIKit;

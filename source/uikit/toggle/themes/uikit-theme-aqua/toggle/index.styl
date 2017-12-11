@@ -44,73 +44,75 @@
                 z-index 1
                 cursor default
 
-        &[text-enabled="false"]
-            .text-right
-            .text-left
-                display none
+            &[text-enabled="false"]
+                .text-right
+                .text-left
+                    display none
 
-        &.vertical
-            height 36px
-            width 24px
-            justify-content center
-            margin 12px 0
+            &.vertical
+                height 36px
+                width 24px
+                justify-content center
+                margin 12px 0
 
-            .left-dummy
-                top -12px
+                .left-dummy
+                    top -12px
 
-            .right-dummy
-                bottom -12px
+                .right-dummy
+                    bottom -12px
 
-            .text-left
-                display none
+                .text-left
+                    display none
 
-            .text-right
-                display none
+                .text-right
+                    display none
 
-        &.horizontal
-            height 24px
-            width 36px
-            align-items center
-            margin 0 12px
-
-            .left-dummy
-                left -12px
-
-            .right-dummy
-                right -12px
-
-            .text-left
-                left 0
+            &.horizontal
                 height 24px
+                width 36px
                 align-items center
+                margin 0 12px
 
-            .text-right
-                right 0
-                height 24px
-                align-items center
+                .left-dummy
+                    left -12px
 
-        &.checked
-            background-color #4EB7A8
+                .right-dummy
+                    right -12px
 
-            .left-dummy
-            .right-dummy
+                .text-left
+                    left 0
+                    height 24px
+                    align-items center
+
+                .text-right
+                    right 0
+                    height 24px
+                    align-items center
+
+        &.uikit-toggle
+
+            &.checked
                 background-color #4EB7A8
 
-            .text-left
-                opacity 1
+                .left-dummy
+                .right-dummy
+                    background-color #4EB7A8
 
-            .text-right
-                opacity 0
+                .text-left
+                    opacity 1
 
-        &:not(.checked)
-            background-color #e5e5e5
+                .text-right
+                    opacity 0
 
-            .left-dummy
-            .right-dummy
+            &:not(.checked)
                 background-color #e5e5e5
 
-            .text-left
-                opacity 0
+                .left-dummy
+                .right-dummy
+                    background-color #e5e5e5
 
-            .text-right
-                opacity 1
+                .text-left
+                    opacity 0
+
+                .text-right
+                    opacity 1

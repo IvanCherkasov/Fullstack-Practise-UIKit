@@ -1,9 +1,8 @@
 class Utils {
-    public static isUikit(dom: JQuery): boolean {
-        if (dom.hasClass('uikit')) {
-            return true;
+    public static isUikit(dom: JQuery): void {
+        if (!dom.hasClass('uikit')) {
+            dom.addClass('uikit');
         }
-        return false;
     }
 
     public static getAllAttributes(obj: JQuery): object {

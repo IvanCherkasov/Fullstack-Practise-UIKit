@@ -1,10 +1,7 @@
 import './themes/index';
-import Component from '../core/component/index';
-import Mediator from '../core/mediator/index';
-import Model from '../core/model/index';
-import Types from '../core/types/index';
+import * as Core from '../core/index';
 
-class ArrowButton extends Component {
+class ArrowButton extends Core.Component {
     public static readonly TYPES = {
         LEFT: 'left',
         RIGHT: 'right',
@@ -17,20 +14,14 @@ class ArrowButton extends Component {
     constructor(dom: JQuery) {
         super(dom);
         const model = new ArrowButton_Model();
-        this.mediator = new Mediator(model);
-        this.build();
-        this.isBuilded = true;
-        this.acceptType();
+        this.mediator = new Core.Mediator(model);
+        this.initialize();
     }
 
-    private acceptType() {
-        this.availableTypes = new Types(ArrowButton.TYPES);
-        const type = this.dom.attr('data-type');
-        if (this.availableTypes.contains(type)) {
-            this.type = type;
-        } else {
-            this.type = ''; // no type default
-        }
+    private initialize() {
+        this.acceptType(ArrowButton.TYPES, '');
+        this.build();
+        this.isBuilded = true;
     }
 
     public build() {
@@ -38,7 +29,7 @@ class ArrowButton extends Component {
     }
 }
 
-class ArrowButton_Model extends Model {
+class ArrowButton_Model extends Core.Model {
     constructor() {
         super();
     }

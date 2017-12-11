@@ -1,29 +1,32 @@
-import './index.styl';
-import './stages-stage/index';
-import './stages-between/index';
 import Stages from '../index';
-import * as UIKit from '../../uikit-core/index';
+import * as Core from '../../core/index';
 
-class Stages_Track extends UIKit.Core.Element {
+class Stages_Track extends Core.Element {
 
     constructor(
         dom: JQuery,
-        mediator: UIKit.Core.Mediator,
+        mediator: Core.Mediator,
         type: string,
+        protected attributes: object,
         private storageInvert: boolean) {
-            super(dom, mediator, type);
+            super(dom, mediator, type, attributes);
             this.initialize();
     }
 
-    protected initialize() {
+    private initialize() {
+        this.build();
+        this.isBuilded = true;
+        this.acceptEvents();
+    }
 
+    protected build() {
+        this.dom.empty();
         let orientation = ['width', 'left'];
         if (this.type === Stages.TYPES.VERTICAL) {
             orientation = ['height', 'top'];
         }
-
-        const stages = this.mediator.getData('model.stages');
-        const percent = 100 / (stages - 1);
+        const stagesCount = Number(this.attributes['data-stages']);
+        const percent = 100 / (stagesCount - 1);
         const stageDom = $('<div>').addClass('uikit-stages-stage');
         const captionDom = $('<div>').addClass('uikit-stage-caption');
         const betweenDom = $('<div>')
@@ -31,21 +34,23 @@ class Stages_Track extends UIKit.Core.Element {
             .css(orientation[0], percent + '%');
 
         let shift: number = 0;
-        for (let i = 1; i <= stages - 1; i += 1) {
+        for (let i = 1; i <= stagesCount - 1; i += 1) {
             betweenDom.css(orientation[1], shift + '%');
             shift += percent;
             this.dom.append(betweenDom.clone());
         }
 
-        for (let i = 1; i <= stages; i += 1) {
+        for (let i = 1; i <= stagesCount; i += 1) {
             const clone = stageDom.clone()
                 .append(
                     captionDom.clone()
                     .html('<span>' + i + '</span>'));
             this.dom.append(clone);
         }
+    }
 
-        const mediatorSubscribeModelStageCallback = (modelData) => {
+    private acceptEvents() {
+        const mediatorSubscribeModelStage = (modelData) => {
             let betweens = this.dom.find('.uikit-stages-between');
             if (this.storageInvert) {
                 betweens = $(betweens.get().reverse());
@@ -70,12 +75,7 @@ class Stages_Track extends UIKit.Core.Element {
             this.dom.find('.uikit-stages-stage').toArray().map(
                 stagesEachMap);
         };
-
-        this.mediator.subscribe(
-            'model.stage',
-            mediatorSubscribeModelStageCallback);
-
-        super.initialize();
+        this.mediator.subscribe('model.stage', mediatorSubscribeModelStage);
     }
 }
 
