@@ -1,0 +1,91 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-location
+            position: relative
+            width: 593px
+            border-radius: 3px
+            display flex
+            flex-direction: column
+            justify-content: space-between
+            align-items: center
+            overflow hidden
+
+            .uikit-location-map
+                position: relative
+                height 212px
+
+                .uikit-location-map-place-mark
+                    position: absolute
+                    width 60px
+                    height 60px
+                    top calc(50% - 30px)
+                    left calc(50% - 30px)
+                    background-image: url('./Shape 14.png')
+                    background-repeat: no-repeat
+                    background-position: center center
+
+            .uikit-location-info
+                height 69px
+                width 100%
+                display: flex
+                justify-content: space-between
+                align-items: center
+                background-color: #e75735
+                color white
+                font-family: Lato
+                box-sizing: border-box
+                padding 0 25px
+
+                .uikit-location-icons
+                    display flex
+                    justify-content: space-between
+                    align-items: center
+                    width: 76px
+
+                    .uikit-location-aim
+                        width 27px
+                        height 27px
+
+                        a
+                            display: block
+                            height inherit
+                            display: block
+                            background-image: url('./Icon - My Location.png')
+                            background-repeat: no-repeat
+                            background-position: center center
+
+                    .uikit-location-mark
+                        width 27px
+                        height 27px
+
+                        a
+                            width inherit 
+                            height inherit
+                            display: block
+                            background-image: url('./Icon - Pin.png')
+                            background-repeat: no-repeat
+                            background-position: center center
+
+                .uikit-location-text
+                    display: flex
+                    align-items: center
+                    cursor default
+
+                    .uikit-location-greet
+                        div
+                            font-family Lato
+                            font-size: 30px
+                            font-weight: 200
+
+                    .uikit-location-place
+                        box-sizing: border-box
+                        margin-left: 27px
+
+                        .uikit-location-state
+                        .uikit-location-town
+                            div
+                                font-family Lato
+                                font-size: 12px
+                                font-weight: bold
+                                text-transform: uppercase
+                                letter-spacing: 1px

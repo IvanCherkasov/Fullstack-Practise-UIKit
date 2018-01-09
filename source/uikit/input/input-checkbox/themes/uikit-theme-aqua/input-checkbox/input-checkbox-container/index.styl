@@ -1,0 +1,44 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-checkbox
+            .uikit-input-checkbox-container
+                display flex
+                align-items center
+                justify-content center
+                width 16px
+                height 16px
+                border-radius 3px
+                border 1px solid #4EB7A8
+                cursor pointer
+                overflow hidden
+                position relative
+
+                .checkbox-color-check
+                    position absolute
+                    display inline-block
+                    width 5px
+                    height 10px
+                    border solid #4EB7A8
+                    border-width 0 2px 2px 0
+                    transform rotate(45deg) scale(0.8)
+                    transition 0.2s
+                    bottom 3px
+                    left 5px
+
+        &.uikit-input-checkbox[data-checked="true"]
+            .checkbox-color-check
+                opacity 1
+                border-color white
+
+            .uikit-input-checkbox-container
+                background-color #4EB7A8
+
+        &.uikit-input-checkbox[data-checked="false"]
+            .checkbox-color-check
+                opacity 0
+                border-color #4EB7A8
+
+            .uikit-input-checkbox-container
+                &:hover
+                    .checkbox-color-check
+                        opacity 1

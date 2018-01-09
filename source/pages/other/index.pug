@@ -1,0 +1,44 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+    head
+        meta(charset="utf-8")
+        meta(viewport="width=device-width")
+        title UIKit - Inputs
+    body
+        div
+            a(href='../') Back
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitProfilebar('profile-1-bar-id', 'prof-1')
+            div(style="width: 50px;")
+            +addUIKitProfilebar('profile-2-bar-id', 'prof-2')
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitNews('news-1-id', 'news-1')
+            div(style="width: 50px;")
+            +addUIKitNews('news-2-id', 'news-2')
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitEvent('event-1-id', 'event-1')
+            div(style="width: 50px;")
+            +addUIKitEvent('event-2-id', 'event-2')
+        br
+        br
+        div(style="position: relative; width: 100%; padding-top: 56.25%;")
+            +addUIKitVideoPlayer('video-player-1-id', 'video-1')
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitMessageBox('message-box-1-id', 'prof-2')
+            div(style="width: 50px;")
+            +addUIKitMessageBox('message-box-2-id', 'prof-1')
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitLocation('location-1-id', 'location-1')
+        br
+        br

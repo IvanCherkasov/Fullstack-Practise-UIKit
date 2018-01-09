@@ -5,8 +5,11 @@ import Math from './math/index';
 import Mediator from './mediator/index';
 import Model from './model/index';
 import ThemeController from './theme-controller/index';
-import Types from './types/index';
+import Orientations from './orientations/index';
 import Utils from './utils/index';
+import Backend from './backend/index';
+
+type TParameters = {[key: string]: any};
 
 export {
     Component,
@@ -16,6 +19,8 @@ export {
     Mediator,
     Model,
     ThemeController,
-    Types,
+    Orientations,
     Utils,
+    TParameters,
+    Backend,
 };

@@ -1,0 +1,46 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-textarea
+            textarea
+                position relative
+                background-color #e5e5e5
+                border none
+                border-radius 3px
+                color #888
+                font-size 14px
+                font-family Source Sans Pro
+                font-weight 400
+                letter-spacing 0.14px
+                text-align left
+                padding 6px 12px
+                box-sizing border-box 
+                flex 2
+
+            textarea:focus
+                outline none
+
+            textarea[data-resizeble="true"]
+                resize both
+
+            textarea[data-resizeble="false"]
+                resize none
+
+        &.uikit-input-textarea[data-variant='regular']
+            width 300px
+            height 150px
+
+            textarea
+                width inherit
+                height inherit
+
+        &.uikit-input-textarea[data-variant='fullsize']
+            width 100%
+            height 100%
+
+            textarea
+                width 100%
+                height 100%
+        
+        &.uikit-input-textarea[data-variant='none']
+            width auto
+            height auto

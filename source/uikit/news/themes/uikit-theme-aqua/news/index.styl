@@ -1,0 +1,51 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-news
+            display: flex
+            flex-direction: row
+            justify-content: space-between
+            align-items: center
+            box-sizing: border-box
+            width 288px
+            height 212px
+            border-radius: 3px
+
+            .uikit-news-picture
+                display flex
+                width 95px
+                height inherit
+
+            .uikit-news-article
+                color white
+                font-family: Lato
+                box-sizing: border-box
+                padding 23px 26px
+                height 100%
+
+                .uikit-news-header
+                    font-weight: 200
+                    font-size: 28px
+                    text-align: left
+                    line-height: 27px
+
+                .uikit-news-date
+                    text-align: left
+                    font-size: 11px
+                    text-transform: uppercase
+                    letter-spacing: 1px
+                    word-spacing: 4px
+
+                .uikit-news-content
+                    font-weight: 300
+                    text-align: left
+                    font-size: 11px
+
+                    p
+                        margin: 0
+        
+            &[data-variant="orangered"]
+                background-color: #e75735
+                
+
+            &[data-variant="aqua"]
+                background-color: #4eb7a8

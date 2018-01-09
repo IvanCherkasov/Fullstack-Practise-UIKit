@@ -1,0 +1,36 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-text
+            .uikit-indicator
+                position relative
+                display flex
+                justify-content center
+                align-items center
+                height 28px
+                border-radius 3px
+                min-width 76px
+                margin-left 10px
+
+            .uikit-indicator::before
+                position absolute
+                content ""
+                width 7px
+                height 7px
+                border-radius 0 0 2px 0
+                transform rotate(135deg)
+                bottom 0
+                top 0
+                left -3px
+                margin auto
+
+            .uikit-indicator[data-enabled='false']
+            .uikit-indicator[data-enabled='false']::before
+                display none
+
+            .uikit-indicator[data-status='true']
+            .uikit-indicator[data-status='true']::before
+                background-color #4EB7A8
+            
+            .uikit-indicator[data-status='false']
+            .uikit-indicator[data-status='false']::before
+                background-color #e75735

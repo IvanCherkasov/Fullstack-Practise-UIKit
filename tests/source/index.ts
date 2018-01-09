@@ -1,44 +1,28 @@
+let ggg: {[key: string]: any} = {
+    a: 0,
+    b: 1,
+    c: 2,
+    d: {
+        1: 0,
+        2: 1,
+        3: 2,
+        4: {
+            1: 0,
+            2: 13,
+        },
+    },
+};
 
-console.log(0o01);
-console.log(0o02);
-console.log(0o03);
+let hhh: {[key: string]: any} = {
+    a: 10,
+    e: 3,
+    f: 4,
+    d: {
+        4: {
+            3: 40,
+        },
+    },
+};
 
-console.log(0o0100);
-console.log(0o0200);
-console.log(0o0300);
-
-console.log(0o010000);
-console.log(0o020000);
-console.log(0o030000);
-
-if (0o01 & 0o0100) {
-    console.log('0o01 & 0o0100', true);
-} else {
-    console.log('0o01 & 0o0100', false);
-}
-
-/*
-console.log(0o01000000);
-console.log(0o02000000);
-console.log(0o03000000);
-
-console.log(0o0100000000);
-console.log(0o0200000000);
-console.log(0o0300000000);
-
-console.log(0o010000000000);
-console.log(0o020000000000);
-console.log(0o030000000000);
-
-console.log(0o01000000000000);
-console.log(0o02000000000000);
-console.log(0o03000000000000);
-
-console.log(0o0100000000000000);
-console.log(0o0200000000000000);
-console.log(0o0300000000000000);
-
-console.log(0o010000000000000000);
-console.log(0o020000000000000000);
-console.log(0o030000000000000000);
-*/
+ggg = { ...ggg, ...hhh };
+console.log(ggg);

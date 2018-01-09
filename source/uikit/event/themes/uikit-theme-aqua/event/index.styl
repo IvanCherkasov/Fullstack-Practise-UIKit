@@ -1,0 +1,68 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-event
+            width 288px
+            height 212px
+            display flex
+            justify-content: space-between
+            align-items: center
+            border-radius: 3px
+
+            .uikit-event-picture
+                display flex
+                width 95px
+                height: inherit 
+
+            .uikit-event-content
+                display:  flex
+                flex-direction: column
+                justify-content: space-between
+                align-items: center
+                height 100%
+                width: 100%
+                box-sizing: border-box
+                padding 23px 26px
+                color white
+                font-family: Lato
+
+                .uikit-event-date
+                    display flex
+                    align-items: flex-end
+                    justify-content: space-around
+
+                    .uikit-event-date-day
+                        font-size 73px
+                        font-weight 200
+                        line-height 63px
+                        box-sizing: border-box
+                        padding-right 4px
+
+                    .uikit-event-date-month
+                        font-size 30px
+                        font-weight: 100
+                        box-sizing: border-box
+                        padding-left: 4px
+
+                .uikit-event-title
+                    text-transform: uppercase
+                    font-size: 12px
+                    font-weight: normal
+                    text-align: left
+                    line-height: 20px
+                    letter-spacing: 0.8px
+
+                .uikit-event-text
+                    font-weight: 300
+                    text-align: left
+                    font-size: 11px
+                    letter-spacing: 0.4px
+
+                    p
+                        margin 0
+
+            &[data-variant="aqua"]
+                background-color: #4eb7a8
+
+            &[data-variant="orangered"]
+                background-color: #e75735
+                

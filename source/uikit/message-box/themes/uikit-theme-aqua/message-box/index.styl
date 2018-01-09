@@ -1,0 +1,161 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-message-box
+            width 288px
+            min-height: 428px
+            border-radius: 3px
+            overflow hidden
+            display flex
+            flex-direction: column
+            align-items: center
+            justify-content: space-between
+
+            .uikit-message-box-1
+                width: 100%
+                min-height 81px
+                display: flex
+                justify-content: center
+                align-items: center
+
+                div
+                    font-size 34px
+                    color white
+                    font-weight: 200
+                    text-align: center
+                    font-family: Source Sans Pro
+
+            .uikit-message-box-2
+                width: 100%
+                height 34px
+
+            .uikit-message-box-3
+                flex 1
+                display flex
+                flex-direction: column
+                background-color: #f2f2f2
+                justify-content: space-between
+                align-items: center
+                box-sizing: border-box
+                padding 0 23px
+                padding-bottom: 26px
+
+                .uikit-message-box-icons
+                    position relative
+                    display flex
+                    justify-content: space-between
+                    align-items: center
+                    box-sizing: border-box
+                    padding-top 22px
+                    width: 100%
+
+                    .chat
+                        width 25px
+                        height 25px
+
+                        a
+                            display block
+                            width: inherit
+                            height inherit
+                            background-image: url('./Chat Icon.png')
+                            background-repeat: no-repeat
+                            background-position: center center
+
+                    .photo
+                        width 84px
+                        height 84px
+                        border 5px solid #e5e5e5
+                        background-color: #e5e5e5
+                        position: absolute
+                        left calc(50% - 47px)
+                        top -47px
+                        border-radius: 50%
+                        overflow hidden
+
+                    .camera
+                        width 25px
+                        height 25px
+                        
+                        a
+                            display block
+                            width: inherit
+                            height inherit
+                            background-image: url('./Camera Icon.png')
+                            background-repeat: no-repeat
+                            background-position: center center
+
+                .uikit-message-box-recieved
+                    background-color: white
+                    border-radius: 5px
+                    overflow hidden
+                    box-sizing: border-box
+                    padding: 20px
+                    margin-top 20px
+
+                    div
+                        font-family: Lato
+                        color #868686
+                        font-size: 12px
+                        font-weight: normal
+                        text-align: left
+
+                .uikit-message-box-textarea
+                    margin-top 20px
+                    width: 100%
+
+                    textarea
+                        padding 0 16px
+                        padding-top 16px
+                        border 3px solid white
+                        border-radius: 3px
+                        color #777
+                        font-size: 12px
+                        font-weight: normal
+                        font-family: Lato
+
+                .uikit-message-box-btn
+                    width 100%
+                    height 32px
+                    padding-top 20px
+                
+        &[data-variant="aqua"]
+            .uikit-message-box-1
+                background-color: #4eb7a8
+
+            .uikit-message-box-2
+                background-color: #46ab9d
+
+            .uikit-message-box-btn
+                .uikit-button
+                    background-color: #4eb7a8
+                    box-shadow 0 3px 0px 0px #28a290
+                    border none
+                    color white
+
+                    &:hover
+                        background-color #28a290
+                        box-shadow 0 3px 0px 0px #227569
+
+                    &:active
+                        box-shadow 0 0px 0px 0px #28a290
+
+        &[data-variant="orangered"]
+            .uikit-message-box-1
+                background-color: #e75735
+
+            .uikit-message-box-2
+                background-color: #d54c2c
+
+            .uikit-message-box-btn
+                .uikit-button
+                    background-color: #e75735
+                    box-shadow 0 3px 0px 0px #bf3e1f
+                    border none
+                    color white
+
+                    &:hover
+                        background-color #bf3e1f
+                        box-shadow 0 3px 0px 0px #9c2c16
+
+                    &:active
+                        box-shadow 0 0px 0px 0px #9c2c16
+                            

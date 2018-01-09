@@ -1,0 +1,38 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-search
+            .uikit-input-search-btn
+                position relative
+                height 28px
+                width 33px
+                display flex
+                align-items center
+                justify-content center
+                border-top-right-radius 3px
+                border-bottom-right-radius 3px
+                background-color #e75735
+                cursor pointer
+                transition background-color 0.2s
+
+                .uikit-input-search-mag
+                    position absolute
+                    width 7px
+                    height 7px
+                    border 2px solid white
+                    border-radius 50%
+                    bottom 10px
+                    left 9px
+                    transform scale(0.9)
+
+                .uikit-input-search-mag::after
+                    content ""
+                    position absolute
+                    height 3px
+                    width 9px
+                    transform rotate(45deg)
+                    background-color white
+                    left 5px
+                    top 8px
+
+            .uikit-input-search-btn:hover
+                background-color #bf3e1f

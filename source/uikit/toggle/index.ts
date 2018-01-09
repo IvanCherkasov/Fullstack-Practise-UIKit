@@ -11,7 +11,7 @@ interface IElements {
     thumb: Toggle_Thumb;
 }
 
-class Toggle extends  UIKit.Core.Component{
+class Toggle extends UIKit.Core.Component{
 
     public static readonly TYPES = {
         HORIZONTAL: 'horizontal',

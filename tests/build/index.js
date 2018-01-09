@@ -67,46 +67,40 @@
 /* 0 */
 /***/ (function(module, exports) {
 
-console.log(1);
-console.log(2);
-console.log(3);
-console.log(64);
-console.log(128);
-console.log(192);
-console.log(4096);
-console.log(8192);
-console.log(12288);
-if (1 & 64) {
-    console.log('0o01 & 0o0100', true);
-}
-else {
-    console.log('0o01 & 0o0100', false);
-}
-/*
-console.log(0o01000000);
-console.log(0o02000000);
-console.log(0o03000000);
-
-console.log(0o0100000000);
-console.log(0o0200000000);
-console.log(0o0300000000);
-
-console.log(0o010000000000);
-console.log(0o020000000000);
-console.log(0o030000000000);
-
-console.log(0o01000000000000);
-console.log(0o02000000000000);
-console.log(0o03000000000000);
-
-console.log(0o0100000000000000);
-console.log(0o0200000000000000);
-console.log(0o0300000000000000);
-
-console.log(0o010000000000000000);
-console.log(0o020000000000000000);
-console.log(0o030000000000000000);
-*/
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var ggg = {
+    a: 0,
+    b: 1,
+    c: 2,
+    d: {
+        1: 0,
+        2: 1,
+        3: 2,
+        4: {
+            1: 0,
+            2: 13,
+        },
+    },
+};
+var hhh = {
+    a: 10,
+    e: 3,
+    f: 4,
+    d: {
+        4: {
+            3: 40,
+        },
+    },
+};
+ggg = __assign({}, ggg, hhh);
+console.log(ggg);
 
 
 /***/ })

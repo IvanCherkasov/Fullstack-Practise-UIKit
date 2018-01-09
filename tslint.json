@@ -7,7 +7,9 @@
     "rules": {
       "ter-indent": ["error", 4],
       "prefer-const": true,
-      "import-name": [false, {}]
+      "import-name": [false, {}],
+      "object-literal-key-quotes": [false],
+      "align": [false]
     },
     "rulesDirectory": []
 }

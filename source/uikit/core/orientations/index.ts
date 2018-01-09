@@ -1,7 +1,7 @@
-class Types {
-    private types: object;
-    constructor(TYPES: object) {
-        this.types = TYPES;
+class Orientations {
+    private orientations: object;
+    constructor(ORIENTATIONS: object) {
+        this.orientations = ORIENTATIONS;
     }
 
     public contains(key: string): boolean {
@@ -12,32 +12,32 @@ class Types {
     }
 
     public getKeys(): string[] {
-        return Object.keys(this.types);
+        return Object.keys(this.orientations);
     }
 
     public getValues(): string[] {
-        const keys = Object.keys(this.types);
+        const keys = Object.keys(this.orientations);
         const values: string[] = [];
         keys.map((key) => {
-            values.push(this.types[key]);
+            values.push(this.orientations[key]);
         });
         return values;
     }
 
     public getAll(): [string, string][] {
-        const types: [string, string][] = [];
+        const orientations: [string, string][] = [];
         const keys: string[] = this.getKeys();
         keys.map((key) => {
-            types.push([key, this.get(key)]);
+            orientations.push([key, this.get(key)]);
         });
-        return types;
+        return orientations;
     }
 
     public get(key: string): string {
         if (this.contains(key)) {
-            return this.types[key];
+            return this.orientations[key];
         }
         return '';
     }
 }
-export default Types;
+export default Orientations;

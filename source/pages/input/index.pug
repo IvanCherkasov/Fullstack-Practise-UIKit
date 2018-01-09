@@ -1,0 +1,73 @@
+include ../../mixins.pug
+
+doctype html
+html(lang='ru')
+    head
+        meta(charset="utf-8")
+        meta(viewport="width=device-width")
+        title UIKit - Inputs
+    body
+        div
+            a(href='../') Back
+        br
+        span styles
+        select(id='style-select-id')
+        br
+        br
+        +addUIKitInput('input-text-id-1', 'text')
+        br
+        +addUIKitInput('input-search-id-15', 'search')
+        label Имитация ошибки   
+        input(type='checkbox' id='input-search-error')
+        br
+        +addUIKitInput('input-dropdown-id-16', 'dropdown')
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitInput('input-toggle-id-2', 'toggle')
+            div(style="width: 50px;")
+            +addUIKitInput('input-toggle-id-3', 'toggle')
+            div(style="width: 50px;")
+            +addUIKitInput('input-radio-id-9', 'radio')
+                label Radio 1
+            +addUIKitInput('input-radio-id-10', 'radio')
+                label Radio 2
+            +addUIKitInput('input-radio-id-11', 'radio')
+                label Radio 3
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitInput('input-button-id-4', 'button')
+            div(style="width: 50px;")
+            +addUIKitInput('input-submit-id-5', 'submit')        
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            +addUIKitInput('input-arrow-id-17', 'arrow')
+            div(style="width: 10px;")
+            +addUIKitInput('input-arrow-id-18', 'arrow')
+            div(style="width: 10px;")
+            +addUIKitInput('input-arrow-id-19', 'arrow')
+            div(style="width: 10px;")
+            +addUIKitInput('input-arrow-id-20', 'arrow')
+            div(style="width: 50px;")
+            +addUIKitInput('input-checkbox-id-12', 'checkbox')
+                label Checkbox 1
+            +addUIKitInput('input-checkbox-id-13', 'checkbox')
+                label Checkbox 2
+            +addUIKitInput('input-checkbox-id-14', 'checkbox')
+                label Checkbox 3     
+        br
+        br
+        div(style="display: flex; flex-wrap: wrap;")
+            div none
+            div(style="width: 200px; height: 100px;")
+                +addUIKitInput('input-textarea-id-6', 'textarea')
+            div(style="width: 50px;")
+            div regular
+            +addUIKitInput('input-textarea-id-7', 'textarea')
+        br
+        br
+        div fullsize 200x100
+        div(style="width: 200px; height: 100px;")
+            +addUIKitInput('input-textarea-id-8', 'textarea')

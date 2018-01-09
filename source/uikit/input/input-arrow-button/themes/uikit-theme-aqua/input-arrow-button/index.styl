@@ -1,0 +1,88 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-arrow-button
+            display flex
+            position: relative
+            align-items: center
+            justify-content: center
+            width 42px
+            height 42px
+            border 3px solid #4eb7a8
+            box-sizing: border-box
+            border-radius: 50%
+            transition 0.2s
+
+            input 
+                display none
+
+            .uikit-input-arrow-button-arrow
+                width 42px
+                height 42px
+                position relative
+                transition 0.2s
+
+            .uikit-input-arrow-button-arrow::after
+                position absolute
+                content ""
+                background-color #4EB7A8
+                width 16px
+                height 4px
+                top 14px
+                left 14px
+
+            .uikit-input-arrow-button-arrow::before
+                position absolute
+                content ""
+                background-color #4EB7A8
+                width 16px
+                height 4px
+                top 24px
+                left 14px
+
+            &[data-variant="left"]
+                .uikit-input-arrow-button-arrow
+                    transform scale(0.9)
+
+                .uikit-input-arrow-button-arrow::after
+                    transform rotate(-45deg)
+                    left 8px
+                    top 14px
+
+                .uikit-input-arrow-button-arrow::before
+                    transform rotate(45deg)
+                    left 8px
+                    top 24px
+
+            &[data-variant="right"]
+                .uikit-input-arrow-button-arrow::after
+                    transform rotate(45deg)
+                    left 11px
+                    top 14px
+
+                .uikit-input-arrow-button-arrow::before
+                    transform rotate(-45deg)
+                    left 11px
+                    top 24px
+
+            &:hover
+                background-color: #4EB7A8
+
+                .uikit-input-arrow-button-arrow::after
+                .uikit-input-arrow-button-arrow::before
+                    background-color white
+
+            &[data-enabled="false"]
+                background-color: #e5e5e5
+                border-color #e5e5e5
+
+                .uikit-input-arrow-button-arrow::after
+                .uikit-input-arrow-button-arrow::before
+                    background-color white
+
+                &:hover
+                    background-color: #e5e5e5
+                    border-color #e5e5e5
+
+                    .uikit-input-arrow-button-arrow::after
+                    .uikit-input-arrow-button-arrow::before
+                        background-color white

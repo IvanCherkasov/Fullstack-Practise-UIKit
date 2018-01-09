@@ -1,0 +1,9 @@
+{
+    "name": "John Smith",
+    "occupation": "UX Designer",
+    "socials": {
+        "facebook": "#fb-link",
+        "twitter": "#twitter-link",
+        "dribbble": "#dribbble-link"
+    }
+}

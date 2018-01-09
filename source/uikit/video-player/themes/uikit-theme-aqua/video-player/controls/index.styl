@@ -1,0 +1,91 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-video-player
+            .uikit-video-player-controls
+                display flex
+                justify-content: space-between
+                align-items: center
+                height 48px
+                background-color: rgba(0,0,0,0.5)
+                z-index 1
+                transition: 0.2s
+
+                .uikit-video-player-pp
+                    position: relative
+                    width 48px
+                    height 48px
+                    overflow hidden
+                    cursor: pointer
+                    border-top-right-radius: 2px
+
+                    &:hover
+                        background-color: #e75735
+
+                .uikit-video-player-range
+                    height 48px
+                    flex 1
+
+                .uikit-video-player-fsbtn
+                    width 48px
+                    height 48px
+                    background-color: #e75735
+                    background-image: url('./Shape 22.png')
+                    background-repeat: no-repeat
+                    background-position: center center
+                    cursor: pointer
+                    border-top-left-radius: 2px
+
+            &[data-playing="false"]
+                .uikit-video-player-controls
+                    .uikit-video-player-pp
+                        &:hover
+                            &::before
+                                content ""
+                                position absolute
+                                width 0
+                                height 0
+                                border: 7px solid transparent
+                                border-left: 11px solid #bf3e1f
+                                top calc(50% - 6px)
+                                left calc(50% - 5.5px)
+
+                    .uikit-video-player-pp::after
+                        content ""
+                        position absolute
+                        width 0
+                        height 0
+                        border: 6px solid transparent
+                        border-left: 10px solid white
+                        top calc(50% - 7px)
+                        left calc(50% - 4px)
+
+            &[data-playing="true"]
+                .uikit-video-player-controls
+                    .uikit-video-player-pp
+                        &:hover
+                            &::before
+                            &::after
+                                box-shadow: -1.5px 2px 0 0 #bf3e1f
+
+                    .uikit-video-player-pp::before
+                        content ""
+                        position absolute
+                        width 2px
+                        height 10px
+                        top calc(50% - 5px)
+                        left calc(50% - 4px)
+                        background-color: white
+
+                    .uikit-video-player-pp::after
+                        content ""
+                        position absolute
+                        width 2px
+                        height 10px
+                        top calc(50% - 5px)
+                        left calc(50% + 2px)
+                        background-color: white
+
+            &[data-controls-show="false"]
+                .uikit-video-player-controls
+                    opacity: 0
+                    pointer-events none

@@ -1,0 +1,39 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-profile-bar
+            .uikit-profile-bar-info
+                position relative
+                height 93px
+                width 164px
+                border-radius 7px
+                padding 12px 0
+                box-sizing border-box
+                display flex
+                flex-direction: column
+                justify-content: space-between
+
+                &::before
+                    content ""
+                    position absolute
+                    width 8px
+                    height 8px
+                    border-radius 3px
+                    transform rotate(45deg)
+                    left -4px
+                    top calc(50% - 4px)
+                    border-top-left-radius: 0
+                    border-bottom-right-radius: 0
+                
+            &[data-variant="orangered"]
+                .uikit-profile-bar-info
+                    background-color #e5e5e5
+
+                    &::before
+                        background-color: #e5e5e5
+
+            &[data-variant="aqua"]
+                .uikit-profile-bar-info
+                    background-color #4eb7a8
+
+                    &::before
+                        background-color: #4eb7a8

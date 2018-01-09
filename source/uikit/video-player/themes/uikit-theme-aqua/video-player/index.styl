@@ -1,0 +1,65 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-video-player
+            display flex
+            flex-direction: column
+            justify-content: space-between
+            position: absolute
+            width: 100%
+            height: 100%
+            border-radius: 3px
+            overflow hidden
+            top 0
+            left 0
+
+            .mask
+                position: absolute
+                top 0
+                left 0
+                width: 100%
+                height: 100%
+                background-color rgba(0,0,0,0.75)
+
+                video
+                    position: absolute
+                    width: 100%
+                    height: 100%
+                    border-radius: 3px
+                    background-color black
+                    z-index: -1
+
+            .uikit-video-player-title
+                color white
+                font-family: Lato
+                box-sizing: border-box
+                z-index: 1
+                padding 34px
+                cursor: default
+
+                .uikit-video-player-name
+                    font-size: 36px
+                    font-weight: 200
+                    text-align: left
+
+                .uikit-video-player-author
+                    font-size: 12px
+                    font-weight: bold
+                    text-align: left
+                    text-transform: uppercase
+                    letter-spacing: 1.5px
+                    word-spacing: 1px
+
+                .uikit-video-player-link
+                    font-size: 18px
+                    font-weight: 300
+                    text-align: left
+                    letter-spacing: 1px
+                    margin: 23px 0
+
+            &[data-playing="true"]
+                .mask
+                    background-color: rgba(0,0,0,0)
+
+                .uikit-video-player-title
+                    opacity: 0
+                    pointer-events: none

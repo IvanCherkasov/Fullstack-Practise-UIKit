@@ -13,9 +13,8 @@ const mainModule = {
     entry: {
         main: './index',
         uikit: './uikit/bundle',
-        'arrow-button': './pages/arrow-button/index',
-        button: './pages/button/index',
-        stages: './pages/stages/index',
+        input: './pages/input/index',
+        other: './pages/other/index',
     },
     output: {
         path: PATHS.build,
@@ -56,7 +55,7 @@ const mainModule = {
             test: /\.(png|jpg|svg)$/,
             loader: 'url-loader?name=pic/[name].[ext]&limit=4096',
         }, {
-            test: /\.(ttf|eot|woff|woff2)$/,
+            test: /\.(ttf|eot|woff|woff2|otf)$/,
             loader: 'file-loader?name=[path][name].[ext]',
         }],
     },
@@ -68,54 +67,14 @@ const mainModule = {
             chunks: ['main', 'uikit'],
         }),
         new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/slider/index.pug`,
-            filename: `${PATHS.build}/slider/index.html`,
-            chunks: ['main'],
+            template: `${PATHS.source}/pages/input/index.pug`,
+            filename: `${PATHS.build}/input/index.html`,
+            chunks: ['main', 'uikit', 'input'],
         }),
         new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/button/index.pug`,
-            filename: `${PATHS.build}/button/index.html`,
-            chunks: ['main', 'uikit', 'button'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/radial-progress/index.pug`,
-            filename: `${PATHS.build}/radial-progress/index.html`,
-            chunks: ['main'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/arrow-button/index.pug`,
-            filename: `${PATHS.build}/arrow-button/index.html`,
-            chunks: ['main', 'uikit', 'arrow-button'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/stages/index.pug`,
-            filename: `${PATHS.build}/stages/index.html`,
-            chunks: ['main', 'uikit', 'stages'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/input-text/index.pug`,
-            filename: `${PATHS.build}/input-text/index.html`,
-            chunks: ['main'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/textarea/index.pug`,
-            filename: `${PATHS.build}/textarea/index.html`,
-            chunks: ['main'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/toggle/index.pug`,
-            filename: `${PATHS.build}/toggle/index.html`,
-            chunks: ['main'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/progress-bar/index.pug`,
-            filename: `${PATHS.build}/progress-bar/index.html`,
-            chunks: ['main'],
-        }),
-        new HtmlWebpackPlugin({
-            template: `${PATHS.source}/pages/tickbox/index.pug`,
-            filename: `${PATHS.build}/tickbox/index.html`,
-            chunks: ['main'],
+            template: `${PATHS.source}/pages/other/index.pug`,
+            filename: `${PATHS.build}/other/index.html`,
+            chunks: ['main', 'uikit', 'other'],
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',
@@ -132,6 +91,7 @@ const mainModule = {
     resolveLoader: {
         alias: {
             'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js'),
+            'export-from-loader': path.resolve(__dirname, './source/utils/export-from-loader.js'),
         },
     },
     node: {
@@ -184,6 +144,7 @@ const uikitModule = {
     resolveLoader: {
         alias: {
             'to-raw-loader': path.resolve(__dirname, './source/utils/to-raw-loader.js'),
+            'export-from-loader': path.resolve(__dirname, './source/utils/export-from-loader.js'),
         },
     },
     node: {

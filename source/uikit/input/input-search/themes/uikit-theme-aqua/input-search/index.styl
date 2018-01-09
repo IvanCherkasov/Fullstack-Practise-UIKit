@@ -1,0 +1,25 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-search
+            display flex
+            flex-direction row
+            align-items center
+
+            input
+                background-color #e5e5e5
+                border none
+                border-top-left-radius 3px
+                border-bottom-left-radius 3px
+                padding 0 12px
+                height 28px
+                color #888
+                display table-cell
+                width 100%
+
+            input:focus
+                outline none
+
+        &.uikit-input-search[data-error="true"]
+            input 
+                background-color #e75735
+                color white

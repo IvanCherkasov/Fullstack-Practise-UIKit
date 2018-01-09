@@ -1,0 +1,43 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-input-radio
+            .uikit-input-radio-container
+                display flex
+                width 16px
+                height 16px
+                border-radius 50%
+                border 1px solid #4EB7A8
+                align-items center
+                justify-content center
+                cursor pointer
+                overflow hidden
+                transition background-color 0.2s
+
+            .radio-color-circle
+                width 6px
+                height 6px
+                position absolute
+                border-radius 50%
+                background-color #4EB7A8
+                transition 0.2s
+
+        &.uikit-input-radio[data-checked="true"]
+            .radio-color-circle
+                opacity 1
+                background-color white
+
+            .uikit-input-radio-container
+                background-color #4EB7A8;
+
+        &.uikit-input-radio[data-checked="false"]
+            .radio-color-circle
+                opacity 0
+                background-color rgba(255, 255, 255, 0)
+
+            .uikit-input-radio-container
+                background-color rgba(255, 255, 255, 0)
+
+                &:hover
+                    .radio-color-circle
+                        opacity 1
+                        background-color #4EB7A8
