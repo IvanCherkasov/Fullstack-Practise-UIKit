@@ -9,7 +9,7 @@ const event2 = require('!!export-from-loader!json-loader!./bd/event/event-2.json
 
 const video1 = require('!!export-from-loader!json-loader!./bd/video-player/video-1.json');
 const videoFile1 = require('file-loader!./bd/video-player/fg_bird.mp4');
-video1.link = `http://localhost/Fullstack-Practise-UIKit/build/${videoFile1}`;
+video1.link = `https://ivancherkasov.github.io/Fullstack-Practise-UIKit/build/${videoFile1}`;
 
 const history1 = require('!!export-from-loader!json-loader!./bd/profile-bar/history/prof-1.json');
 const history2 = require('!!export-from-loader!json-loader!./bd/profile-bar/history/prof-1.json');
