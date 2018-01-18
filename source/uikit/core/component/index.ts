@@ -1,7 +1,6 @@
 import Orientations from '../orientations/index';
 import Mediator from '../mediator/index';
 import Model from '../model/index';
-import Utils from '../utils/index';
 import { TParameters } from '../index';
 
 export abstract class Component {
@@ -24,7 +23,10 @@ export abstract class Component {
         if (!this.dom || this.dom === null) {
             throw ReferenceError('Component is empty!');
         }
-        Utils.isUikit(this.dom);
+        
+        if (!dom.hasClass('uikit')) {
+            dom.addClass('uikit');
+        }
 
         if (this.dom.attr('data-enabled') === 'false') {
             this.enabled = false;

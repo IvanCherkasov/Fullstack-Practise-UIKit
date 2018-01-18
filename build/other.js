@@ -1,6 +1,6 @@
 webpackJsonp([1],{
 
-/***/ 137:
+/***/ 160:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17,9 +17,12 @@ var video1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].VideoPlayer($('#
 var msgbox1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].MessageBox($('#message-box-1-id'));
 var msgbox2 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].MessageBox($('#message-box-2-id'), { 'variant': 'orangered' });
 var location1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Location($('#location-1-id'));
+var calendar1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Calendar($('#calendar-1-id'));
+var stages1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Stages($('#stages-id-1'));
+stages1.stage = 3;
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })
 
-},[137]);
+},[160]);

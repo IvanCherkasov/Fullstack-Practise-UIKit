@@ -1,0 +1,68 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-calendar
+            .uikit-calendar-day-month
+                height 152px
+                width: 100%
+                background-color: #e75735
+                display flex
+                flex-direction: column
+                justify-content: space-between
+                position: relative
+
+                .uikit-calendar-year
+                    position absolute
+                    right 0
+                    margin 5px
+                    font-family: Lato
+                    font-size: 12px
+                    opacity: 0
+                    transition: opacity 0.2s
+                    font-weight: 200
+                    color white
+                    cursor: default
+
+                .uikit-calendar-month
+                    background-color: #d54c2c
+                    height 43px
+                    width: 100%
+                    display flex
+                    justify-content: space-between
+                    align-items: center
+
+                    .btn-left
+                        width 20px
+                        height 100%
+                        background-image: url('./Arrow Left.png')
+                        background-repeat: no-repeat
+                        background-position: center center
+                        margin-left 14px
+                        cursor: pointer
+
+                    .btn-right
+                        width 20px
+                        height 100%
+                        background-image: url('./Arrow Right.png')
+                        background-repeat: no-repeat
+                        background-position: center center
+                        margin-right 14px
+                        cursor: pointer
+
+                    .caption
+                        font-family: Lato
+                        color white
+                        font-size: 24px
+                        font-weight: 200
+                        text-align: center
+                        cursor: default
+
+                .uikit-calendar-day
+                    font-family: Lato
+                    color white
+                    font-size: 80px
+                    font-weight: 200
+                    text-align: center
+                    padding-top 10px
+                    cursor: default
+
+

@@ -10,3 +10,6 @@ const video1 = new UIKit.VideoPlayer($('#video-player-1-id'));
 const msgbox1 = new UIKit.MessageBox($('#message-box-1-id'));
 const msgbox2 = new UIKit.MessageBox($('#message-box-2-id'), { 'variant': 'orangered' });
 const location1 = new UIKit.Location($('#location-1-id'));
+const calendar1 = new UIKit.Calendar($('#calendar-1-id'));
+const stages1 = new UIKit.Stages($('#stages-id-1'));
+stages1.stage = 3;

@@ -7,9 +7,9 @@ class Stages_Track extends Core.Element {
         dom: JQuery,
         mediator: Core.Mediator,
         type: string,
-        protected attributes: object,
+        protected defaultParameters: Core.TParameters,
         private storageInvert: boolean) {
-            super(dom, mediator, type, attributes);
+            super(dom, mediator, type, defaultParameters);
             this.initialize();
     }
 
@@ -22,10 +22,10 @@ class Stages_Track extends Core.Element {
     protected build() {
         this.dom.empty();
         let orientation = ['width', 'left'];
-        if (this.type === Stages.TYPES.VERTICAL) {
+        if (this.orientation === Stages.ORIENTATIONS.VERTICAL) {
             orientation = ['height', 'top'];
         }
-        const stagesCount = Number(this.attributes['data-stages']);
+        const stagesCount = this.defaultParameters['maximum'];
         const percent = 100 / (stagesCount - 1);
         const stageDom = $('<div>').addClass('uikit-stages-stage');
         const captionDom = $('<div>').addClass('uikit-stage-caption');

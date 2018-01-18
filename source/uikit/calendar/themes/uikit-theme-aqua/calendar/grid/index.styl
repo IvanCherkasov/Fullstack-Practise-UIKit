@@ -1,0 +1,64 @@
+.uikit-theme-aqua
+    .uikit
+        &.uikit-calendar
+            .uikit-calendar-week-days
+                width: 100%
+                display flex
+                flex-direction: column
+                justify-content: space-between
+
+                .uikit-calendar-week
+                    height 27px
+                    background-color: #e75735
+                    display flex
+                    justify-content: space-between
+                    align-items: center
+
+                    .day
+                        width: 39px
+                        font-family: Lato
+                        font-size: 9px
+                        font-weight: 400
+                        text-align: center
+                        text-transform: uppercase
+                        color white
+                        cursor: default
+
+                .uikit-calendar-days-grid
+                    height 200px
+                    display: flex
+                    flex-direction: row
+                    justify-content: space-between
+                    flex-wrap: wrap
+                    margin-top 1px
+
+                    .cell
+                        width 39px
+                        height 39px
+                        background-color: #f2f2f2
+                        font-family: Source Sans Pro
+                        color #868686
+                        font-size 20px
+                        font-weight: 300
+                        text-align: center
+                        display: flex
+                        align-items: center
+                        justify-content: center
+                        cursor: pointer
+
+                        &[data-selected='true']
+                            background-color: #e75735
+                            color white
+
+                            &:hover
+                                color white
+
+                        &:hover
+                            color #e75735
+
+                        &.prev-month
+                        &.next-month
+                            color white
+
+                        span
+                            pointer-events: none

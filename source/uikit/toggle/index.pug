@@ -1,9 +1,0 @@
-include ./toggle-thumb/index.pug
-
-mixin addUIKitToggle(id, type, isChecked, textEnabled)
-	div.uikit.uikit-toggle(id=id, data-type=type, text-enabled=textEnabled ? "true" : "false", value=isChecked ? "true" : "false")
-		div.left-dummy
-		div.right-dummy
-		div.text-left.no-select ON
-		div.text-right.no-select OFF
-		+addUIKitToggle_Thumb()

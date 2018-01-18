@@ -10,6 +10,11 @@ import Utils from './utils/index';
 import Backend from './backend/index';
 
 type TParameters = {[key: string]: any};
+type TDate = {
+    day: number;
+    month: number;
+    year: number;
+};
 
 export {
     Component,
@@ -23,4 +28,5 @@ export {
     Utils,
     TParameters,
     Backend,
+    TDate,
 };
