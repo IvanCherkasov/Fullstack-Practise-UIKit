@@ -1485,7 +1485,7 @@
   letter-spacing: 1px;
 }
 .uikit-theme-aqua .uikit.uikit-calendar {
-  width: 279px;
+  width: 17.4375rem;
   border-radius: 3px;
   overflow: hidden;
   background-color: #fff;
@@ -1496,7 +1496,7 @@
 .uikit-theme-aqua .uikit.uikit-calendar:hover .uikit-calendar-day-month .uikit-calendar-year {
   opacity: 1;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendat-today-btn {
+.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-today-btn {
   height: 49px;
   width: 100%;
   background-color: #e5e5e5;

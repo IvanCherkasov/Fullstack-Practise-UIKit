@@ -36,7 +36,7 @@ class Calendar extends Core.Component {
         this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         this.setDate(Core.Utils.Dates.combineDate(this.today));
         this.oldDate = this.getDate();
         this.parametersObject['date'] = this.getDate();

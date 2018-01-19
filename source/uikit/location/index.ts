@@ -34,7 +34,7 @@ class Location extends Core.Component {
         this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.isBuilded = true;
         this.variant = this.parametersObject['variant'];

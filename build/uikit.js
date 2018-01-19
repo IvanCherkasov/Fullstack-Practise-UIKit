@@ -19946,7 +19946,7 @@ var InputText = /** @class */ (function (_super) {
         this.domInput = $('<input>').attr('type', 'text');
         var domIndicator = $('<div>').addClass('uikit-indicator');
         this.dom.append(this.domInput, domIndicator);
-        this.indicator = new __WEBPACK_IMPORTED_MODULE_3__input_text_indicator_index__["a" /* default */](domIndicator, this.mediator, this.orientation, this.parametersObject);
+        this.indicator = new __WEBPACK_IMPORTED_MODULE_3__input_text_indicator_index__["a" /* default */](domIndicator, this.mediator, this.orientation, __WEBPACK_IMPORTED_MODULE_1_lodash__["clone"](this.parametersObject));
     };
     InputText.prototype.applyEvents = function () {
         var _this = this;

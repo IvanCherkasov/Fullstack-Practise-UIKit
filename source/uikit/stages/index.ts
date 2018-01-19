@@ -32,7 +32,7 @@ class Stages extends Core.Component {
         this.initialize();
     }
 
-    private initialize(): void {
+    protected initialize(): void {
         this.isBuilded = false;
         this.acceptOrientation(Stages.ORIENTATIONS, Stages.ORIENTATIONS.HORIZONTAL);
         this.build();

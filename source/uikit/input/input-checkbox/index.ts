@@ -22,7 +22,7 @@ class InputCheckbox extends Core.Component {
         this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.isBuilded = true;
         this.applyEvents();

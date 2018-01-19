@@ -10,7 +10,7 @@ class Button_Caption extends Core.Element {
             this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.isBuilded = true;
         this.applyEvents();

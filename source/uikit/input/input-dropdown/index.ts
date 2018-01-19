@@ -31,7 +31,7 @@ class InputDropdown extends Core.Component {
         this.dom.attr('data-block-visible', 'false');
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.isBuilded = true;
         this.applyEvents();

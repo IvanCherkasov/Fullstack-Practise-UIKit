@@ -27,7 +27,7 @@ class InputToggle extends Core.Component {
         this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         const model = new InputToggle_Model();
         this.mediator = new Core.Mediator(model);
         this.acceptOrientation(InputToggle.ORIENTATIONS, InputToggle.ORIENTATIONS.HORIZONTAL);

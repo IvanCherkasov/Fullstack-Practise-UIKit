@@ -22,6 +22,8 @@ var stages1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Stages($('#stag
 stages1.stage = 3;
 var tickbox1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Tickbox($('#tickbox-1-id'));
 var tickbox2 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Tickbox($('#tickbox-2-id'));
+var tBtn = __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Input.create($('#test-btn-id-1'), { 'caption': 'cap 1', 'variant': 'regular' });
+tBtn.on('click', function () { alert('ert'); });
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 

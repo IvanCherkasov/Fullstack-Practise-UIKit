@@ -15,3 +15,6 @@ const stages1 = new UIKit.Stages($('#stages-id-1'));
 stages1.stage = 3;
 const tickbox1 = new UIKit.Tickbox($('#tickbox-1-id'));
 const tickbox2 = new UIKit.Tickbox($('#tickbox-2-id'));
+
+const tBtn = UIKit.Input.create($('#test-btn-id-1'), { 'caption': 'cap 1', 'variant': 'regular' });
+tBtn.on('click', () => {alert('ert'); });

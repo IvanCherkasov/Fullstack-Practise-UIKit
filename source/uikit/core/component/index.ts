@@ -9,6 +9,7 @@ export abstract class Component {
     private storageVariant: string = '';
 
     protected abstract build();
+    protected abstract initialize();
     protected mediator: Mediator;
     protected orientationChangingNeedRebuild: boolean = false;
     protected availableOrientations: Orientations;

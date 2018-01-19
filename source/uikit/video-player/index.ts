@@ -43,7 +43,7 @@ class VideoPlayer extends Core.Component {
         this.initialize();
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.dom.attr('data-playing', 'false');
         this.isBuilded = true;

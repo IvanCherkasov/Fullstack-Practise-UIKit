@@ -35,7 +35,7 @@ class InputTextarea extends Core.Component {
         this.variant = this.parametersObject['variant'];
     }
 
-    private initialize() {
+    protected initialize() {
         this.build();
         this.isBuilded = true;
         this.applyEvents();

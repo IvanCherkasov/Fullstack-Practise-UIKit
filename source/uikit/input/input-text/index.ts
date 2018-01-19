@@ -48,7 +48,7 @@ class InputText extends Core.Component {
             domIndicator,
             this.mediator,
             this.orientation,
-            this.parametersObject,
+            _.clone(this.parametersObject),
         );
     }
 
