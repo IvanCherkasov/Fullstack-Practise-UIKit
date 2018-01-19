@@ -1,6 +1,6 @@
 webpackJsonp([1],{
 
-/***/ 160:
+/***/ 167:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20,9 +20,11 @@ var location1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Location($('#
 var calendar1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Calendar($('#calendar-1-id'));
 var stages1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Stages($('#stages-id-1'));
 stages1.stage = 3;
+var tickbox1 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Tickbox($('#tickbox-1-id'));
+var tickbox2 = new __WEBPACK_IMPORTED_MODULE_0_uikit__["default"].Tickbox($('#tickbox-2-id'));
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ })
 
-},[160]);
+},[167]);

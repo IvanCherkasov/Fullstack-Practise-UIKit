@@ -195,15 +195,13 @@ class VideoPlayer extends Core.Component {
         _.merge(this.parametersObject, newParams);
         const keys = Object.keys(newParams);
         keys.map((current) => {
-            if (typeof newParams[current] === 'string') {
-                switch (current) {
-                    case 'video-id':
-                        this.videoInfo = Core.Backend.getInfo('video-player', newParams[current]);
-                        this.mediator.publish(`parameters.video-id`, this.videoInfo);
-                        break;
-                    default:
-                        this.mediator.publish(`parameters.${current}`, newParams[current]);
-                }
+            switch (current) {
+                case 'video-id':
+                    this.videoInfo = Core.Backend.getInfo('video-player', newParams[current]);
+                    this.mediator.publish(`parameters.video-id`, this.videoInfo);
+                    break;
+                default:
+                    this.mediator.publish(`parameters.${current}`, newParams[current]);
             }
         });
     }

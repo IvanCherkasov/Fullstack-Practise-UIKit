@@ -19,6 +19,7 @@ import MessageBox from './message-box/index';
 import Location from './location/index';
 import Calendar from './calendar/index';
 import Stages from './stages/index';
+import Tickbox from './tickbox/index';
 
 const Inputs = {
     InputText,
@@ -47,4 +48,5 @@ export default {
     Location,
     Calendar,
     Stages,
+    Tickbox,
 };

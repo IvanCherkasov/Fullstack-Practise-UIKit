@@ -19758,6 +19758,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__location_index__ = __webpack_require__(132);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__calendar_index__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__stages_index__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__tickbox_index__ = __webpack_require__(159);
+
 
 
 
@@ -19803,6 +19805,7 @@ __WEBPACK_IMPORTED_MODULE_0__core_index__["ThemeController"].initialize();
     Location: __WEBPACK_IMPORTED_MODULE_17__location_index__["a" /* default */],
     Calendar: __WEBPACK_IMPORTED_MODULE_18__calendar_index__["a" /* default */],
     Stages: __WEBPACK_IMPORTED_MODULE_19__stages_index__["a" /* default */],
+    Tickbox: __WEBPACK_IMPORTED_MODULE_20__tickbox_index__["a" /* default */],
 });
 
 
@@ -21531,16 +21534,14 @@ var Stages = /** @class */ (function (_super) {
             __WEBPACK_IMPORTED_MODULE_2_lodash__["merge"](this.parametersObject, newParams);
             var keys = Object.keys(newParams);
             keys.map(function (current) {
-                if (typeof newParams[current] === 'string') {
-                    switch (current) {
-                        case 'stage':
-                            _this.mediator.setData('model.stage', newParams[current]);
-                        case 'maximum':
-                            // ignore
-                            break;
-                        default:
-                            _this.mediator.publish("parameters." + current, newParams[current]);
-                    }
+                switch (current) {
+                    case 'stage':
+                        _this.mediator.setData('model.stage', newParams[current]);
+                    case 'maximum':
+                        // ignore
+                        break;
+                    default:
+                        _this.mediator.publish("parameters." + current, newParams[current]);
                 }
             });
         },
@@ -24583,15 +24584,13 @@ var VideoPlayer = /** @class */ (function (_super) {
             __WEBPACK_IMPORTED_MODULE_1_lodash__["merge"](this.parametersObject, newParams);
             var keys = Object.keys(newParams);
             keys.map(function (current) {
-                if (typeof newParams[current] === 'string') {
-                    switch (current) {
-                        case 'video-id':
-                            _this.videoInfo = __WEBPACK_IMPORTED_MODULE_0__core_index__["Backend"].getInfo('video-player', newParams[current]);
-                            _this.mediator.publish("parameters.video-id", _this.videoInfo);
-                            break;
-                        default:
-                            _this.mediator.publish("parameters." + current, newParams[current]);
-                    }
+                switch (current) {
+                    case 'video-id':
+                        _this.videoInfo = __WEBPACK_IMPORTED_MODULE_0__core_index__["Backend"].getInfo('video-player', newParams[current]);
+                        _this.mediator.publish("parameters.video-id", _this.videoInfo);
+                        break;
+                    default:
+                        _this.mediator.publish("parameters." + current, newParams[current]);
                 }
             });
         },
@@ -25818,6 +25817,234 @@ var Stages_Track = /** @class */ (function (_super) {
 /* harmony default export */ __webpack_exports__["a"] = (Stages_Track);
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 159 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__core_index__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tickbox_inner_index__ = __webpack_require__(160);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__themes_index__ = __webpack_require__(161);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var templatePug = __webpack_require__(165);
+var template = $(templatePug());
+var Tickbox = /** @class */ (function (_super) {
+    __extends(Tickbox, _super);
+    function Tickbox(dom, parameters) {
+        var _this = _super.call(this, dom) || this;
+        _this.parametersObject = {
+            'checked': false,
+        };
+        if (parameters) {
+            __WEBPACK_IMPORTED_MODULE_1_lodash__["merge"](_this.parametersObject, parameters);
+        }
+        var model = new Tickbox_Model();
+        _this.mediator = new __WEBPACK_IMPORTED_MODULE_0__core_index__["Mediator"](model);
+        _this.initialize();
+        return _this;
+    }
+    Tickbox.prototype.initialize = function () {
+        this.build();
+        this.isBuilded = true;
+        this.applyEvents();
+    };
+    Tickbox.prototype.build = function () {
+        this.dom.empty();
+        this.checkParams();
+        this.dom.addClass('uikit-tickbox');
+        this.dom.append(template.clone());
+        this.inner = new __WEBPACK_IMPORTED_MODULE_2__tickbox_inner_index__["a" /* default */](this.dom.find('.uikit-tickbox-inner'), this.mediator, this.orientation, __WEBPACK_IMPORTED_MODULE_1_lodash__["clone"](this.parametersObject));
+    };
+    Tickbox.prototype.checkParams = function () {
+        if (this.parametersObject.checked === true) {
+            this.dom.attr('data-checked', 'true');
+        }
+        else if (this.dom.attr('data-checked') === 'true') {
+            this.parametersObject.checked = true;
+        }
+        else {
+            this.dom.attr('data-checked', 'false');
+        }
+    };
+    Tickbox.prototype.applyEvents = function () {
+        var _this = this;
+        var mediatorModelChecked = function (modelData) {
+            _this.dom.attr('data-checked', "" + modelData.checked);
+            _this.parametersObject['checked'] = modelData.checked;
+        };
+        this.mediator.subscribe('model.checked', mediatorModelChecked);
+    };
+    Object.defineProperty(Tickbox.prototype, "checked", {
+        get: function () {
+            return this.mediator.getData('model.checked');
+        },
+        set: function (value) {
+            this.mediator.setData('model.checked', value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tickbox.prototype, "parameters", {
+        get: function () {
+            return __WEBPACK_IMPORTED_MODULE_1_lodash__["cloneDeep"](this.parametersObject);
+        },
+        set: function (newParams) {
+            var _this = this;
+            __WEBPACK_IMPORTED_MODULE_1_lodash__["merge"](this.parametersObject, newParams);
+            var keys = Object.keys(newParams);
+            keys.map(function (current) {
+                switch (current) {
+                    case 'checked':
+                        _this.mediator.setData('model.checked', "" + (newParams[current] === true));
+                        break;
+                    default:
+                        _this.mediator.publish("parameters." + current, newParams[current]);
+                }
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Tickbox;
+}(__WEBPACK_IMPORTED_MODULE_0__core_index__["Component"]));
+var Tickbox_Model = /** @class */ (function (_super) {
+    __extends(Tickbox_Model, _super);
+    function Tickbox_Model() {
+        return _super.call(this, {
+            checked: false,
+        }) || this;
+    }
+    Tickbox_Model.prototype.getData = function (property) {
+        switch (property) {
+            case 'checked':
+                return this.data.checked;
+            default:
+                return undefined;
+        }
+    };
+    Tickbox_Model.prototype.setData = function (property, data) {
+        switch (property) {
+            case 'checked':
+                if (typeof data === 'boolean') {
+                    this.data.checked = data;
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+    };
+    return Tickbox_Model;
+}(__WEBPACK_IMPORTED_MODULE_0__core_index__["Model"]));
+/* harmony default export */ __webpack_exports__["a"] = (Tickbox);
+
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
+
+/***/ }),
+/* 160 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__core_index__ = __webpack_require__(0);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Tickbox_Inner = /** @class */ (function (_super) {
+    __extends(Tickbox_Inner, _super);
+    function Tickbox_Inner(dom, mediator, orientation, defaultParameters) {
+        var _this = _super.call(this, dom, mediator, orientation, defaultParameters) || this;
+        _this.defaultParameters = defaultParameters;
+        _this.initialize();
+        return _this;
+    }
+    Tickbox_Inner.prototype.initialize = function () {
+        this.build();
+        this.isBuilded = true;
+        this.applyEvents();
+    };
+    Tickbox_Inner.prototype.build = function () {
+        // ---
+    };
+    Tickbox_Inner.prototype.applyEvents = function () {
+        var mediatorModelChecked = function (modelData) {
+            // подпись на изменение model.checked
+            // но ничего не делаем, так как внешний вид
+            // меняется через стили
+        };
+        this.mediator.subscribe('model.checked', mediatorModelChecked);
+    };
+    return Tickbox_Inner;
+}(__WEBPACK_IMPORTED_MODULE_0__core_index__["Element"]));
+/* harmony default export */ __webpack_exports__["a"] = (Tickbox_Inner);
+
+
+/***/ }),
+/* 161 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uikit_theme_aqua_index__ = __webpack_require__(162);
+
+
+
+/***/ }),
+/* 162 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tickbox_index_styl__ = __webpack_require__(163);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tickbox_index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__tickbox_index_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tickbox_inner_index_styl__ = __webpack_require__(164);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tickbox_inner_index_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__tickbox_inner_index_styl__);
+
+
+
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 164 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pug = __webpack_require__(3);
+
+function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_indent = [];
+pug_html = pug_html + "\n\u003Cdiv class=\"uikit-tickbox-inner\"\u003E\u003C\u002Fdiv\u003E";;return pug_html;};
+module.exports = template;
 
 /***/ })
 /******/ ]);

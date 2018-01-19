@@ -13,3 +13,5 @@ const location1 = new UIKit.Location($('#location-1-id'));
 const calendar1 = new UIKit.Calendar($('#calendar-1-id'));
 const stages1 = new UIKit.Stages($('#stages-id-1'));
 stages1.stage = 3;
+const tickbox1 = new UIKit.Tickbox($('#tickbox-1-id'));
+const tickbox2 = new UIKit.Tickbox($('#tickbox-2-id'));

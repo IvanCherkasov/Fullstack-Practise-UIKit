@@ -110,16 +110,14 @@ class Stages extends Core.Component {
         _.merge(this.parametersObject, newParams);
         const keys = Object.keys(newParams);
         keys.map((current) => {
-            if (typeof newParams[current] === 'string') {
-                switch (current) {
-                    case 'stage':
-                        this.mediator.setData('model.stage', newParams[current]);
-                    case 'maximum':
-                        // ignore
-                        break;
-                    default:
-                        this.mediator.publish(`parameters.${current}`, newParams[current]);
-                }
+            switch (current) {
+                case 'stage':
+                    this.mediator.setData('model.stage', newParams[current]);
+                case 'maximum':
+                    // ignore
+                    break;
+                default:
+                    this.mediator.publish(`parameters.${current}`, newParams[current]);
             }
         });
     }
