@@ -3,30 +3,30 @@
         &.uikit-video-player
             .uikit-video-player-controls
                 .uikit-video-player-sound
-                    width 30px
-                    height 48px
-                    margin 0 2px
+                    width 2.5rem
+                    height 4rem
+                    margin 0 0.1667rem
                     position: relative
 
                     .sound-box
                         position: absolute
-                        height: 150px
+                        height: 12.5rem
                         width: inherit 
                         top 0
                         display flex
                         flex-direction: column
                         transition top 0.2s
-                        border-top-left-radius: 2px
-                        border-top-right-radius: 2px
+                        border-top-left-radius: 0.1667rem
+                        border-top-right-radius: 0.1667rem
                         overflow hidden
 
                         .pic
-                            height 48px
+                            height 4rem
                             width inherit
                             background-image: url('./speaker.png')
                             background-repeat: no-repeat
                             background-position: center center
-                            background-size: 19px
+                            background-size: 1.5833rem
                             background-color: #e75735
 
                         .sound-range
@@ -36,10 +36,10 @@
                             justify-content: center
                             flex 1
                             box-sizing: border-box
-                            padding 7px 0
+                            padding 0.5833rem 0
 
                             .sound-track
-                                width 9px
+                                width 0.75rem
                                 cursor: pointer
                                 height: 100%
                                 display flex
@@ -47,18 +47,18 @@
 
                                 .sound-filler
                                     height 100%
-                                    width 4px
+                                    width 0.3333rem
                                     background-color: #e5e5e5
                                     display: flex
                                     flex-direction: column-reverse
-                                    border-radius: 3px
+                                    border-radius: 0.25rem
                                     
                                     .sound-filled
-                                        border-radius: 3px
+                                        border-radius: 0.25rem
                                         width 100%
                                         background-color: #e75735
 
                     &:hover
                         .sound-box
-                            top -102px
+                            top -8.5rem
 

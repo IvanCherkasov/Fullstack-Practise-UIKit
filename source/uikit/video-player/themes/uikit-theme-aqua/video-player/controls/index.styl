@@ -5,35 +5,35 @@
                 display flex
                 justify-content: space-between
                 align-items: center
-                height 48px
+                height 4rem
                 background-color: rgba(0,0,0,0.5)
                 z-index 1
                 transition: 0.2s
 
                 .uikit-video-player-pp
                     position: relative
-                    width 48px
-                    height 48px
+                    width 4rem
+                    height 4rem
                     overflow hidden
                     cursor: pointer
-                    border-top-right-radius: 2px
+                    border-top-right-radius: 0.1667rem
 
                     &:hover
                         background-color: #e75735
 
                 .uikit-video-player-range
-                    height 48px
+                    height 4rem
                     flex 1
 
                 .uikit-video-player-fsbtn
-                    width 48px
-                    height 48px
+                    width 4rem
+                    height 4rem
                     background-color: #e75735
                     background-image: url('./Shape 22.png')
                     background-repeat: no-repeat
                     background-position: center center
                     cursor: pointer
-                    border-top-left-radius: 2px
+                    border-top-left-radius: 0.1667rem
 
             &[data-playing="false"]
                 .uikit-video-player-controls
@@ -44,20 +44,20 @@
                                 position absolute
                                 width 0
                                 height 0
-                                border: 7px solid transparent
-                                border-left: 11px solid #bf3e1f
-                                top calc(50% - 6px)
-                                left calc(50% - 5.5px)
+                                border: 0.5833rem solid transparent
+                                border-left: 0.9167rem solid #bf3e1f
+                                top calc(50% - 0.5rem)
+                                left calc(50% - 0.4583rem)
 
                     .uikit-video-player-pp::after
                         content ""
                         position absolute
                         width 0
                         height 0
-                        border: 6px solid transparent
-                        border-left: 10px solid white
-                        top calc(50% - 7px)
-                        left calc(50% - 4px)
+                        border: 0.5rem solid transparent
+                        border-left: 0.8333rem solid white
+                        top calc(50% - 0.5833rem)
+                        left calc(50% - 0.3333rem)
 
             &[data-playing="true"]
                 .uikit-video-player-controls
@@ -65,24 +65,24 @@
                         &:hover
                             &::before
                             &::after
-                                box-shadow: -1.5px 2px 0 0 #bf3e1f
+                                box-shadow: -0.125rem 0.1667rem 0 0 #bf3e1f
 
                     .uikit-video-player-pp::before
                         content ""
                         position absolute
-                        width 2px
-                        height 10px
-                        top calc(50% - 5px)
-                        left calc(50% - 4px)
+                        width 0.1667rem
+                        height 0.8333rem
+                        top calc(50% - 0.4167rem)
+                        left calc(50% - 0.3333rem)
                         background-color: white
 
                     .uikit-video-player-pp::after
                         content ""
                         position absolute
-                        width 2px
-                        height 10px
-                        top calc(50% - 5px)
-                        left calc(50% + 2px)
+                        width 0.1667rem
+                        height 0.8333rem
+                        top calc(50% - 0.4167rem)
+                        left calc(50% + 0.1667rem)
                         background-color: white
 
             &[data-controls-show="false"]
