@@ -25299,14 +25299,15 @@ var Calendar = /** @class */ (function (_super) {
     };
     Calendar.prototype.build = function () {
         this.dom.attr('data-today', __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.combineDate(this.mediator.getData('model.today')));
-        this.dom.addClass('uikit-calendar');
+        this.dom.addClass('uikitCalendar');
         this.dom.append(template.clone());
-        this.domHead = this.dom.find('.uikit-calendar-day-month');
-        this.domGrid = this.dom.find('.uikit-calendar-week-days .uikit-calendar-days-grid');
-        this.domTodayBtn = this.dom.find('.uikit-calendat-today-btn');
-        var weekDays = this.dom.find('.uikit-calendar-week');
+        this.domHead = this.dom.find('.uikitCalendar__header');
+        this.domGrid = this.dom.find('.uikitCalendar__daysGrid');
+        this.domTodayBtn = this.dom.find('.uikitCalendar__setTodayButton');
+        var weekDays = this.dom.find('.uikitCalendar__week');
         Object.keys(__WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.daysNames).map(function (key) {
-            var day = $('<div>').addClass('day').text(__WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.daysNames[key]['short']);
+            var day = $('<div>').addClass('uikitCalendar__dayInWeek')
+                .text(__WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.daysNames[key]['short']);
             weekDays.append(day);
         });
         this.calendarHead = new __WEBPACK_IMPORTED_MODULE_3__head_index__["a" /* default */](this.domHead, this.mediator, this.orientation, this.getDate());
@@ -25462,7 +25463,7 @@ var Calendar_Model = /** @class */ (function (_super) {
 var pug = __webpack_require__(3);
 
 function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_indent = [];
-pug_html = pug_html + "\n\u003Cdiv class=\"uikit-calendar-day-month\"\u003E\n  \u003Cdiv class=\"uikit-calendar-year\"\u003E2018\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikit-calendar-day\"\u003E\u003Cspan\u003E24\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikit-calendar-month\"\u003E\n    \u003Cdiv class=\"btn-left\"\u003E\u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"caption\"\u003E\u003Cspan\u003ESeptember\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"btn-right\"\u003E\u003C\u002Fdiv\u003E\n  \u003C\u002Fdiv\u003E\n\u003C\u002Fdiv\u003E\n\u003Cdiv class=\"uikit-calendar-week-days\"\u003E\n  \u003Cdiv class=\"uikit-calendar-week\"\u003E\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikit-calendar-days-grid\"\u003E\u003C\u002Fdiv\u003E\n\u003C\u002Fdiv\u003E\n\u003Cdiv class=\"uikit-calendar-today-btn\"\u003E\u003Cspan\u003EToday\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E";;return pug_html;};
+pug_html = pug_html + "\n\u003Cdiv class=\"uikitCalendar__header\"\u003E\n  \u003Cdiv class=\"uikitCalendar__year\"\u003E2018\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikitCalendar__currentDay\"\u003E\u003Cspan\u003E24\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikitCalendar__monthSwitcher\"\u003E\n    \u003Cdiv class=\"uikitCalendar__previousMonthButton\"\u003E\u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"uikitCalendar__monthFullName\"\u003E\u003Cspan\u003ESeptember\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E\n    \u003Cdiv class=\"uikitCalendar__nextMonthButton\"\u003E\u003C\u002Fdiv\u003E\n  \u003C\u002Fdiv\u003E\n\u003C\u002Fdiv\u003E\n\u003Cdiv class=\"uikitCalendar__weekDays\"\u003E\n  \u003Cdiv class=\"uikitCalendar__week\"\u003E\u003C\u002Fdiv\u003E\n  \u003Cdiv class=\"uikitCalendar__daysGrid\"\u003E\u003C\u002Fdiv\u003E\n\u003C\u002Fdiv\u003E\n\u003Cdiv class=\"uikitCalendar__setTodayButton\"\u003E\u003Cspan\u003EToday\u003C\u002Fspan\u003E\u003C\u002Fdiv\u003E";;return pug_html;};
 module.exports = template;
 
 /***/ }),
@@ -25496,11 +25497,11 @@ var Calendar_Head = /** @class */ (function (_super) {
         this.applyEvents();
     };
     Calendar_Head.prototype.build = function () {
-        this.domDay = this.dom.find('.uikit-calendar-day span');
-        this.domMonthLeftBtn = this.dom.find('.uikit-calendar-month .btn-left');
-        this.domMonthCaption = this.dom.find('.uikit-calendar-month .caption span');
-        this.domMonthRightBtn = this.dom.find('.uikit-calendar-month .btn-right');
-        this.domYear = this.dom.find('.uikit-calendar-year');
+        this.domDay = this.dom.find('.uikitCalendar__currentDay span');
+        this.domMonthLeftBtn = this.dom.find('.uikitCalendar__previousMonthButton');
+        this.domMonthCaption = this.dom.find('.uikitCalendar__monthFullName span');
+        this.domMonthRightBtn = this.dom.find('.uikitCalendar__nextMonthButton');
+        this.domYear = this.dom.find('.uikitCalendar__year');
         this.domDay.text(this.inDate.day);
         this.domMonthCaption.text(this.capitalizeFirstLetter(__WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.monthsNames[this.inDate.month].full));
     };
@@ -25520,6 +25521,14 @@ var Calendar_Head = /** @class */ (function (_super) {
             _this.domYear.text(modelData.date.year);
         };
         this.mediator.subscribe('model.date', mediatorModelDate);
+        var domMouseEnter = function () {
+            _this.domYear.addClass('uikitCalendar__year-show');
+        };
+        var domMouseLeave = function () {
+            _this.domYear.removeClass('uikitCalendar__year-show');
+        };
+        this.dom.on('mouseenter', domMouseEnter);
+        this.dom.on('mouseleave', domMouseLeave);
     };
     Calendar_Head.prototype.capitalizeFirstLetter = function (str) {
         return str.charAt(0).toUpperCase() + str.slice(1).toLocaleLowerCase();
@@ -25555,6 +25564,11 @@ var CalendarGrid = /** @class */ (function (_super) {
         var _this = _super.call(this, dom, mediator, orientation) || this;
         _this.inDate = inDate;
         _this.days = days;
+        _this.inDate = {
+            day: 1,
+            year: 2018,
+            month: 7,
+        };
         _this.initialize();
         return _this;
     }
@@ -25566,12 +25580,13 @@ var CalendarGrid = /** @class */ (function (_super) {
         this.dom.empty();
         var daysCount = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.getDaysCount(this.inDate.month, this.inDate.year);
         var startDay = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.getDayOfWeekIndex(this.inDate.month, 1, this.inDate.year);
+        console.log(startDay);
         var lastDay = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.getDayOfWeekIndex(this.inDate.month, daysCount, this.inDate.year);
         var startDate = __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.clone(this.inDate);
         startDate.day = 1;
         for (var i = startDay; i > 1; i -= 1) {
             startDate = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.decreaseDay(startDate);
-            var cell = this.getCell('prev-month', startDate);
+            var cell = this.getCell('uikitCalendar__daysGridCell-isNotThisMonth', startDate);
             this.dom.prepend(cell);
         }
         startDate = __WEBPACK_IMPORTED_MODULE_1_lodash___default.a.clone(this.inDate);
@@ -25579,7 +25594,8 @@ var CalendarGrid = /** @class */ (function (_super) {
         for (var i = 1; i <= daysCount; i += 1) {
             var cell = this.getCell('', startDate);
             if (i === this.inDate.day) {
-                cell.attr('data-selected', 'true');
+                // cell.attr('data-selected', 'true');
+                cell.addClass('uikitCalendar__daysGridCell-selected');
             }
             this.applyCellEvent(cell);
             this.dom.append(cell);
@@ -25589,26 +25605,29 @@ var CalendarGrid = /** @class */ (function (_super) {
         startDate.day = daysCount;
         for (var i = lastDay + 1; i <= 7; i += 1) {
             startDate = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.increaseDay(startDate);
-            var cell = this.getCell('next-month', startDate);
+            // const cell = this.getCell('next-month', startDate);
+            var cell = this.getCell('uikitCalendar__daysGridCell-isNotThisMonth', startDate);
             this.dom.append(cell);
         }
     };
     CalendarGrid.prototype.applyCellEvent = function (cell) {
         var _this = this;
         cell.on('click', function (event) {
-            _this.dom.find('.cell').map(function (index, item) {
-                $(item).attr('data-selected', '');
+            _this.dom.find('.uikitCalendar__daysGridCell').map(function (index, item) {
+                // $(item).attr('data-selected', '');
+                $(item).removeClass('uikitCalendar__daysGridCell-selected');
             });
-            $(event.target).attr('data-selected', 'true');
+            // $(event.target).attr('data-selected', 'true');
+            $(event.target).addClass('uikitCalendar__daysGridCell-selected');
             var dateString = $(event.target).attr('data-date');
             var date = __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.parseDate(dateString);
             _this.mediator.setData('model.date', date);
         });
     };
     CalendarGrid.prototype.getCell = function (classes, date) {
-        var span = $('<span>').text(date.day);
+        var span = $('<span>').text(date.day).addClass('uikitCalendar__daysGridCellSpan');
         var cell = $('<div>')
-            .addClass("cell " + classes + " no-select")
+            .addClass("uikitCalendar__daysGridCell " + classes + " no-select")
             .attr('data-date', __WEBPACK_IMPORTED_MODULE_0__core_index__["Utils"].Dates.combineDate(date));
         cell.append(span);
         return cell;

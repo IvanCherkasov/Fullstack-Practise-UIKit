@@ -1,64 +1,62 @@
 .uikit-theme-aqua
-    .uikit
-        &.uikit-calendar
-            .uikit-calendar-week-days
-                width: 100%
-                display flex
-                flex-direction: column
-                justify-content: space-between
+    .uikitCalendar
+        &__weekDays
+            width: 100%
+            display flex
+            flex-direction: column
+            justify-content: space-between
 
-                .uikit-calendar-week
-                    height 2.25rem
-                    background-color: #e75735
-                    display flex
-                    justify-content: space-between
-                    align-items: center
+        &__week
+            height 2.25rem
+            background-color: #e75735
+            display flex
+            justify-content: space-between
+            align-items: center
 
-                    .day
-                        width: 3.25rem
-                        font-family: Lato
-                        font-size: 0.75rem
-                        font-weight: 400
-                        text-align: center
-                        text-transform: uppercase
-                        color white
-                        cursor: default
+        &__dayInWeek
+            width: 3.25rem
+            font-family: Lato
+            font-size: 0.75rem
+            font-weight: 400
+            text-align: center
+            text-transform: uppercase
+            color white
+            cursor: default
 
-                .uikit-calendar-days-grid
-                    height 16.6667rem
-                    display: flex
-                    flex-direction: row
-                    justify-content: space-between
-                    flex-wrap: wrap
-                    margin-top 0.0833rem
+        &__daysGrid
+            height 16.6667rem
+            display: flex
+            flex-direction: row
+            justify-content: space-between
+            flex-wrap: wrap
+            margin-top 0.0833rem
 
-                    .cell
-                        width 3.25rem
-                        height 3.25rem
-                        background-color: #f2f2f2
-                        font-family: Source Sans Pro
-                        color #868686
-                        font-size 1.6667rem
-                        font-weight: 300
-                        text-align: center
-                        display: flex
-                        align-items: center
-                        justify-content: center
-                        cursor: pointer
+        &__daysGridCell
+            width 3.25rem
+            height 3.25rem
+            background-color: #f2f2f2
+            font-family: Source Sans Pro
+            color #868686
+            font-size 1.6667rem
+            font-weight: 300
+            text-align: center
+            display: flex
+            align-items: center
+            justify-content: center
+            cursor: pointer
 
-                        &[data-selected='true']
-                            background-color: #e75735
-                            color white
+            &-selected
+                background-color: #e75735
+                color white
 
-                            &:hover
-                                color white
+                &:hover
+                    color white !important
 
-                        &:hover
-                            color #e75735
+            &:hover
+                color #e75735
 
-                        &.prev-month
-                        &.next-month
-                            color white
+            &-isNotThisMonth
+                color white
 
-                        span
-                            pointer-events: none
+        &__daysGridCellSpan
+            pointer-events: none

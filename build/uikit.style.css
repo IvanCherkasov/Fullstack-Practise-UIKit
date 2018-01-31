@@ -1495,7 +1495,7 @@
   text-transform: uppercase;
   letter-spacing: 0.0833rem;
 }
-.uikit-theme-aqua .uikit.uikit-calendar {
+.uikit-theme-aqua .uikitCalendar {
   width: 23.25rem;
   border-radius: 0.25rem;
   overflow: hidden;
@@ -1504,10 +1504,7 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.uikit-theme-aqua .uikit.uikit-calendar:hover .uikit-calendar-day-month .uikit-calendar-year {
-  opacity: 1;
-}
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-today-btn {
+.uikit-theme-aqua .uikitCalendar__setTodayButton {
   height: 4.0833rem;
   width: 100%;
   background-color: #e5e5e5;
@@ -1524,20 +1521,20 @@
   box-sizing: border-box;
   cursor: pointer;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days {
+.uikit-theme-aqua .uikitCalendar__weekDays {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-week {
+.uikit-theme-aqua .uikitCalendar__week {
   height: 2.25rem;
   background-color: #e75735;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-week .day {
+.uikit-theme-aqua .uikitCalendar__dayInWeek {
   width: 3.25rem;
   font-family: Lato;
   font-size: 0.75rem;
@@ -1547,7 +1544,7 @@
   color: #fff;
   cursor: default;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid {
+.uikit-theme-aqua .uikitCalendar__daysGrid {
   height: 16.6667rem;
   display: flex;
   flex-direction: row;
@@ -1555,7 +1552,7 @@
   flex-wrap: wrap;
   margin-top: 0.0833rem;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell {
+.uikit-theme-aqua .uikitCalendar__daysGridCell {
   width: 3.25rem;
   height: 3.25rem;
   background-color: #f2f2f2;
@@ -1569,33 +1566,23 @@
   justify-content: center;
   cursor: pointer;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell[data-selected='true'] {
+.uikit-theme-aqua .uikitCalendar__daysGridCell-selected {
   background-color: #e75735;
   color: #fff;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell[data-selected='true']:hover {
-  color: #fff;
+.uikit-theme-aqua .uikitCalendar__daysGridCell-selected:hover {
+  color: #fff !important;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell:hover {
+.uikit-theme-aqua .uikitCalendar__daysGridCell:hover {
   color: #e75735;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell.prev-month,
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell.next-month {
+.uikit-theme-aqua .uikitCalendar__daysGridCell-isNotThisMonth {
   color: #fff;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-week-days .uikit-calendar-days-grid .cell span {
+.uikit-theme-aqua .uikitCalendar__daysGridCellSpan {
   pointer-events: none;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month {
-  height: 12.6667rem;
-  width: 100%;
-  background-color: #e75735;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-}
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-year {
+.uikit-theme-aqua .uikitCalendar__year {
   position: absolute;
   right: 0;
   margin: 0.4167rem;
@@ -1607,7 +1594,19 @@
   color: #fff;
   cursor: default;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-month {
+.uikit-theme-aqua .uikitCalendar__year-show {
+  opacity: 1;
+}
+.uikit-theme-aqua .uikitCalendar__header {
+  height: 12.6667rem;
+  width: 100%;
+  background-color: #e75735;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.uikit-theme-aqua .uikitCalendar__monthSwitcher {
   background-color: #d54c2c;
   height: 3.5833rem;
   width: 100%;
@@ -1615,7 +1614,7 @@
   justify-content: space-between;
   align-items: center;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-month .btn-left {
+.uikit-theme-aqua .uikitCalendar__previousMonthButton {
   width: 1.6667rem;
   height: 100%;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAQCAQAAACFdibLAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAABzSURBVBjTbdCxDcJQDEXRqxSpYYIotF9MQIZKSxcWYglaKkZgA5T0lwK+HEexuyM9yzaSevQkmSb1bb8lfXrcoYjf/nSQiol+uCHBq6qvIGl4sAAdhShxcFY/XiK+w3VO4lh+xeszK5f8kMHZu21GPNvKFydYwWpmt967AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTAxLTE1VDEzOjE2OjMwKzAwOjAwi/3KHgAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0wMS0xNVQxMzoxNjozMCswMDowMPqgcqIAAAAASUVORK5CYII=");
@@ -1624,7 +1623,7 @@
   margin-left: 1.1667rem;
   cursor: pointer;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-month .btn-right {
+.uikit-theme-aqua .uikitCalendar__nextMonthButton {
   width: 1.6667rem;
   height: 100%;
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAQCAQAAACFdibLAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAB2SURBVBjTbdCxDcJADIXhpxRXXyZA0IZMcOxETwUTMURaKkZggyT0P8XpZPuEXVj6ZFuWhThxRT7FkQ9wjzjygsjiD9fS+OFRZM+23rE/JfMG4DbIYtJB0leL9RVWYOdi444aFjajih0hce4JicQzUh1PzPF1P0xQwXChiT0AAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTAxLTE1VDEzOjE2OjMzKzAwOjAwuhXQgwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0wMS0xNVQxMzoxNjozMyswMDowMMtIaD8AAAAASUVORK5CYII=");
@@ -1633,7 +1632,7 @@
   margin-right: 1.1667rem;
   cursor: pointer;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-month .caption {
+.uikit-theme-aqua .uikitCalendar__monthFullName {
   font-family: Lato;
   color: #fff;
   font-size: 2rem;
@@ -1641,7 +1640,7 @@
   text-align: center;
   cursor: default;
 }
-.uikit-theme-aqua .uikit.uikit-calendar .uikit-calendar-day-month .uikit-calendar-day {
+.uikit-theme-aqua .uikitCalendar__currentDay {
   font-family: Lato;
   color: #fff;
   font-size: 6.6667rem;

@@ -27,11 +27,11 @@ class Calendar_Head extends Core.Element {
     }
 
     protected build() {
-        this.domDay = this.dom.find('.uikit-calendar-day span');
-        this.domMonthLeftBtn = this.dom.find('.uikit-calendar-month .btn-left');
-        this.domMonthCaption = this.dom.find('.uikit-calendar-month .caption span');
-        this.domMonthRightBtn = this.dom.find('.uikit-calendar-month .btn-right');
-        this.domYear = this.dom.find('.uikit-calendar-year');
+        this.domDay = this.dom.find('.uikitCalendar__currentDay span');
+        this.domMonthLeftBtn = this.dom.find('.uikitCalendar__previousMonthButton');
+        this.domMonthCaption = this.dom.find('.uikitCalendar__monthFullName span');
+        this.domMonthRightBtn = this.dom.find('.uikitCalendar__nextMonthButton');
+        this.domYear = this.dom.find('.uikitCalendar__year');
 
         this.domDay.text(this.inDate.day);
         this.domMonthCaption.text(
@@ -56,6 +56,17 @@ class Calendar_Head extends Core.Element {
             this.domYear.text(modelData.date.year);
         };
         this.mediator.subscribe('model.date', mediatorModelDate);
+
+        const domMouseEnter = () => {
+            this.domYear.addClass('uikitCalendar__year-show');
+        };
+
+        const domMouseLeave = () => {
+            this.domYear.removeClass('uikitCalendar__year-show');
+        };
+
+        this.dom.on('mouseenter', domMouseEnter);
+        this.dom.on('mouseleave', domMouseLeave);
     }
 
     private capitalizeFirstLetter(str: string) {

@@ -48,14 +48,15 @@ class Calendar extends Core.Component {
     protected build() {
         this.dom.attr('data-today', Core.Utils.Dates.combineDate(
             this.mediator.getData('model.today')));
-        this.dom.addClass('uikit-calendar');
+        this.dom.addClass('uikitCalendar');
         this.dom.append(template.clone());
-        this.domHead = this.dom.find('.uikit-calendar-day-month');
-        this.domGrid = this.dom.find('.uikit-calendar-week-days .uikit-calendar-days-grid');
-        this.domTodayBtn = this.dom.find('.uikit-calendat-today-btn');
-        const weekDays = this.dom.find('.uikit-calendar-week');
+        this.domHead = this.dom.find('.uikitCalendar__header');
+        this.domGrid = this.dom.find('.uikitCalendar__daysGrid');
+        this.domTodayBtn = this.dom.find('.uikitCalendar__setTodayButton');
+        const weekDays = this.dom.find('.uikitCalendar__week');
         Object.keys(Core.Utils.Dates.daysNames).map((key) => {
-            const day = $('<div>').addClass('day').text(Core.Utils.Dates.daysNames[key]['short']);
+            const day = $('<div>').addClass('uikitCalendar__dayInWeek')
+                .text(Core.Utils.Dates.daysNames[key]['short']);
             weekDays.append(day);
         });
 
@@ -105,6 +106,8 @@ class Calendar extends Core.Component {
                 Core.Utils.Dates.combineDate(
                     Core.Utils.Dates.decreaseMonth(this.getDate())));
         });
+
+        
     }
 
     private getCurrentDate(): string {

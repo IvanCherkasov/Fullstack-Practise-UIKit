@@ -35,7 +35,7 @@ class CalendarGrid extends Core.Element {
         startDate.day = 1;
         for (let i = startDay; i > 1; i -= 1) {
             startDate = Core.Utils.Dates.decreaseDay(startDate);
-            const cell = this.getCell('prev-month', startDate);
+            const cell = this.getCell('uikitCalendar__daysGridCell-isNotThisMonth', startDate);
             this.dom.prepend(cell);
         }
 
@@ -44,7 +44,8 @@ class CalendarGrid extends Core.Element {
         for (let i = 1; i <= daysCount; i += 1) {
             const cell = this.getCell('', startDate);
             if (i === this.inDate.day) {
-                cell.attr('data-selected', 'true');
+                // cell.attr('data-selected', 'true');
+                cell.addClass('uikitCalendar__daysGridCell-selected');
             }
             this.applyCellEvent(cell);
             this.dom.append(cell);
@@ -55,17 +56,20 @@ class CalendarGrid extends Core.Element {
         startDate.day = daysCount;
         for (let i = lastDay + 1; i <= 7; i += 1) {
             startDate = Core.Utils.Dates.increaseDay(startDate);
-            const cell = this.getCell('next-month', startDate);
+            // const cell = this.getCell('next-month', startDate);
+            const cell = this.getCell('uikitCalendar__daysGridCell-isNotThisMonth', startDate);
             this.dom.append(cell);
         }
     }
 
     private applyCellEvent(cell: JQuery) {
         cell.on('click', (event) => {
-            this.dom.find('.cell').map((index, item) => {
-                $(item).attr('data-selected', '');
+            this.dom.find('.uikitCalendar__daysGridCell').map((index, item) => {
+                // $(item).attr('data-selected', '');
+                $(item).removeClass('uikitCalendar__daysGridCell-selected');
             });
-            $(event.target).attr('data-selected', 'true');
+            // $(event.target).attr('data-selected', 'true');
+            $(event.target).addClass('uikitCalendar__daysGridCell-selected');
             const dateString = $(event.target).attr('data-date');
             const date = Core.Utils.Dates.parseDate(dateString);
             this.mediator.setData('model.date', date);
@@ -73,9 +77,9 @@ class CalendarGrid extends Core.Element {
     }
 
     private getCell(classes: string, date: Core.TDate) {
-        const span = $('<span>').text(date.day);
+        const span = $('<span>').text(date.day).addClass('uikitCalendar__daysGridCellSpan');
         const cell = $('<div>')
-            .addClass(`cell ${classes} no-select`)
+            .addClass(`uikitCalendar__daysGridCell ${classes} no-select`)
             .attr('data-date', Core.Utils.Dates.combineDate(date));
         cell.append(span);
         return cell;
